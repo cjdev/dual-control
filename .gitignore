@@ -1,1 +1,8 @@
+*.swp
+configure.scan
+config.status
+Makefile
+*.log
+autom4te.cache/
+hello
 .vagrant/
