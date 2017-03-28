@@ -1,1 +1,13 @@
+.deps/
+*~
+*.o
+stamp-h1
+config.h
+*.swp
+configure.scan
+config.status
+Makefile
+*.log
+autom4te.cache/
+hello
 .vagrant/
