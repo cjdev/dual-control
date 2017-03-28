@@ -9,5 +9,5 @@ config.status
 Makefile
 *.log
 autom4te.cache/
-hello
+dual_control_test
 .vagrant/
