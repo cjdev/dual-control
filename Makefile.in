@@ -102,8 +102,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_dual_control_test_OBJECTS = dual_control_test.$(OBJEXT) \
-	dual_control.$(OBJEXT)
+am_dual_control_test_OBJECTS =  \
+	dual_control_test-dual_control_test.$(OBJEXT) \
+	dual_control_test-dual_control.$(OBJEXT)
 dual_control_test_OBJECTS = $(am_dual_control_test_OBJECTS)
 dual_control_test_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -122,6 +123,10 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_@AM_V@)
@@ -268,6 +273,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 dual_control_test_SOURCES = dual_control_test.c dual_control.c
+dual_control_test_CPPFLAGS = -fPIC -fno-stack-protector
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -374,8 +380,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dual_control.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dual_control_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dual_control_test-dual_control.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dual_control_test-dual_control_test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -390,6 +396,34 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+dual_control_test-dual_control_test.o: dual_control_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dual_control_test-dual_control_test.o -MD -MP -MF $(DEPDIR)/dual_control_test-dual_control_test.Tpo -c -o dual_control_test-dual_control_test.o `test -f 'dual_control_test.c' || echo '$(srcdir)/'`dual_control_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dual_control_test-dual_control_test.Tpo $(DEPDIR)/dual_control_test-dual_control_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dual_control_test.c' object='dual_control_test-dual_control_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dual_control_test-dual_control_test.o `test -f 'dual_control_test.c' || echo '$(srcdir)/'`dual_control_test.c
+
+dual_control_test-dual_control_test.obj: dual_control_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dual_control_test-dual_control_test.obj -MD -MP -MF $(DEPDIR)/dual_control_test-dual_control_test.Tpo -c -o dual_control_test-dual_control_test.obj `if test -f 'dual_control_test.c'; then $(CYGPATH_W) 'dual_control_test.c'; else $(CYGPATH_W) '$(srcdir)/dual_control_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dual_control_test-dual_control_test.Tpo $(DEPDIR)/dual_control_test-dual_control_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dual_control_test.c' object='dual_control_test-dual_control_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dual_control_test-dual_control_test.obj `if test -f 'dual_control_test.c'; then $(CYGPATH_W) 'dual_control_test.c'; else $(CYGPATH_W) '$(srcdir)/dual_control_test.c'; fi`
+
+dual_control_test-dual_control.o: dual_control.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dual_control_test-dual_control.o -MD -MP -MF $(DEPDIR)/dual_control_test-dual_control.Tpo -c -o dual_control_test-dual_control.o `test -f 'dual_control.c' || echo '$(srcdir)/'`dual_control.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dual_control_test-dual_control.Tpo $(DEPDIR)/dual_control_test-dual_control.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dual_control.c' object='dual_control_test-dual_control.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dual_control_test-dual_control.o `test -f 'dual_control.c' || echo '$(srcdir)/'`dual_control.c
+
+dual_control_test-dual_control.obj: dual_control.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dual_control_test-dual_control.obj -MD -MP -MF $(DEPDIR)/dual_control_test-dual_control.Tpo -c -o dual_control_test-dual_control.obj `if test -f 'dual_control.c'; then $(CYGPATH_W) 'dual_control.c'; else $(CYGPATH_W) '$(srcdir)/dual_control.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/dual_control_test-dual_control.Tpo $(DEPDIR)/dual_control_test-dual_control.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='dual_control.c' object='dual_control_test-dual_control.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dual_control_test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dual_control_test-dual_control.obj `if test -f 'dual_control.c'; then $(CYGPATH_W) 'dual_control.c'; else $(CYGPATH_W) '$(srcdir)/dual_control.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
