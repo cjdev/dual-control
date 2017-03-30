@@ -1,6 +1,7 @@
 .deps/
 *~
 *.o
+*.a
 stamp-h1
 config.h
 *.swp
