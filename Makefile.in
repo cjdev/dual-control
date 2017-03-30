@@ -2,7 +2,7 @@ MODULEFLAGS = -fPIC -fno-stack-protector
 MODULEOBJS = dual_control.o
 
 .PHONY: all
-all: dual_control.a
+all: dual_control.a dual_control_test
 
 dual_control.a: $(MODULEOBJS)
 	ar rvs $@ $^
@@ -14,8 +14,12 @@ $(MODULEOBJS): %.o: %.c
 .PHONY: clean
 clean:
 	rm -f *.o *.a
+	rm dual_control_test
 
 .PHONY: distclean
 distclean: clean
 	rm -f Makefile config.h
+
+dual_control_test: dual_control_test.c $(MODULEOBJS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^
 
