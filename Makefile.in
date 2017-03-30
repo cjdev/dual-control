@@ -13,17 +13,17 @@ $(MODULEOBJS): %.o: %.c
 
 .PHONY: clean
 clean:
-	rm -f *.o *.a
-	rm -f dual_control_test
+	@rm -f *.o *.a
+	@rm -f dual_control_test
 
 .PHONY: distclean
 distclean: clean
-	rm -f Makefile config.h
+	@rm -f Makefile config.h
 
 dual_control_test: dual_control_test.c $(MODULEOBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^
 
 .PHONY: test
 test: dual_control_test
-	./dual_control_test
+	@./dual_control_test > /dev/null
 
