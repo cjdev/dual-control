@@ -3,10 +3,16 @@ MODULEFLAGS = -fPIC -fno-stack-protector
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $(MODULEFLAGS) $< -o $@
 
-.PHONY: all
+.PHONY: all clean realclean
 all: dual_control.a
 
-
 dual_control.a: dual_control.o
-	libtool -static -o $@ $<
+	ar rvs $@ $<
+	ranlib $@
+
+clean:
+	rm -f *.o *.a
+
+realclean: clean
+	rm -f Makefile config.h
 
