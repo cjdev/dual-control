@@ -1,5 +1,8 @@
 MODULEFLAGS = -fPIC -fno-stack-protector
-MODULEOBJS = dual_control.o
+SYSOBJS = logging.o
+LOGICOBJS = dual_control.o
+MODULEOBJS = $(SYSOBJS) $(LOGICOBJS)
+
 MODULELIB = pam_dual_control.so
 UNAME_S := $(shell uname -s)
 
@@ -22,7 +25,7 @@ clean:
 distclean: clean
 	@rm -f Makefile config.h
 
-dual_control_test: dual_control_test.c $(MODULEOBJS)
+dual_control_test: dual_control_test.c $(LOGICOBJS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $^
 
 .PHONY: test
