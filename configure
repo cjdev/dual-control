@@ -587,6 +587,7 @@ PACKAGE_URL=''
 ac_unique_file="config.h.in"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+PAM_MODULE_DIRECTORY
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -635,6 +636,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_pam_module_directory
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1249,6 +1251,12 @@ if test -n "$ac_init_help"; then
      short | recursive ) echo "Configuration of FULL-PACKAGE-NAME VERSION:";;
    esac
   cat <<\_ACEOF
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-pam-module-directory=NAME
+        Use NAME as installation directory for PAM modules
 
 Some influential environment variables:
   CC          C compiler command
@@ -2531,6 +2539,19 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # Checks for library functions.
 
+# Implementation of the --with-pam-module-directory switch.
+DEFAULT_PAM_MODULE_DIRECTORY="${libdir}/security"
+
+# Check whether --with-pam-module-directory was given.
+if test "${with_pam_module_directory+set}" = set; then :
+  withval=$with_pam_module_directory; PAM_MODULE_DIRECTORY="$withval"
+else
+  PAM_MODULE_DIRECTORY="$DEFAULT_PAM_MODULE_DIRECTORY"
+fi
+
+
+
+
 ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF
@@ -3804,4 +3825,34 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
+
+
+if test "$PAM_MODULE_DIRECTORY" = "$DEFAULT_PAM_MODULE_DIRECTORY"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
+        **
+        ** Warning: using default value ($DEFAULT_PAM_MODULE_DIRECTORY) as
+        **          installation directory for PAM module; this is probably not
+        **          what you want. Either use the configure flag
+        **
+        **                      --with-pam-module-directory=DIRECTORY
+        **
+        **          or copy the newly built pam_dual_control.so into the correct directory
+        **          manually. Usually PAM modules are located in /lib/security or /lib64/security.
+        **" >&5
+$as_echo "$as_me: WARNING:
+        **
+        ** Warning: using default value ($DEFAULT_PAM_MODULE_DIRECTORY) as
+        **          installation directory for PAM module; this is probably not
+        **          what you want. Either use the configure flag
+        **
+        **                      --with-pam-module-directory=DIRECTORY
+        **
+        **          or copy the newly built pam_dual_control.so into the correct directory
+        **          manually. Usually PAM modules are located in /lib/security or /lib64/security.
+        **" >&2;}
+else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: PAM module installation directory: $PAM_MODULE_DIRECTORY" >&5
+$as_echo "$as_me: PAM module installation directory: $PAM_MODULE_DIRECTORY" >&6;}
+fi
+
 
