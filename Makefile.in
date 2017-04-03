@@ -1,5 +1,7 @@
 MODULEFLAGS = -fPIC -fno-stack-protector
 MODULEOBJS = dual_control.o
+MODULELIB = pam_dual_control.so
+UNAME_S := $(shell uname -s)
 
 .PHONY: all
 all: test dual_control.a
@@ -26,4 +28,16 @@ dual_control_test: dual_control_test.c $(MODULEOBJS)
 .PHONY: test
 test: dual_control_test
 	@./dual_control_test > /dev/null
+
+
+.PHONY: install
+install: $(MODULEOBJS)
+ifeq ($(UNAME_S), Linux)
+	ld -x --shared -o @PAM_MODULE_DIRECTORY@/$(MODULELIB) $(MODULEOBJS)
+else
+	@echo installation recipe not known for $(UNAME_S)
+endif
+
+
+
 
