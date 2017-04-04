@@ -1,0 +1,5 @@
+install:
+  - sudo apt-get install libpam0g-dev
+
+language: c
+
