@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cjdev/dual-control.svg?branch=master)](https://travis-ci.org/cjdev/dual-control)
+
 # Dual Control
 
 Goal: To remove all non-firefighting developer write-access to production boxes
