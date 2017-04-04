@@ -1,7 +1,6 @@
 MODULEFLAGS = -fPIC -fno-stack-protector
-SYSOBJS = logging.o
-LOGICOBJS = dual_control.o
-MODULEOBJS = $(SYSOBJS) $(LOGICOBJS)
+MODULEOBJS = dual_control.o logging.o dc_syslog.o
+HEADERS = logging.h dc_syslog.h
 
 MODULELIB = pam_dual_control.so
 UNAME_S := $(shell uname -s)
@@ -13,7 +12,7 @@ dual_control.a: $(MODULEOBJS)
 	ar rvs $@ $^
 	ranlib $@
 
-$(MODULEOBJS): %.o: %.c
+$(MODULEOBJS): %.o: %.c $(HEADERS)
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $(MODULEFLAGS) $< -o $@
 
 .PHONY: clean
@@ -25,13 +24,12 @@ clean:
 distclean: clean
 	@rm -f Makefile config.h
 
-dual_control_test: dual_control_test.c $(LOGICOBJS)
+dual_control_test: dual_control_test.c dual_control.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
 
 .PHONY: test
 test: dual_control_test
 	@./dual_control_test > /dev/null
-
 
 .PHONY: install
 install: $(MODULEOBJS)
@@ -40,7 +38,4 @@ ifeq ($(UNAME_S), Linux)
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
-
-
-
 
