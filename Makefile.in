@@ -36,7 +36,7 @@ test: dual_control_test
 .PHONY: install
 install: $(MODULEOBJS)
 ifeq ($(UNAME_S), Linux)
-	ld -x --shared -o @PAM_MODULE_DIRECTORY@/$(MODULELIB) $(MODULEOBJS)
+	ld $(LDFLAGS) -x --shared -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(MODULEOBJS)
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
