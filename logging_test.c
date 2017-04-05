@@ -11,7 +11,9 @@ void dc_syslog(int priority, const char *message, ...) {
     logged_message = message;
 }
 
+int close_log_invoked = 0;
 void dc_closelog(void) {
+    close_log_invoked = 1;
 }
 
 int opened_facility = -1000;
@@ -45,6 +47,7 @@ int test_log_success() {
     opened_logopt = -1000;
     logged_priority = -1000;
     logged_message = "";
+    close_log_invoked = 0;
 
     // when
     log_success();
@@ -53,6 +56,7 @@ int test_log_success() {
     checkint(LOG_AUTHPRIV, opened_facility, "facility");
     checkint(LOG_NOTICE, logged_priority, "priority");
     checkint(0, opened_logopt, "logopt");
+    check(close_log_invoked, "log closed");
     checkstr("pam_dual_control", opened_program_name, "program name");
     checkstr("dual control succeeded", logged_message, "logged message");
 
