@@ -8,15 +8,6 @@ void log_success() {
     log_success_invoked = 1;
 }
 
-int pam_sm_acct_mgmt_returns_successs() {
-    // given
-
-    // when
-    int result = pam_sm_acct_mgmt(NULL, 0, 0, NULL);
-
-    // then
-    return result == PAM_SUCCESS;
-}
 
 int pam_sm_authenticate_returns_success() {
     //given
@@ -47,11 +38,6 @@ int pam_sm_authenticate_invokes_log_success() {
 
 
 int main(int argc, char* argv[]) {
-    int test1_result = pam_sm_acct_mgmt_returns_successs();
-    if (!test1_result) {
-        fprintf(stderr, "acct management failed\n");
-    }
-
     int test2_result = pam_sm_authenticate_returns_success();
     if (!test2_result) {
         fprintf(stderr, "acct auth failed\n");
@@ -67,7 +53,7 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "authenticate invokes log_success failed\n");
     }
 
-    if (test1_result && test2_result && test3_result && test4_result) {
+    if (test2_result && test3_result && test4_result) {
         fprintf(stderr, "success\n");
         return 0;
     } else {
