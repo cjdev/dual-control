@@ -26,10 +26,13 @@ distclean: clean
 
 dual_control_test: dual_control_test.c dual_control.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+logging_test: logging_test.c logging.o
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
 
 .PHONY: test
-test: dual_control_test
+test: dual_control_test logging_test
 	@./dual_control_test > /dev/null
+	@./logging_test > /dev/null
 
 .PHONY: install
 install: $(MODULEOBJS)
