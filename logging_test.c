@@ -4,10 +4,10 @@
 #include "dc_syslog.h"
 #include "logging.h"
 
-int test_priority = -1000;
+int logged_priority = -1000;
 const char *logged_message = "";
 void dc_syslog(int priority, const char *message, ...) {
-    test_priority = priority;
+    logged_priority = priority;
     logged_message = message;
 }
 
@@ -26,9 +26,15 @@ void dc_openlog(const char *ident, int logopt, int facility) {
 
 #define check(assertion, msg) \
     if (!(assertion)) { \
-      fprintf(stderr, "assertion failed %s\n", msg); \
+      fprintf(stderr, "assertion failed: %s\n", msg); \
       return 0; \
     }
+
+#define checkint(expected, actual, name) \
+    check(expected == actual, name " should be " #expected)
+
+#define checkstr(expected, actual, name) \
+    check(!strcmp(actual, expected), name " should be '" expected "'")
 
 #define succeed() return 1
 
@@ -37,18 +43,18 @@ int test_log_success() {
     opened_facility = -1000;
     opened_program_name = "";
     opened_logopt = -1000;
-    test_priority = -1000;
+    logged_priority = -1000;
     logged_message = "";
 
     // when
     log_success();
 
     // then
-    check(opened_facility == LOG_AUTHPRIV, "facility should be authpriv");
-    check(!strcmp(opened_program_name, "pam_dual_control"), "incorrect program name");
-    check(opened_logopt == 0, "incorrect log option");
-    check(test_priority == LOG_NOTICE, "incorrect priority");
-    check(!strcmp(logged_message, "dual control succeeded"), "incorrect logged message");
+    checkint(LOG_AUTHPRIV, opened_facility, "facility");
+    checkint(LOG_NOTICE, logged_priority, "priority");
+    checkint(0, opened_logopt, "logopt");
+    checkstr("pam_dual_control", opened_program_name, "program name");
+    checkstr("dual control succeeded", logged_message, "logged message");
 
     succeed();
 }
