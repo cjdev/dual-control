@@ -13,9 +13,11 @@ void dc_closelog(void) {
 
 int opened_facility = -1000;
 const char *opened_program_name = "";
+int opened_logopt = -1000;
 void dc_openlog(const char *ident, int logopt, int facility) {
     opened_facility = facility;
     opened_program_name = ident;
+    opened_logopt = logopt;
 }
 
 
@@ -31,6 +33,7 @@ int test_log_success() {
     // given
     opened_facility = -1000;
     opened_program_name = "";
+    opened_logopt = -1000;
 
     // when
     log_success();
@@ -38,6 +41,7 @@ int test_log_success() {
     // then
     check(opened_facility == LOG_AUTHPRIV, "facility should be authpriv");
     check(!strcmp(opened_program_name, "pam_dual_control"), "incorrect program name");
+    check(opened_logopt == 0, "incorrect log option");
 
     succeed();
 }
