@@ -5,8 +5,10 @@
 #include "logging.h"
 
 int test_priority = -1000;
+const char *logged_message = "";
 void dc_syslog(int priority, const char *message, ...) {
     test_priority = priority;
+    logged_message = message;
 }
 
 void dc_closelog(void) {
@@ -36,6 +38,7 @@ int test_log_success() {
     opened_program_name = "";
     opened_logopt = -1000;
     test_priority = -1000;
+    logged_message = "";
 
     // when
     log_success();
@@ -45,6 +48,7 @@ int test_log_success() {
     check(!strcmp(opened_program_name, "pam_dual_control"), "incorrect program name");
     check(opened_logopt == 0, "incorrect log option");
     check(test_priority == LOG_NOTICE, "incorrect priority");
+    check(!strcmp(logged_message, "dual control succeeded"), "incorrect logged message");
 
     succeed();
 }
