@@ -19,6 +19,14 @@ void dc_openlog(const char *ident, int logopt, int facility) {
 }
 
 
+#define check(assertion, msg) \
+    if (!(assertion)) { \
+      fprintf(stderr, "assertion failed %s\n", msg); \
+      return 0; \
+    }
+
+#define succeed() return 1
+
 int test_log_success() {
     // given
     opened_facility = -1000;
@@ -28,7 +36,10 @@ int test_log_success() {
     log_success();
 
     // then
-    return opened_facility == LOG_AUTHPRIV && !strcmp(opened_program_name, "pam_dual_control");
+    check(opened_facility == LOG_AUTHPRIV, "facility should be authpriv");
+    check(!strcmp(opened_program_name, "pam_dual_control"), "incorrect program name");
+
+    succeed();
 }
 
 
