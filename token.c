@@ -2,8 +2,9 @@
 
 #include "token.h"
 
-const char *ask_for_token(pam_handle_t * pamh) {
-    return "";
+int validate_token(const char *token) {
+    return 1;
+
 }
 
 

@@ -1,5 +1,5 @@
 MODULEFLAGS = -fPIC -fno-stack-protector
-MODULEOBJS = dual_control.o logging.o token.o
+MODULEOBJS = dual_control.o logging.o token.o conversation.o
 TESTOBJS = $(patsubst %.o, t_%.o, $(MODULEOBJS))
 HEADERS = logging.h test_support.h token.h
 MODULELIB = pam_dual_control.so
