@@ -6,13 +6,6 @@
 
 #include "testutil.h"
 
-#define reset_vars() \
-    logged_priority = -1000; \
-    close_log_invoked = 0; \
-    opened_facility = -1000; \
-    const char *opened_program_name = ""; \
-    int opened_logopt = -1000; \
-
 int logged_priority = -1000;
 const char *logged_message = "";
 void dc_syslog(int priority, const char *message, ...) {
@@ -33,6 +26,14 @@ void dc_openlog(const char *ident, int logopt, int facility) {
     opened_program_name = ident;
     opened_logopt = logopt;
 }
+
+RESET_VARS_START
+logged_priority = -1000;
+close_log_invoked = 0;
+opened_facility = -1000;
+const char *opened_program_name = "";
+int opened_logopt = -1000;
+RESET_VARS_END
 
 int test_log_success() {
     // given
@@ -58,3 +59,4 @@ int test_runner() {
 int main(int numargs, char **args) {
     return !test_runner();
 }
+

@@ -2,6 +2,6 @@
 #define __DUAL_CONTROL_LOGGING
 
 void log_success();
-void log_fail();
+void log_failure();
 
 #endif

@@ -2,7 +2,7 @@
 #define _TESTUTIL_H
 
 #include <string.h>
-
+#include <stdio.h>
 #define check(assertion, msg) \
     if (!(assertion)) { \
       fprintf(stderr, "assertion failed: %s\n", msg); \
@@ -15,15 +15,13 @@
 #define checkstr(expected, actual, name) \
     check(!strcmp(expected, actual), name " should be '" expected "'")
 
-#ifdef reset_vars
-#define _reset reset_vars()
-#else
-#define _reset
-#endif
+#define RESET_VARS_START void __reset_vars() {
+
+#define RESET_VARS_END }
 
 #define test(NAME) \
     { \
-      _reset \
+      __reset_vars(); \
       int result = NAME (); \
       if (!result) { \
           fprintf(stderr, "test failed: %s\n", #NAME); \
