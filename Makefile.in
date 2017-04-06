@@ -1,5 +1,5 @@
 MODULEFLAGS = -fPIC -fno-stack-protector
-MODULEOBJS = dual_control.o logging.o dc_syslog.o
+MODULEOBJS = dual_control.o logging.o dc_syslog.o token.o
 HEADERS = logging.h dc_syslog.h
 
 MODULELIB = pam_dual_control.so
@@ -26,13 +26,20 @@ distclean: clean
 
 dual_control_test: dual_control_test.c dual_control.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+
 logging_test: logging_test.c logging.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
 
+token_test: token_test.c token.o
+	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+
+
+
 .PHONY: test
-test: dual_control_test logging_test
+test: dual_control_test logging_test token_test
 	@./dual_control_test
 	@./logging_test
+	@./token_test
 	@echo all tests passed
 
 .PHONY: install
