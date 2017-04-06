@@ -6,6 +6,13 @@
 
 #include "testutil.h"
 
+#define reset_vars() \
+    logged_priority = -1000; \
+    close_log_invoked = 0; \
+    opened_facility = -1000; \
+    const char *opened_program_name = ""; \
+    int opened_logopt = -1000; \
+
 int logged_priority = -1000;
 const char *logged_message = "";
 void dc_syslog(int priority, const char *message, ...) {
@@ -29,12 +36,6 @@ void dc_openlog(const char *ident, int logopt, int facility) {
 
 int test_log_success() {
     // given
-    opened_facility = -1000;
-    opened_program_name = "";
-    opened_logopt = -1000;
-    logged_priority = -1000;
-    logged_message = "";
-    close_log_invoked = 0;
 
     // when
     log_success();
@@ -46,16 +47,14 @@ int test_log_success() {
     check(close_log_invoked, "log closed");
     checkstr("pam_dual_control", opened_program_name, "program name");
     checkstr("dual control succeeded", logged_message, "logged message");
-
     succeed();
 }
 
+int test_runner() {
+    test(test_log_success);
+    succeed();
+}
 
 int main(int numargs, char **args) {
-    if(test_log_success()) {
-        fprintf(stderr, "logging_test: success!\n");
-        return 0;
-    } else {
-        return 1;
-    }
+    return !test_runner();
 }

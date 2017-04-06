@@ -31,8 +31,9 @@ logging_test: logging_test.c logging.o
 
 .PHONY: test
 test: dual_control_test logging_test
-	@./dual_control_test > /dev/null
-	@./logging_test > /dev/null
+	@./dual_control_test
+	@./logging_test
+	@echo all tests passed
 
 .PHONY: install
 install: $(MODULEOBJS)

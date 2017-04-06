@@ -30,6 +30,7 @@
     }
 
 #define succeed() return 1
+#define fail() return 0
 
 #endif
 
