@@ -48,12 +48,14 @@ int pam_sm_setcred_returns_success() {
 int pam_sm_authenticate_validates_with_received_token() {
     // given
     token_to_return = "mytoken";
+    pam_handle_t *handle = (pam_handle_t*)"";
 
     // when
-    pam_sm_authenticate(NULL, 0, 0, NULL);
+    pam_sm_authenticate(handle, 0, 0, NULL);
 
     // then
     checkstr("mytoken",validated_token, "validated token");
+    check(passed_pam_handle == handle, "incorrect handle");
     succeed();
 }
 
