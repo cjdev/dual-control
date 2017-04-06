@@ -66,10 +66,9 @@ int test_log_success() {
 
 int main(int numargs, char **args) {
     if(test_log_success()) {
-        fprintf(stderr, "Success!\n");
+        fprintf(stderr, "logging_test: success!\n");
         return 0;
     } else {
         return 1;
     }
 }
-
