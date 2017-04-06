@@ -1,13 +1,12 @@
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
-#include <stdio.h>
 #include "logging.h"
 #include "token.h"
+#include "conversation.h"
 
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    printf("Authentication\n");
-
-    int returned_validation = validate_token("str");
+    const char *returned_token = ask_for_token(pamh);
+    int returned_validation = validate_token(returned_token);
 
     if (returned_validation) {
         log_success();
@@ -18,6 +17,5 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
 }
 
 PAM_EXTERN int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    printf("Set cred\n");
     return PAM_SUCCESS;
 }

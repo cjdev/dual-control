@@ -1,6 +1,8 @@
 #ifndef _TESTUTIL_H
 #define _TESTUTIL_H
 
+#include <string.h>
+
 #define check(assertion, msg) \
     if (!(assertion)) { \
       fprintf(stderr, "assertion failed: %s\n", msg); \
@@ -11,7 +13,7 @@
     check(expected == actual, name " should be " #expected)
 
 #define checkstr(expected, actual, name) \
-    check(!strcmp(actual, expected), name " should be '" expected "'")
+    check(!strcmp(expected, actual), name " should be '" expected "'")
 
 #ifdef reset_vars
 #define _reset reset_vars()
