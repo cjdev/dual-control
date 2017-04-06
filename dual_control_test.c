@@ -74,16 +74,21 @@ int fails_with_invalid_token() {
     return result == PAM_AUTH_ERR;
 }
 
-int main(int argc, char* argv[]) {
-    check(pam_sm_setcred_returns_success(), "set cred failed\n");
-    check(pam_sm_authenticate_success_invokes_log_success(), "authenticate invokes log_success failed\n");
-    check(succeeds_with_valid_token(), "succeeds with valid token failed\n");
-    check(fails_with_invalid_token(), "fails with invalid token failed\n")
-
-    if(at_least_one_failed_test) {
-      return 1;
-    } else {
-      fprintf(stderr, "dual_control_test: success!\n");
-      return 0;
-    }
+int runtests() {
+    test(pam_sm_setcred_returns_success);
+    test(pam_sm_authenticate_success_invokes_log_success);
+    test(succeeds_with_valid_token);
+    test(fails_with_invalid_token);
+    succeed();
 }
+
+int main(int argc, char* argv[]) {
+//    check(pam_sm_setcred_returns_success(), "set cred failed\n");
+//    check(pam_sm_authenticate_success_invokes_log_success(), "authenticate invokes log_success failed\n");
+//    check(succeeds_with_valid_token(), "succeeds with valid token failed\n");
+//    check(fails_with_invalid_token(), "fails with invalid token failed\n")
+
+   return !runtests();
+
+}
+

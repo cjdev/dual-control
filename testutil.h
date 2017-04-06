@@ -13,6 +13,16 @@
 #define checkstr(expected, actual, name) \
     check(!strcmp(actual, expected), name " should be '" expected "'")
 
+#define test(NAME) \
+    { \
+    fprintf(stderr, "here %s\n", #NAME); \
+      int result = NAME (); \
+      if (!result) { \
+          fprintf(stderr, "test failed: %s\n", #NAME); \
+          return 0; \
+      } \
+    }
+
 #define succeed() return 1
 
 #endif
