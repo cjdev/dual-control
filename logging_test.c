@@ -1,27 +1,26 @@
 #include <stdio.h>
 #include <string.h>
+#include <syslog.h>
 
-#include "dc_syslog.h"
 #include "logging.h"
-
-#include "testutil.h"
+#include "test_util.h"
 
 int logged_priority = -1000;
 const char *logged_message = "";
-void dc_syslog(int priority, const char *message, ...) {
+void fake_syslog(int priority, const char *message, ...) {
     logged_priority = priority;
     logged_message = message;
 }
 
 int close_log_invoked = 0;
-void dc_closelog(void) {
+void fake_closelog(void) {
     close_log_invoked = 1;
 }
 
 int opened_facility = -1000;
 const char *opened_program_name = "";
 int opened_logopt = -1000;
-void dc_openlog(const char *ident, int logopt, int facility) {
+void fake_openlog(const char *ident, int logopt, int facility) {
     opened_facility = facility;
     opened_program_name = ident;
     opened_logopt = logopt;

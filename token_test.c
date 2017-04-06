@@ -1,5 +1,5 @@
 #include "token.h"
-#include "testutil.h"
+#include "test_util.h"
 
 int validate_compares_to_user_token() {
     fail();

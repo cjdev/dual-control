@@ -10,6 +10,6 @@ config.status
 Makefile
 *.log
 autom4te.cache/
-dual_control_test
-logging_test
-.vagrant/
+*_test
+*_test
+
