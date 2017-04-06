@@ -4,6 +4,8 @@
 #include "dc_syslog.h"
 #include "logging.h"
 
+#include "testutil.h"
+
 int logged_priority = -1000;
 const char *logged_message = "";
 void dc_syslog(int priority, const char *message, ...) {
@@ -24,21 +26,6 @@ void dc_openlog(const char *ident, int logopt, int facility) {
     opened_program_name = ident;
     opened_logopt = logopt;
 }
-
-
-#define check(assertion, msg) \
-    if (!(assertion)) { \
-      fprintf(stderr, "assertion failed: %s\n", msg); \
-      return 0; \
-    }
-
-#define checkint(expected, actual, name) \
-    check(expected == actual, name " should be " #expected)
-
-#define checkstr(expected, actual, name) \
-    check(!strcmp(actual, expected), name " should be '" expected "'")
-
-#define succeed() return 1
 
 int test_log_success() {
     // given
