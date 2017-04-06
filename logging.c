@@ -9,4 +9,3 @@ void log_success() {
     dc_syslog(LOG_NOTICE, "dual control succeeded");
     dc_closelog();
 }
-
