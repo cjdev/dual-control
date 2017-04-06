@@ -51,8 +51,25 @@ int test_log_success() {
     succeed();
 }
 
+int test_log_failure() {
+    //given
+
+    //when
+    log_failure();
+
+    //then
+    checkint(LOG_AUTHPRIV, opened_facility, "facility");
+    checkint(LOG_NOTICE, logged_priority, "priority");
+    checkint(0, opened_logopt, "logopt");
+    check(close_log_invoked, "log closed");
+    checkstr("pam_dual_control", opened_program_name, "program name");
+    checkstr("dual control failed", logged_message, "logged message");
+    succeed();
+}
+
 int test_runner() {
     test(test_log_success);
+    test(test_log_failure);
     succeed();
 }
 
