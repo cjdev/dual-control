@@ -13,9 +13,15 @@
 #define checkstr(expected, actual, name) \
     check(!strcmp(actual, expected), name " should be '" expected "'")
 
+#ifdef reset_vars
+#define _reset reset_vars()
+#else
+#define _reset
+#endif
+
 #define test(NAME) \
     { \
-    fprintf(stderr, "here %s\n", #NAME); \
+      _reset \
       int result = NAME (); \
       if (!result) { \
           fprintf(stderr, "test failed: %s\n", #NAME); \
