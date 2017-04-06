@@ -4,7 +4,7 @@
 
 #include "conversation.h"
 #include "token.h"
-
+#include "testutil.h"
 
 const char *token_to_return = "";
 int validation_to_return = 0;
@@ -16,12 +16,6 @@ pam_handle_t *passed_pam_handle = NULL;
   validation_to_return = 1; \
   passed_pam_handle = NULL; \
   log_success_invoked = 0
-
-#define check(result, message) \
-  if(!(result)) { \
-    fprintf(stderr, message); \
-    at_least_one_failed_test = 1; \
-  }
 
 const char *ask_for_token(pam_handle_t *pamh) {
     passed_pam_handle = pamh;
