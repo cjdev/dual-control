@@ -6,6 +6,7 @@
 #include "token.h"
 #include "test_util.h"
 
+const char *validated_user = "";
 const char *validated_token = "";
 const char *token_to_return = "";
 int validation_to_return = 0;
@@ -15,6 +16,7 @@ int at_least_one_failed_test = 0;
 pam_handle_t *passed_pam_handle = NULL;
 
 RESET_VARS_START
+validated_user = "";
 validated_token = "";
 validation_to_return = 1;
 passed_pam_handle = NULL;
@@ -27,7 +29,9 @@ const char *ask_for_token(pam_handle_t *pamh) {
     return token_to_return;
 }
 
-int validate_token(const char *token) {
+
+int validate_token(const char *user, const char *token) {
+    validated_user = user;
     validated_token = token;
     return validation_to_return;
 }
@@ -54,14 +58,15 @@ int pam_sm_setcred_returns_success() {
 
 int pam_sm_authenticate_validates_with_received_token() {
     // given
-    token_to_return = "mytoken";
+    token_to_return = "user:pin";
     pam_handle_t *handle = (pam_handle_t*)"";
 
     // when
     pam_sm_authenticate(handle, 0, 0, NULL);
 
     // then
-    checkstr("mytoken",validated_token, "validated token");
+    checkstr("pin",validated_token, "validated token");
+    checkstr("user",validated_user, "validated user");
     check(passed_pam_handle == handle, "incorrect handle");
     succeed();
 }

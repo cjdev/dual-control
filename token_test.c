@@ -74,7 +74,7 @@ int validate_compares_to_user_token() {
     // given
 
     // when
-    int valid = validate_token("msmith:123456");
+    int valid = validate_token("msmith", "123456");
 
     // then
     check(valid, "expected result to be valid");
@@ -87,7 +87,7 @@ int validates_from_the_right_user() {
     //given
 
     //when
-    int valid = validate_token("jbalcita:12346");
+    int valid = validate_token("jbalcita", "12346");
 
     //then
     check(!valid, "expected result to be invalid");
@@ -98,7 +98,7 @@ int validates_user_specific_token() {
     //given
 
     //when
-    int valid = validate_token("msmith:654321");
+    int valid = validate_token("msmith", "654321");
 
     //then
     check(!valid, "expected result to be invalid");

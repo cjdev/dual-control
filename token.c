@@ -45,26 +45,14 @@ int get_passwd(const char *user, struct passwd *passwd, buffer_t buffer) {
     return (found_passwd != 0);
 }
 
-int validate_token(const char *token) {
+int validate_token(const char *user, const char *token) {
+
 
     char *filepath = 0;
     char *working_token = 0;
     buffer_t buffer = allocate_buffer();
 
     int ok = 0;
-
-    int token_length = strlen(token);
-    working_token = (char *) malloc((token_length + 1) * sizeof(char));
-    strcpy(working_token, token);
-    char *colon = strchr(working_token, ':');
-    if (!colon) {
-        goto finally;
-    }
-
-    *colon = 0;
-    char *user = working_token;
-    char *user_token = colon + 1;
-
     struct passwd passwd;
     int user_found = get_passwd(user, &passwd, buffer);
 
@@ -97,7 +85,7 @@ int validate_token(const char *token) {
     fclose(fp);
 
     // check if token matches
-    if(strcmp(user_token, fetched_token)) {
+    if(strcmp(token, fetched_token)) {
         goto finally;
     }
 
