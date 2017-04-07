@@ -4,25 +4,45 @@
 
 #include "conversation.h"
 #include "token.h"
+#include "test_util.h"
 
+const char *validated_user = "";
+const char *validated_token = "";
 const char *token_to_return = "";
+int validation_to_return = 0;
+int log_success_invoked = 0;
+int log_failure_invoked = 0;
+int at_least_one_failed_test = 0;
 pam_handle_t *passed_pam_handle = NULL;
+
+RESET_VARS_START
+validated_user = "";
+validated_token = "";
+validation_to_return = 1;
+passed_pam_handle = NULL;
+log_success_invoked = 0;
+log_failure_invoked = 0;
+RESET_VARS_END
+
 const char *ask_for_token(pam_handle_t *pamh) {
     passed_pam_handle = pamh;
     return token_to_return;
 }
 
-int validation_to_return = 0;
-int validate_token(const char *token) {
+
+int validate_token(const char *user, const char *token) {
+    validated_user = user;
+    validated_token = token;
     return validation_to_return;
 }
 
-
-int log_success_invoked = 0;
 void log_success() {
     log_success_invoked = 1;
 }
 
+void log_failure() {
+    log_failure_invoked = 1;
+}
 
 int pam_sm_setcred_returns_success() {
     //given
@@ -31,17 +51,43 @@ int pam_sm_setcred_returns_success() {
     int result = pam_sm_setcred(NULL, 0, 0, NULL);
 
     //then
-    return result == PAM_SUCCESS;
+    checkint(PAM_SUCCESS, result, "function return");
+    succeed();
+
+}
+
+int pam_sm_authenticate_validates_with_received_token() {
+    // given
+    token_to_return = "user:pin";
+    pam_handle_t *handle = (pam_handle_t*)"";
+
+    // when
+    pam_sm_authenticate(handle, 0, 0, NULL);
+
+    // then
+    checkstr("pin",validated_token, "validated token");
+    checkstr("user",validated_user, "validated user");
+    check(passed_pam_handle == handle, "incorrect handle");
+    succeed();
 }
 
 int pam_sm_authenticate_success_invokes_log_success() {
     // given
     validation_to_return = 1;
-    log_success_invoked = 0;
 
     //when
    pam_sm_authenticate(NULL, 0, 0, NULL);
    return log_success_invoked;
+}
+
+int pam_sm_authenticate_fail_invokes_log_failure() {
+    // given
+    validation_to_return = 0;
+
+    //when
+   pam_sm_authenticate(NULL, 0, 0, NULL);
+   check(log_failure_invoked, "log failure should be invoked");
+   succeed();
 }
 
 int succeeds_with_valid_token() {
@@ -66,35 +112,17 @@ int fails_with_invalid_token() {
     return result == PAM_AUTH_ERR;
 }
 
-int main(int argc, char* argv[]) {
-    int test1_result = succeeds_with_valid_token();
-    if (!test1_result) {
-        fprintf(stderr, "succeds with valid token failed\n");
-    }
-
-    int test3_result = pam_sm_setcred_returns_success();
-    if (!test3_result) {
-        fprintf(stderr, "set cred failed\n");
-    }
-
-    int test4_result = pam_sm_authenticate_success_invokes_log_success();
-    if (!test4_result) {
-        fprintf(stderr, "authenticate invokes log_success failed\n");
-    }
-
-    int test5_result = fails_with_invalid_token();
-    if (!test5_result) {
-        fprintf(stderr, "fails with invalid token failed\n");
-    }
-
-
-
-    if (test1_result && test3_result && test4_result && test5_result) {
-        fprintf(stderr, "success\n");
-        return 0;
-    } else {
-        return 1;
-    }
+int runtests() {
+    test(pam_sm_authenticate_validates_with_received_token);
+    test(pam_sm_setcred_returns_success);
+    test(pam_sm_authenticate_success_invokes_log_success);
+    test(pam_sm_authenticate_fail_invokes_log_failure);
+    test(succeeds_with_valid_token);
+    test(fails_with_invalid_token);
+    succeed();
 }
 
+int main(int argc, char* argv[]) {
+   return !runtests();
+}
 
