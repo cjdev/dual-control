@@ -1,9 +1,9 @@
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include <security/pam_modules.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <sys/stat.h>
 
 #include "token.h"
@@ -45,9 +45,11 @@ int get_passwd(const char *user, struct passwd *passwd, buffer_t buffer) {
     return (found_passwd != 0);
 }
 
+
 int validate_token(const char *user, const char *token) {
 
-
+    char fetched_token[7];
+    FILE *fp = 0;
     char *filepath = 0;
     char *working_token = 0;
     buffer_t buffer = allocate_buffer();
@@ -55,31 +57,27 @@ int validate_token(const char *user, const char *token) {
     int ok = 0;
     struct passwd passwd;
     int user_found = get_passwd(user, &passwd, buffer);
-
-    // check if user is known
-    if(!user_found) {
-       goto finally;
-    }
-
     const char *directory = passwd.pw_dir;
-
     int dir_len = strlen(directory);
     int fname_len = strlen(".dual_control");
+    struct stat file_stat;
     filepath = (char *)malloc((dir_len + 1 + fname_len + 1) * sizeof(char));
 
     strcpy(filepath, directory);
     strcat(filepath, "/");
     strcat(filepath, ".dual_control");
-
-    struct stat file_stat;
     int check_file = stat(filepath, &file_stat);
+    // check if user is known
+    if(!user_found) {
+       goto finally;
+    }
+
+
     if (check_file) {
         goto finally;
     }
 
     // read the file and grab token
-    char fetched_token[7];
-    FILE *fp = 0;
     fp = fopen(filepath, "r");
     fgets(fetched_token, 7, fp);
     fclose(fp);

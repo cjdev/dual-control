@@ -4,8 +4,8 @@
 
 #ifndef _TEST_SUPPORT_H
 #define _TEST_SUPPORT_H
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <pwd.h>
 #include <sys/stat.h>
 // SYSLOG

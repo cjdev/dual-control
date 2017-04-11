@@ -1,6 +1,6 @@
-#include <string.h>
+#include <cstring>
 #include <pwd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <sys/stat.h>
 
 #include "token.h"
@@ -10,7 +10,7 @@ const char *fake_user = "";
 const char *fake_user_token = "";
 
 // all the fake system calls
-char *fake_home_dir = "";
+const char *fake_home_dir = "";
 int fake_getpwnam_r(const char *nam, struct passwd *pwd, char *buffer, size_t bufsize, struct passwd **result) {
   strcpy(buffer, fake_home_dir);
   pwd->pw_dir = buffer;
@@ -20,13 +20,13 @@ int fake_getpwnam_r(const char *nam, struct passwd *pwd, char *buffer, size_t bu
 }
 
 
-char *fake_stat_path = "";
+const char *fake_stat_path = "";
 int fake_stat(const char *path, struct stat *stat) {
     return (strcmp(fake_stat_path, path));
 }
 
-char *fake_fopen_path = "";
-char *fake_fopen_mode = "";
+const char *fake_fopen_path = "";
+const char *fake_fopen_mode = "";
 FILE *_fhandle = 0;
 FILE *fake_fopen(const char *path, const char *mode) {
     static FILE handle;

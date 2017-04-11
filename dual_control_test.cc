@@ -1,6 +1,6 @@
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
-#include <stdio.h>
+#include <cstdio>
 
 #include "conversation.h"
 #include "token.h"

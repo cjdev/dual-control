@@ -1,7 +1,7 @@
 #include <security/pam_appl.h>
 #include <security/pam_modules.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 #include "logging.h"
 #include "token.h"
