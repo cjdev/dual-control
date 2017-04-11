@@ -2,6 +2,7 @@
 #define _USER_H
 #include <vector>
 #include <string>
+#include <memory>
 #include <pwd.h>
 
 class user {
@@ -10,18 +11,11 @@ class user {
 
     public:
         user(struct passwd *sys_info);
-        bool valid();
         std::string home_directory();
 };
 
-class concrete_user : public user {
-    private:
-        std::vector<char> buffer;
-        std::shared_ptr<struct passwd> store;
-    public:
-        concrete_user(const std::string &user_name);
-};
 
+const std::shared_ptr<user> create_user(const std::string &user_name);
 
 #endif
 
