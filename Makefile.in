@@ -26,27 +26,32 @@ distclean: clean
 	@rm -f Makefile config.h
 
 
-t_%.o: %.c
-	$(CC) -c $(CPPFLAGS) $(CFLAGS) -D UNIT_TEST -o $@ $<
 
 t_%.o: %.cc
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -D UNIT_TEST -o $@ $<
 
-dual_control_test: dual_control_test.o t_dual_control.o
-	$(CXX) $(CXXFLAGS) $(CPPLAGS)  -lpam -o $@ $^
+#dual_control_test: dual_control_test.o t_dual_control.o
+#	$(CXX) $(CXXFLAGS) $(CPPLAGS)  -lpam -o $@ $^
+#
+#logging_test: logging_test.o t_logging.o
+#	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+#
+#token_test: token_test.o t_token.o
+#	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -lpam -o $@ $^
 
-logging_test: logging_test.o t_logging.o
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+user_test: user_test.o user.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
-token_test: token_test.o t_token.o
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -lpam -o $@ $^
 
 .PHONY: test
-test: dual_control_test logging_test token_test
-	@./dual_control_test
-	@./logging_test
-	@./token_test
-	@echo all tests passed
+test: user_test
+	@./user_test
+
+
+#	@./dual_control_test
+#	@./logging_test
+#	@./token_test
+#	@echo all tests passed
 
 .PHONY: install
 install: $(OBJS)

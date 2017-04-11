@@ -5,97 +5,71 @@
 #include <unistd.h>
 #include <cstdio>
 #include <sys/stat.h>
+#include <string>
+#include <vector>
+#include <memory>
+#include <fstream>
 
 #include "token.h"
 #include "test_support.h"
 
-typedef struct buffer {
-    size_t size;
-    char *mem;
-} buffer_t;
 
-buffer_t allocate_buffer() {
-    buffer_t buffer;
+typedef struct passwd passwd_t;
+class user {
+    private:
+        std::vector<char> passwd_buffer;
+        std::shared_ptr<passwd_t> sys_user_info;
 
-    buffer.size = (size_t) sysconf(_SC_GETPW_R_SIZE_MAX);
-    buffer.mem = (char *) malloc(buffer.size * sizeof(char));
+    public:
+        user(const std::string &user_name);
+        bool valid();
+        const std::string token();
 
-    return buffer;
+};
 
-}
-
-void free_buffer(buffer_t *buffer) {
-    free(buffer->mem);
-    buffer->mem = 0;
-    buffer->size = 0;
-}
-
-char *use_buffer(buffer_t buffer) {
-    return buffer.mem;
-}
-
-size_t buffer_size(buffer_t buffer) {
-    return buffer.size;
-}
-
-
-int get_passwd(const char *user, struct passwd *passwd, buffer_t buffer) {
-    struct passwd *found_passwd = 0;
-    getpwnam_r(user, passwd, use_buffer(buffer), buffer_size(buffer), &found_passwd);
-    return (found_passwd != 0);
-}
-
-
-int validate_token(const char *user, const char *token) {
-
-    char fetched_token[7];
-    FILE *fp = 0;
-    char *filepath = 0;
-    char *working_token = 0;
-    buffer_t buffer = allocate_buffer();
-
-    int ok = 0;
-    struct passwd passwd;
-    int user_found = get_passwd(user, &passwd, buffer);
-    const char *directory = passwd.pw_dir;
-    int dir_len = strlen(directory);
-    int fname_len = strlen(".dual_control");
-    struct stat file_stat;
-    filepath = (char *)malloc((dir_len + 1 + fname_len + 1) * sizeof(char));
-
-    strcpy(filepath, directory);
-    strcat(filepath, "/");
-    strcat(filepath, ".dual_control");
-    int check_file = stat(filepath, &file_stat);
-    // check if user is known
-    if(!user_found) {
-       goto finally;
+const std::string user::token() {
+    // compute the token file path
+    std::string filepath = (std::string)sys_user_info->pw_dir + "/.dual_control";
+    // does the file exist?
+    std::ifstream token_file(filepath);
+    if (!token_file.good()) {
+        return "";
     }
 
+    // read file
+    int token_length = 6;
+    std::vector<char> token_buffer(token_length + 1);
+    token_file.read(token_buffer.data(), token_length);
 
-    if (check_file) {
-        goto finally;
+    // return contents
+    return token_buffer.data();
+}
+
+bool user::valid() {
+    return sys_user_info;
+}
+
+user::user(const std::string &user_name) :
+        passwd_buffer(sysconf(_SC_GETPW_R_SIZE_MAX)) {
+    std::shared_ptr<passwd> temp_passwd(new passwd);
+    struct passwd *found_passwd(0);
+    getpwnam_r(user_name.c_str(), sys_user_info.get(), passwd_buffer.data(), passwd_buffer.size(), &found_passwd);
+
+    if (found_passwd) {
+        sys_user_info = temp_passwd;
     }
+}
 
-    // read the file and grab token
-    fp = fopen(filepath, "r");
-    fgets(fetched_token, 7, fp);
-    fclose(fp);
+int validate_token(const char *c_user_name, const char *c_token) {
 
-    // check if token matches
-    if(strcmp(token, fetched_token)) {
-        goto finally;
+    user user(c_user_name);
+    if (!user.valid()) {
+        return 0;
     }
+    std::string token(c_token);
 
-    ok = 1;
+    return user.token() == token;
 
-    finally:
-
-    free(filepath);
-    free(working_token);
-    free_buffer(&buffer);
-
-    return ok;
 }
 
 
