@@ -39,7 +39,7 @@ t_%.o: %.cc
 #token_test: token_test.o t_token.o
 #	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -lpam -o $@ $^
 
-user_test: user_test.o user.o
+user_test: user_test.o t_user.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
 

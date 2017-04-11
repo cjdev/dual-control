@@ -1,8 +1,10 @@
 #include <memory>
-
+#include <iostream>
 #include "user.h"
 #include "test_util.h"
-int gets_home_directory() {
+
+
+bool gets_home_directory() {
     //given
     const char *expected_home_directory = "home/msmith";
     struct passwd test_passwd;
@@ -17,18 +19,23 @@ int gets_home_directory() {
     return expected_home_directory == actual_home_directory;
 }
 
-std::string fake_home_directory("");
+
+std::shared_ptr<struct passwd> fake_passwd;
 int fake_getpwnam_r(const char *nam, struct passwd *pwd, char *buffer, size_t bufsize, struct passwd **result) {
-  pwd->pw_dir = const_cast<char *>(fake_home_directory.c_str());
-  result = &pwd;
-  return 0;
+  if (fake_passwd) {
+      *pwd = *fake_passwd;
+      *result = pwd;
+      return 0;
+  }
+  return -1;
 }
 
-int initialize_concrete_user() {
+bool create_user_succeeds() {
     // given
     std::string username("msmith");
     std::string home_directory("this is my home");
-    fake_home_directory = home_directory;
+    fake_passwd.reset(new struct passwd);
+    fake_passwd->pw_dir = const_cast<char *>(home_directory.c_str());
 
     // when
     std::shared_ptr<user> user(create_user(username));
@@ -41,11 +48,27 @@ int initialize_concrete_user() {
 
 }
 
+bool create_user_nonexistent() {
+    // given
+    std::string username("msmith");
+
+    // when
+    std::shared_ptr<user> user(create_user(username));
+
+    // then
+    check(!user, "no user should be returned");
+
+    succeed();
+}
+
 RESET_VARS_START
+fake_passwd.reset((struct passwd *)0);
 RESET_VARS_END
 
 int run_tests() {
     test(gets_home_directory);
+    test(create_user_succeeds);
+    test(create_user_nonexistent);
     succeed();
 }
 int main(int argc, char *argv[]) {
