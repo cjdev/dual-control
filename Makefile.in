@@ -42,10 +42,15 @@ t_%.o: %.cc
 user_test: user_test.o t_user.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
+validator_test: validator_test.o t_validator.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+
+
 
 .PHONY: test
-test: user_test
+test: user_test validator_test
 	@./user_test
+	@./validator_test
 
 
 #	@./dual_control_test

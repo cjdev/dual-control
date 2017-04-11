@@ -62,13 +62,12 @@ user::user(const std::string &user_name) :
 
 int validate_token(const char *c_user_name, const char *c_token) {
 
-    user user(c_user_name);
-    if (!user.valid()) {
-        return 0;
-    }
-    std::string token(c_token);
+   user_p user(create_user(c_user_name));
 
-    return user.token() == token;
+   validator_p validator(create_validator(user));
+
+   return validator->valid(c_token);
+
 
 }
 
