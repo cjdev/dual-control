@@ -1,22 +1,20 @@
-MODULEFLAGS = -fPIC -fno-stack-protector
-MODULEOBJS = dual_control.o logging.o token.o conversation.o
-TESTOBJS = $(patsubst %.o, t_%.o, $(MODULEOBJS))
+CXXFLAGS += -fPIC -fno-stack-protector
+CFLAGS += -fPIC -fno-stack-protector
+
+OBJS = logging.o conversation.o token.o dual_control.o
 HEADERS = logging.h test_support.h token.h
+
 MODULELIB = pam_dual_control.so
+
 UNAME_S := $(shell uname -s)
+
 
 .PHONY: all
 all: dual_control.a
 
-dual_control.a: $(MODULEOBJS)
+dual_control.a: $(OBJS)
 	ar rvs $@ $^
 	ranlib $@
-
-$(MODULEOBJS): %.o: %.c $(HEADERS)
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) $(MODULEFLAGS) $< -o $@
-
-$(TESTOBJS): t_%.o: %.c $(HEADERS)
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) $(MODULEFLAGS) -D UNIT_TEST $< -o $@
 
 .PHONY: clean
 clean:
@@ -27,14 +25,21 @@ clean:
 distclean: clean
 	@rm -f Makefile config.h
 
-dual_control_test: dual_control_test.c t_dual_control.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
 
-logging_test: logging_test.c t_logging.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+t_%.o: %.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) -D UNIT_TEST -o $@ $<
 
-token_test: token_test.c t_token.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+t_%.o: %.cc
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -D UNIT_TEST -o $@ $<
+
+dual_control_test: dual_control_test.o t_dual_control.o
+	$(CXX) $(CXXFLAGS) $(CPPLAGS)  -lpam -o $@ $^
+
+logging_test: logging_test.o t_logging.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -lpam -o $@ $^
+
+token_test: token_test.o t_token.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -lpam -o $@ $^
 
 .PHONY: test
 test: dual_control_test logging_test token_test
@@ -44,9 +49,9 @@ test: dual_control_test logging_test token_test
 	@echo all tests passed
 
 .PHONY: install
-install: $(MODULEOBJS)
+install: $(OBJS)
 ifeq ($(UNAME_S), Linux)
-	ld $(LDFLAGS) -x --shared -lpam -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(MODULEOBJS)
+	ld $(LDFLAGS) -x --shared -lpam -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(OBJS)
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
