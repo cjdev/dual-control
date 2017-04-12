@@ -1,5 +1,5 @@
-#ifndef _VALIDATOR_
-#define _VALIDATOR_
+#ifndef _VALIDATOR_H
+#define _VALIDATOR_H
 
 #include <string>
 

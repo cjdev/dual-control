@@ -8,11 +8,41 @@ bool validator_validates() {
 
 
    // when
-   bool actual = v.validate("user", "code");
+   bool actual = v.validate("user", "token");
 
 
    // then
-   check(actual, "user and code should be valid");
+   check(actual, "should be valid");
+   succeed();
+}
+
+bool validator_fails_unknown_user() {
+
+   // given
+   validator v;
+
+
+   // when
+   bool actual = v.validate("notuser", "token");
+
+
+   // then
+   check(!actual, "should not be valid");
+   succeed();
+}
+
+bool validator_fails_incorrect_token() {
+
+   // given
+   validator v;
+
+
+   // when
+   bool actual = v.validate("user", "nottoken");
+
+
+   // then
+   check(!actual, "should not be valid");
    succeed();
 }
 
@@ -21,6 +51,8 @@ RESET_VARS_END
 
 bool run_tests() {
     test(validator_validates);
+    test(validator_fails_unknown_user);
+    test(validator_fails_incorrect_token);
     succeed();
 
 }
