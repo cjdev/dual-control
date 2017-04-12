@@ -6,17 +6,19 @@
 #include <pwd.h>
 
 class user {
-    private:
-        struct passwd *info;
-
     public:
-        user(struct passwd *sys_info);
-        std::string home_directory();
+        virtual ~user() {}
+//        virtual std::string home_directory() = 0;
 };
 
 
-const std::shared_ptr<user> create_user(const std::string &user_name);
 typedef std::shared_ptr<user> user_p;
+class directory {
+    public:
+        virtual ~directory() {}
+        virtual const user_p find_user(const std::string &user_name) = 0;
+};
 
+typedef std::shared_ptr<directory> directory_p;
 #endif
 

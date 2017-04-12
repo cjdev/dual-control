@@ -1,29 +1,51 @@
 #include "validator.h"
+#include "user.h"
 #include "test_util.h"
+
+class fake_directory : public directory {
+    private:
+        std::string user_name_;
+    public:
+        fake_directory(const std::string &user_name) : user_name_(user_name) {}
+        fake_directory() : user_name_("_NOT_A_USER") {}
+
+        virtual const user_p find_user(const std::string &user_name) {
+            user_p result;
+            if (user_name == user_name_) {
+                result.reset(new user);
+            }
+
+            return result;
+        }
+};
+
 
 bool validator_validates() {
 
    // given
-   validator v;
+    std::string user_name = "msmith";
+    directory_p directory(new fake_directory(user_name));
+    validator validator(directory);
 
 
-   // when
-   bool actual = v.validate("user", "token");
+    // when
+    bool actual = validator.validate(user_name, "token");
 
 
-   // then
-   check(actual, "should be valid");
-   succeed();
+    // then
+    check(actual, "should be valid");
+    succeed();
 }
 
 bool validator_fails_unknown_user() {
 
    // given
-   validator v;
+   directory_p directory(new fake_directory);
+   validator validator(directory);
 
 
    // when
-   bool actual = v.validate("notuser", "token");
+   bool actual = validator.validate("notuser", "token");
 
 
    // then
@@ -34,11 +56,13 @@ bool validator_fails_unknown_user() {
 bool validator_fails_incorrect_token() {
 
    // given
-   validator v;
+    std::string user_name = "user";
+    directory_p directory(new fake_directory(user_name));
+    validator validator(directory);
 
 
    // when
-   bool actual = v.validate("user", "nottoken");
+   bool actual = validator.validate(user_name, "nottoken");
 
 
    // then

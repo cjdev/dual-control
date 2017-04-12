@@ -48,8 +48,7 @@ validator_test: validator_test.o t_validator.o
 
 
 .PHONY: test
-test: user_test validator_test
-	@./user_test
+test: validator_test
 	@./validator_test
 
 
