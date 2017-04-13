@@ -12,10 +12,11 @@ class token_conversation {
         virtual std::string user_name() { return ""; }
 };
 
-class pam_token_conversation : token_conversation {
+class pam_token_conversation : public token_conversation {
     public:
         pam_token_conversation(pam_handle_t *pamh);
         std::string token();
+        std::string user_name();
 };
 
 #endif
