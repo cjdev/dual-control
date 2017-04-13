@@ -2,7 +2,10 @@
 
 #include "conversation.h"
 
-const char *ask_for_token(pam_handle_t *pamh) {
-    return "";
+
+pam_token_conversation::pam_token_conversation(pam_handle_t *pamh) {}
+
+std::string pam_token_conversation::token() {
+    return "token";
 }
 

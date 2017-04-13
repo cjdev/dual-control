@@ -45,12 +45,13 @@ user_test: user_test.o t_user.o
 validator_test: validator_test.o t_validator.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
-
+conversation_test: conversation_test.o t_conversation.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
 .PHONY: test
-test: validator_test
+test: validator_test conversation_test
 	@./validator_test
-
+	@./conversation_test
 
 #	@./dual_control_test
 #	@./logging_test
