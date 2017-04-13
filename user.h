@@ -15,7 +15,7 @@ class user {
 typedef std::shared_ptr<user> user_p;
 class directory {
     public:
-        virtual ~directory() {}
+       virtual ~directory() {}
         virtual const user_p find_user(const std::string &user_name) = 0;
 };
 
