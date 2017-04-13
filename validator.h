@@ -2,6 +2,7 @@
 #define _VALIDATOR_H
 
 #include <string>
+#include <memory>
 
 #include "user.h"
 #include "token.h"
@@ -16,5 +17,6 @@ class validator {
             user_token_supplier_(user_token_supplier) {}
         bool validate(const std::string &user, const std::string &token);
 };
+
 
 #endif

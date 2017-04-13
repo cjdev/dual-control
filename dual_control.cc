@@ -4,25 +4,15 @@
 #include <cstdlib>
 
 #include "logging.h"
-#include "token.h"
 #include "conversation.h"
+#include "validator.h"
+
+extern validator system_validator;
 
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    const char *returned_token = ask_for_token(pamh);
 
-    int returned_token_length = strlen(returned_token);
-    char working_token[returned_token_length + 1];
-    strcpy(working_token, returned_token);
-    char *colon = strchr(working_token, ':');
-    if(!colon) {
-        return PAM_AUTH_ERR;
-    }
-
-    *colon = 0;
-    char *user = working_token;
-    char *token = colon + 1;
-
-    int returned_validation = validate_token(user, token);
+    pam_token_conversation conversation(pamh);
+    int returned_validation = system_validator.validate(conversation.user_name(), conversation.token());
 
     if (returned_validation) {
         log_success();
