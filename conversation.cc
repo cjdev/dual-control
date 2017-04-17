@@ -16,6 +16,7 @@ pam_token_conversation::pam_token_conversation(pam_handle_t *pamh, const pam_p p
     struct pam_message prompt;
     std::string message("Dual control token: ");
     prompt.msg = const_cast<char *>(message.c_str());
+    prompt.msg_style = PAM_PROMPT_ECHO_OFF;
     std::vector<const struct pam_message *> prompts(1);
     prompts[0] = &prompt;
     std::vector<struct pam_response *> answers(1);
