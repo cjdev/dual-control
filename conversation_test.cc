@@ -77,6 +77,20 @@ int returns_empty_user_and_token_when_no_colon() {
     succeed();
 }
 
+int returns_empty_user_and_token_when_empty_answer() {
+    //given
+    pam_handle_t *pamh;
+    pam_p pam = (pam_p)new fake_pam("");
+
+    //when
+    pam_token_conversation conversation(pamh, pam);
+
+    //then
+    check(conversation.user_name() == "", "did not return empty user name");
+    check(conversation.token() == "", "did not return empty token");
+    succeed();
+}
+
 int returns_empty_token_when_colon_end() {
     //given
     pam_handle_t *pamh;
@@ -115,6 +129,7 @@ int run_tests() {
     test(returns_empty_user_and_token_when_no_colon);
     test(returns_empty_token_when_colon_end);
     test(returns_empty_user_when_colon_begin);
+    test(returns_empty_user_and_token_when_empty_answer);
     succeed();
 }
 
