@@ -1,29 +1,21 @@
-#include <security/pam_appl.h>
 #include <security/pam_modules.h>
-#include <cstring>
-#include <cstdlib>
+#include <string>
+#include <memory>
+#include <vector>
 
-#include "logging.h"
-#include "conversation.h"
-#include "validator.h"
+#include "arguments.h"
 
-extern validator system_validator;
+std::vector<const std::string> convert_arguments(int argc, const char **argv);
+
+extern dual_control dc;
 
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-
-    pam_token_conversation conversation(pamh);
-    int returned_validation = system_validator.validate(conversation.user_name(), conversation.token());
-
-    if (returned_validation) {
-        log_success();
-        return PAM_SUCCESS;
-    } else {
-        log_failure();
-        return PAM_AUTH_ERR;
-    }
+    std::vector<const std::string> arguments = convert_arguments(argc, argv);
+    return dc.authenticate(pamh, flags, arguments);
 }
 
 PAM_EXTERN int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    return PAM_SUCCESS;
+    std::vector<const std::string> arguments = convert_arguments(argc, argv);
+    return dc.setcred(pamh, flags, arguments);
 }
 
