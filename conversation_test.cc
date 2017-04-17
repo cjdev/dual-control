@@ -34,6 +34,24 @@ class fake_failing_conversation: public pam_conversation {
         }
 };
 
+class fake_failing_answer_conversation: public pam_conversation {
+    private:
+        pam_response response_;
+        std::string answer_;
+    public:
+        fake_failing_answer_conversation() : answer_("ok:1") {}
+        int conv(const std::vector<const struct pam_message *> &prompts, std::vector<struct pam_response *> &answers) {
+            if (prompts.size() != 1) {
+                throw std::string("test only supports one prompt");
+            }
+            response_.resp_retcode = 13;
+            response_.resp = const_cast<char *>(answer_.c_str());
+            answers.resize(1);
+            answers[0] = &response_;
+            return 0;
+        }
+};
+
 class match_prompt_text_conversation : public pam_conversation {
     private:
         pam_response response_;
@@ -242,6 +260,20 @@ int returns_empty_user_and_token_when_conversation_fails() {
     succeed();
 }
 
+int returns_empty_user_and_token_when_conversation_answer_fails() {
+    //given
+    pam_handle_t *pamh;
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_failing_answer_conversation;
+    pam_p pam = (pam_p) new fake_pam(fake_conversation);
+
+    //when
+    pam_token_conversation conversation(pamh, pam);
+
+    //then
+    check(conversation.user_name() == "", "did not return empty user name");
+    check(conversation.token() == "", "did not return empty token");
+    succeed();
+}
 
 RESET_VARS_START
 RESET_VARS_END
@@ -257,6 +289,7 @@ int run_tests() {
     test(prompts_user_with_correct_text);
     test(prompts_user_with_correct_style);
     test(returns_empty_user_and_token_when_conversation_fails);
+    test(returns_empty_user_and_token_when_conversation_answer_fails);
     succeed();
 }
 

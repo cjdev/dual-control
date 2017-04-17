@@ -24,6 +24,10 @@ pam_token_conversation::pam_token_conversation(pam_handle_t *pamh, const pam_p p
     if (conversation_result) {
         return;
     }
+
+    if (answers[0]->resp_retcode) {
+        return;
+    }
     std::string answer(answers[0]->resp);
     std::string::iterator delim = std::find(answer.begin(), answer.end(), ':');
     if (delim == answer.end()) {
