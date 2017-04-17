@@ -28,19 +28,21 @@ class fake_pam_conversation : public pam_conversation {
 
 class fake_pam : public pam {
     private:
-        std::string answer_;
+        std::shared_ptr<pam_conversation> conversation_;
     public:
-        fake_pam(const std::string &answer) : answer_(answer) {}
+        fake_pam(std::shared_ptr<pam_conversation> conversation) : conversation_(conversation) {}
         int get_conversation(pam_handle_t *pamh, std::shared_ptr<pam_conversation> &conversation) {
-           conversation.reset(new fake_pam_conversation(answer_));
+           conversation = conversation_;
            return 0;
         }
 };
 
+
 int returns_correct_token() {
     //given
     pam_handle_t *pamh;
-    pam_p pam = (pam_p)new fake_pam("user:code");
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_pam_conversation("user:code");
+    pam_p pam = (pam_p)new fake_pam(fake_conversation);
 
     //when
     pam_token_conversation conversation(pamh, pam);
@@ -53,7 +55,9 @@ int returns_correct_token() {
 int returns_correct_user_name() {
     //given
     pam_handle_t *pamh;
-    pam_p pam = (pam_p)new fake_pam("sally:token");
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_pam_conversation("sally:token");
+    pam_p pam = (pam_p)new fake_pam(fake_conversation);
+
 
     //when
     pam_token_conversation conversation(pamh, pam);
@@ -66,7 +70,8 @@ int returns_correct_user_name() {
 int returns_empty_user_and_token_when_no_colon() {
     //given
     pam_handle_t *pamh;
-    pam_p pam = (pam_p)new fake_pam("sally");
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_pam_conversation("sally");
+    pam_p pam = (pam_p)new fake_pam(fake_conversation);
 
     //when
     pam_token_conversation conversation(pamh, pam);
@@ -80,7 +85,8 @@ int returns_empty_user_and_token_when_no_colon() {
 int returns_empty_user_and_token_when_empty_answer() {
     //given
     pam_handle_t *pamh;
-    pam_p pam = (pam_p)new fake_pam("");
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_pam_conversation("");
+    pam_p pam = (pam_p)new fake_pam(fake_conversation);
 
     //when
     pam_token_conversation conversation(pamh, pam);
@@ -94,7 +100,8 @@ int returns_empty_user_and_token_when_empty_answer() {
 int returns_empty_token_when_colon_end() {
     //given
     pam_handle_t *pamh;
-    pam_p pam = (pam_p)new fake_pam("sally:");
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_pam_conversation("sally:");
+    pam_p pam = (pam_p)new fake_pam(fake_conversation);
 
     //when
     pam_token_conversation conversation(pamh, pam);
@@ -108,7 +115,8 @@ int returns_empty_token_when_colon_end() {
 int returns_empty_user_when_colon_begin() {
     //given
     pam_handle_t *pamh;
-    pam_p pam = (pam_p)new fake_pam(":token");
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_pam_conversation(":token");
+    pam_p pam = (pam_p)new fake_pam(fake_conversation);
 
     //when
     pam_token_conversation conversation(pamh, pam);
