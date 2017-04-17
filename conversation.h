@@ -4,6 +4,7 @@
 #include <security/pam_modules.h>
 #include <string>
 
+#include "pam.h"
 
 class token_conversation {
     public:
@@ -14,7 +15,10 @@ class token_conversation {
 
 class pam_token_conversation : public token_conversation {
     public:
+        std::string user_;
+        std::string token_;
         pam_token_conversation(pam_handle_t *pamh);
+        pam_token_conversation(pam_handle_t *pamh, const pam_p);
         std::string token();
         std::string user_name();
 };
