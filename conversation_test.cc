@@ -31,9 +31,13 @@ class fake_pam : public pam {
         std::shared_ptr<pam_conversation> conversation_;
     public:
         fake_pam(std::shared_ptr<pam_conversation> conversation) : conversation_(conversation) {}
+        fake_pam() {}
         int get_conversation(pam_handle_t *pamh, std::shared_ptr<pam_conversation> &conversation) {
-           conversation = conversation_;
-           return 0;
+            if (conversation_) {
+               conversation = conversation_;
+               return 0;
+            }
+            return 12;
         }
 };
 
@@ -127,6 +131,21 @@ int returns_empty_user_when_colon_begin() {
     succeed();
 }
 
+int returns_empty_user_and_token_when_pam_cant_create_conversation() {
+    // given
+    pam_handle_t *pamh;
+    pam_p pam = (pam_p)new fake_pam;
+
+    //when
+    pam_token_conversation conversation(pamh, pam);
+
+    //then
+    check(conversation.user_name() == "", "did not return empty user name");
+    check(conversation.token() == "", "did not return empty token");
+    succeed();
+
+}
+
 
 RESET_VARS_START
 RESET_VARS_END
@@ -138,6 +157,7 @@ int run_tests() {
     test(returns_empty_token_when_colon_end);
     test(returns_empty_user_when_colon_begin);
     test(returns_empty_user_and_token_when_empty_answer);
+    test(returns_empty_user_and_token_when_pam_cant_create_conversation);
     succeed();
 }
 
