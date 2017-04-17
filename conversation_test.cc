@@ -26,6 +26,14 @@ class fake_pam_conversation : public pam_conversation {
         }
 };
 
+class fake_failing_conversation: public pam_conversation {
+
+    public:
+        int conv(const std::vector<const struct pam_message *> &prompts, std::vector<struct pam_response *> &answers) {
+            return 1;
+        }
+};
+
 class match_prompt_text_conversation : public pam_conversation {
     private:
         pam_response response_;
@@ -219,7 +227,20 @@ int prompts_user_with_correct_style() {
     }
 }
 
+int returns_empty_user_and_token_when_conversation_fails() {
+    //given
+    pam_handle_t *pamh;
+    pam_conversation_p fake_conversation = (pam_conversation_p) new fake_failing_conversation;
+    pam_p pam = (pam_p) new fake_pam(fake_conversation);
 
+    //when
+    pam_token_conversation conversation(pamh, pam);
+
+    //then
+    check(conversation.user_name() == "", "did not return empty user name");
+    check(conversation.token() == "", "did not return empty token");
+    succeed();
+}
 
 
 RESET_VARS_START
@@ -235,6 +256,7 @@ int run_tests() {
     test(returns_empty_user_and_token_when_pam_cant_create_conversation);
     test(prompts_user_with_correct_text);
     test(prompts_user_with_correct_style);
+    test(returns_empty_user_and_token_when_conversation_fails);
     succeed();
 }
 
