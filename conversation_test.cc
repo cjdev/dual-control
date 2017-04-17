@@ -26,6 +26,26 @@ class fake_pam_conversation : public pam_conversation {
         }
 };
 
+class mock_pam_conversation : public pam_conversation {
+    private:
+        pam_response response_;
+        std::string answer_;
+        std::string prompt_;
+    public:
+        mock_pam_conversation(const std::string &prompt) : prompt_(prompt), answer_("ok:123") {}
+        int conv(const std::vector<const struct pam_message *> &prompts, std::vector<struct pam_response *> &answers) {
+            if (prompt_ != prompts[0]->msg) {
+                throw std::string("prompt does not match");
+            }
+            response_.resp_retcode = 0;
+            response_.resp = const_cast<char *>(answer_.c_str());
+            answers.resize(1);
+            answers[0] = &response_;
+            return 0;
+        }
+
+};
+
 class fake_pam : public pam {
     private:
         std::shared_ptr<pam_conversation> conversation_;
@@ -146,6 +166,24 @@ int returns_empty_user_and_token_when_pam_cant_create_conversation() {
 
 }
 
+int prompts_user_with_correct_text() {
+    // given
+    pam_handle_t *pamh;
+    pam_conversation_p match_conversation = (pam_conversation_p) new mock_pam_conversation("Dual control token: ");
+    pam_p pam = (pam_p)new fake_pam(match_conversation);
+
+
+    // when / then
+    try {
+      pam_token_conversation conversation(pamh, pam);
+      succeed();
+    } catch (const std::string &x) {
+        fail();
+    }
+
+
+
+}
 
 RESET_VARS_START
 RESET_VARS_END
@@ -158,6 +196,7 @@ int run_tests() {
     test(returns_empty_user_when_colon_begin);
     test(returns_empty_user_and_token_when_empty_answer);
     test(returns_empty_user_and_token_when_pam_cant_create_conversation);
+    test(prompts_user_with_correct_text);
     succeed();
 }
 

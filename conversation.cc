@@ -13,7 +13,11 @@ pam_token_conversation::pam_token_conversation(pam_handle_t *pamh, const pam_p p
         return;
     }
 
-    const std::vector<const struct pam_message *> prompts(1);
+    struct pam_message prompt;
+    std::string message("Dual control token: ");
+    prompt.msg = const_cast<char *>(message.c_str());
+    std::vector<const struct pam_message *> prompts(1);
+    prompts[0] = &prompt;
     std::vector<struct pam_response *> answers(1);
     pam_conversation->conv(prompts, answers);
     std::string answer(answers[0]->resp);
