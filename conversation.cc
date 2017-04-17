@@ -15,6 +15,9 @@ pam_token_conversation::pam_token_conversation(pam_handle_t *pamh, const pam_p p
     pam_conversation->conv(prompts, answers);
     std::string answer(answers[0]->resp);
     std::string::iterator delim = std::find(answer.begin(), answer.end(), ':');
+    if (delim == answer.end()) {
+        return;
+    }
     std::string user_name(answer.begin(), delim);
     std::string token(delim + 1, answer.end());
     user_ = user_name;

@@ -63,7 +63,19 @@ int returns_correct_user_name() {
     succeed();
 }
 
+int returns_empty_string_with_bad_input() {
+    //given
+    pam_handle_t *pamh;
+    pam_p pam = (pam_p)new fake_pam("sally");
 
+    //when
+    pam_token_conversation conversation(pamh, pam);
+
+    //then
+    check(conversation.user_name() == "", "did not return empty user name");
+    check(conversation.token() == "", "did not return empty token");
+    succeed();
+}
 
 RESET_VARS_START
 RESET_VARS_END
@@ -71,6 +83,7 @@ RESET_VARS_END
 int run_tests() {
     test(returns_correct_token);
     test(returns_correct_user_name);
+    test(returns_empty_string_with_bad_input);
     succeed();
 }
 
