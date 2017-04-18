@@ -75,7 +75,7 @@ int authenticate_validates_with_received_token() {
     std::string user("user");
     std::string token("token");
     configuration.validator = validator(new fake_validator(user, token));
-    configuration.conversations = conversations(new fake_conversations(user, token));
+    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, token)));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -93,7 +93,7 @@ int authenticate_fails_with_wrong_user() {
     dual_control_configuration configuration;
     std::string token("token");
     configuration.validator = validator(new fake_validator("user", token));
-    configuration.conversations = conversations(new fake_conversations("wrong user", token));
+    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations("wrong user", token)));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -111,7 +111,7 @@ int authenticate_fails_with_wrong_token() {
     dual_control_configuration configuration;
     std::string user("user");
     configuration.validator = validator(new fake_validator(user, "token"));
-    configuration.conversations = conversations(new fake_conversations(user, "wrong token"));
+    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, "wrong token")));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -130,7 +130,7 @@ int logs_authentication() {
     std::string user("user");
     std::string token("token");
     configuration.validator = validator(new fake_validator(user, token));
-    configuration.conversations = conversations(new fake_conversations(user, token));
+    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, token)));
     mock_logger *test_logger = new mock_logger;
     configuration.logger = logger(std::shared_ptr<logger_ifc>(test_logger));
     dual_control dc(create_dual_control(configuration));
@@ -153,7 +153,7 @@ int logs_authentication_failure() {
     std::string user("user");
     std::string token("token");
     configuration.validator = validator(new fake_validator(user, "not the received token"));
-    configuration.conversations = conversations(new fake_conversations(user, token));
+    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, token)));
     mock_logger *test_logger = new mock_logger;
     configuration.logger = logger(std::shared_ptr<logger_ifc>(test_logger));
     dual_control dc(create_dual_control(configuration));

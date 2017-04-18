@@ -21,6 +21,7 @@ class conversation_result {
         std::string user_name() { return user_name_; }
 };
 
+
 class conversations_ifc {
     public:
         virtual ~conversations_ifc() {}
@@ -28,7 +29,17 @@ class conversations_ifc {
             return conversation_result("","");
         }
 };
-typedef std::shared_ptr<conversations_ifc> conversations;
+
+class conversations : public conversations_ifc {
+    private:
+        std::shared_ptr<conversations_ifc> delegate_;
+    public:
+        conversations() : conversations(std::shared_ptr<conversations_ifc>(new conversations_ifc)) {}
+        conversations(const std::shared_ptr<conversations_ifc> &delegate) : delegate_(delegate) {}
+        conversation_result initiate_conversation() {
+            return delegate_->initiate_conversation();
+        }
+};
 
 class token_conversation {
     public:

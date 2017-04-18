@@ -25,7 +25,7 @@ int impl::setcred(pam_handle *handle, int flags, const std::vector<const std::st
 
 int impl::authenticate(pam_handle *handle, int flags, const std::vector<const std::string> &arguments) {
 
-    conversation_result conversation = conversations_->initiate_conversation();
+    conversation_result conversation = conversations_.initiate_conversation();
     std::string user_name = conversation.user_name();
     std::string token = conversation.token();
 
