@@ -147,84 +147,45 @@ int logs_authentication() {
     succeed();
 }
 
+int logs_authentication_failure() {
+    //given
+    dual_control_configuration configuration;
+    std::string user("user");
+    std::string token("token");
+    configuration.validator = validator(new fake_validator(user, "not_token"));
+    configuration.conversations = conversations(new fake_conversations(user, token));
+    mock_logger *test_logger = new mock_logger;
+    configuration.logger = logger(test_logger);
+    dual_control dc(create_dual_control(configuration));
+    pam_handle_t *handle = (pam_handle_t*)"";
+    std::vector<const std::string> arguments;
+
+    //when
+    dc->authenticate(handle, 0, arguments);
+
+    //then
+    check (test_logger->logged_result() == PAM_AUTH_ERR, "logged result should be success");
+    check (test_logger->logged_user_name() == user, "logged user name should be user");
+    check (test_logger->logged_token() == token, "logged token should be token");
+    succeed();
+}
+
+
 RESET_VARS_START
 RESET_VARS_END
 
 int runtests() {
-//    test(setcred_returns_success);
-//    test(authenticate_validates_with_received_token);
-//    test(authenticate_fails_with_wrong_user);
-//    test(authenticate_fails_with_wrong_token);
+    test(setcred_returns_success);
+    test(authenticate_validates_with_received_token);
+    test(authenticate_fails_with_wrong_user);
+    test(authenticate_fails_with_wrong_token);
     test(logs_authentication);
+    test(logs_authentication_failure);
     succeed();
 }
 
 int main(int argc, char* argv[]) {
    return !runtests();
 }
-
-
-
-// DELETE BELOW HERE
-
-/*
-const char *validated_user = "";
-const char *validated_token = "";
-const char *token_to_return = "";
-int validation_to_return = 0;
-int log_success_invoked = 0;
-int log_failure_invoked = 0;
-int at_least_one_failed_test = 0;
-pam_handle_t *passed_pam_handle = NULL;
-
-RESET_VARS_START
-validated_user = "";
-validated_token = "";
-validation_to_return = 1;
-passed_pam_handle = NULL;
-log_success_invoked = 0;
-log_failure_invoked = 0;
-RESET_VARS_END
-
-const char *ask_for_token(pam_handle_t *pamh) {
-    passed_pam_handle = pamh;
-    return token_to_return;
-}
-
-
-int validate_token(const char *user, const char *token) {
-    validated_user = user;
-    validated_token = token;
-    return validation_to_return;
-}
-
-void log_success() {
-    log_success_invoked = 1;
-}
-
-void log_failure() {
-    log_failure_invoked = 1;
-}
-
-int pam_sm_authenticate_success_invokes_log_success() {
-    // given
-    validation_to_return = 1;
-
-    //when
-   pam_sm_authenticate(NULL, 0, 0, NULL);
-   return log_success_invoked;
-}
-
-int pam_sm_authenticate_fail_invokes_log_failure() {
-    // given
-    validation_to_return = 0;
-
-    //when
-   pam_sm_authenticate(NULL, 0, 0, NULL);
-   check(log_failure_invoked, "log failure should be invoked");
-   succeed();
-}
-
-*/
 
 
