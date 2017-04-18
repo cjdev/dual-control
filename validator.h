@@ -10,11 +10,12 @@
 class validator_ifc {
     public:
         virtual ~validator_ifc() {}
-        virtual bool validate(const std::string &user, const std::string &token) = 0;
+        virtual bool validate(const std::string &user, const std::string &token) {
+           return false;
+        }
 };
 
 typedef std::shared_ptr<validator_ifc> validator;
-
 
 class old_validator {
     private:
@@ -26,6 +27,5 @@ class old_validator {
             user_token_supplier_(user_token_supplier) {}
         bool validate(const std::string &user, const std::string &token);
 };
-
 
 #endif

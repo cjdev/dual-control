@@ -24,11 +24,11 @@ class conversation_result {
 class conversations_ifc {
     public:
         virtual ~conversations_ifc() {}
-        virtual conversation_result initiate_conversation() = 0;
+        virtual conversation_result initiate_conversation() {
+            return conversation_result("","");
+        }
 };
 typedef std::shared_ptr<conversations_ifc> conversations;
-
-
 
 class token_conversation {
     public:
