@@ -132,7 +132,7 @@ int logs_authentication() {
     configuration.validator = validator(new fake_validator(user, token));
     configuration.conversations = conversations(new fake_conversations(user, token));
     mock_logger *test_logger = new mock_logger;
-    configuration.logger = logger(test_logger);
+    configuration.logger = logger(std::shared_ptr<logger_ifc>(test_logger));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -155,7 +155,7 @@ int logs_authentication_failure() {
     configuration.validator = validator(new fake_validator(user, "not the received token"));
     configuration.conversations = conversations(new fake_conversations(user, token));
     mock_logger *test_logger = new mock_logger;
-    configuration.logger = logger(test_logger);
+    configuration.logger = logger(std::shared_ptr<logger_ifc>(test_logger));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;

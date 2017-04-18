@@ -22,10 +22,6 @@ struct dual_control_configuration {
     validator validator;
     conversations conversations;
     logger logger;
-    dual_control_configuration()
-        : validator(new validator_ifc),
-          conversations(new conversations_ifc),
-          logger(new logger_ifc) {}
 };
 dual_control create_dual_control(const dual_control_configuration &configuration);
 

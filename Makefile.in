@@ -1,4 +1,4 @@
-CXXFLAGS += -fPIC -fno-stack-protector
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++14
 CFLAGS += -fPIC -fno-stack-protector
 
 OBJS = dual_control.o argument.o dual_control_integrate.o

@@ -31,7 +31,7 @@ int impl::authenticate(pam_handle *handle, int flags, const std::vector<const st
 
     int auth_result = validator_->validate(user_name, token) ? PAM_SUCCESS : PAM_AUTH_ERR;
 
-    logger_->log(auth_result, user_name, token);
+    logger_.log(auth_result, user_name, token);
     return auth_result;
 }
 
