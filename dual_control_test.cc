@@ -8,6 +8,12 @@
 #include "test_util.h"
 
 
+template<class T>
+std::shared_ptr<T> share(T* t) {
+  return std::shared_ptr<T>(t);
+}
+
+
 class mock_logger : public logger_ifc {
     private:
         int result_;
@@ -74,8 +80,8 @@ int authenticate_validates_with_received_token() {
     dual_control_configuration configuration;
     std::string user("user");
     std::string token("token");
-    configuration.validator = validator(std::shared_ptr<validator_ifc>(new fake_validator(user, token)));
-    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, token)));
+    configuration.validator = validator(share(new fake_validator(user, token)));
+    configuration.conversations = conversations(share(new fake_conversations(user, token)));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -92,8 +98,8 @@ int authenticate_fails_with_wrong_user() {
     // given
     dual_control_configuration configuration;
     std::string token("token");
-    configuration.validator = validator(std::shared_ptr<validator_ifc>(new fake_validator("user", token)));
-    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations("wrong user", token)));
+    configuration.validator = validator(share(new fake_validator("user", token)));
+    configuration.conversations = conversations(share(new fake_conversations("wrong user", token)));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -110,8 +116,8 @@ int authenticate_fails_with_wrong_token() {
     // given
     dual_control_configuration configuration;
     std::string user("user");
-    configuration.validator = validator(std::shared_ptr<validator_ifc>(new fake_validator(user, "token")));
-    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, "wrong token")));
+    configuration.validator = validator(share(new fake_validator(user, "token")));
+    configuration.conversations = conversations(share(new fake_conversations(user, "wrong token")));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -129,10 +135,10 @@ int logs_authentication() {
     dual_control_configuration configuration;
     std::string user("user");
     std::string token("token");
-    configuration.validator = validator(std::shared_ptr<validator_ifc>(new fake_validator(user, token)));
-    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, token)));
+    configuration.validator = validator(share(new fake_validator(user, token)));
+    configuration.conversations = conversations(share(new fake_conversations(user, token)));
     mock_logger *test_logger = new mock_logger;
-    configuration.logger = logger(std::shared_ptr<logger_ifc>(test_logger));
+    configuration.logger = logger(share(test_logger));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
@@ -152,10 +158,10 @@ int logs_authentication_failure() {
     dual_control_configuration configuration;
     std::string user("user");
     std::string token("token");
-    configuration.validator = validator(std::shared_ptr<validator_ifc>(new fake_validator(user, "not the received token")));
-    configuration.conversations = conversations(std::shared_ptr<conversations_ifc>(new fake_conversations(user, token)));
+    configuration.validator = validator(share(new fake_validator(user, "not the received token")));
+    configuration.conversations = conversations(share(new fake_conversations(user, token)));
     mock_logger *test_logger = new mock_logger;
-    configuration.logger = logger(std::shared_ptr<logger_ifc>(test_logger));
+    configuration.logger = logger(share(test_logger));
     dual_control dc(create_dual_control(configuration));
     pam_handle_t *handle(0);
     std::vector<const std::string> arguments;
