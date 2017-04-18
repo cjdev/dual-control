@@ -29,7 +29,7 @@ int impl::authenticate(pam_handle *handle, int flags, const std::vector<const st
     std::string user_name = conversation.user_name();
     std::string token = conversation.token();
 
-    int auth_result = validator_->validate(user_name, token) ? PAM_SUCCESS : PAM_AUTH_ERR;
+    int auth_result = validator_.validate(user_name, token) ? PAM_SUCCESS : PAM_AUTH_ERR;
 
     logger_.log(auth_result, user_name, token);
     return auth_result;
