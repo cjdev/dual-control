@@ -1,11 +1,40 @@
-#include <security/pam_appl.h>
 #include <security/pam_modules.h>
-#include <cstdio>
 
-#include "conversation.h"
-#include "token.h"
+#include "dual_control.h"
 #include "test_util.h"
 
+int setcred_returns_success() {
+    //given
+    pam_handle *pamh(0);
+    dual_control dc(create_dual_control());
+    std::vector<const std::string> arguments;
+
+    //when
+    int result = dc->setcred(pamh, 0, arguments);
+
+    //then
+    checkint(PAM_SUCCESS, result, "function return");
+    succeed();
+
+}
+
+RESET_VARS_START
+RESET_VARS_END
+
+int runtests() {
+    test(setcred_returns_success);
+    succeed();
+}
+
+int main(int argc, char* argv[]) {
+   return !runtests();
+}
+
+
+
+// DELETE BELOW HERE
+
+/*
 const char *validated_user = "";
 const char *validated_token = "";
 const char *token_to_return = "";
@@ -42,18 +71,6 @@ void log_success() {
 
 void log_failure() {
     log_failure_invoked = 1;
-}
-
-int pam_sm_setcred_returns_success() {
-    //given
-
-    //when
-    int result = pam_sm_setcred(NULL, 0, 0, NULL);
-
-    //then
-    checkint(PAM_SUCCESS, result, "function return");
-    succeed();
-
 }
 
 int pam_sm_authenticate_validates_with_received_token() {
@@ -111,18 +128,6 @@ int fails_with_invalid_token() {
     //then
     return result == PAM_AUTH_ERR;
 }
+*/
 
-int runtests() {
-    test(pam_sm_authenticate_validates_with_received_token);
-    test(pam_sm_setcred_returns_success);
-    test(pam_sm_authenticate_success_invokes_log_success);
-    test(pam_sm_authenticate_fail_invokes_log_failure);
-    test(succeeds_with_valid_token);
-    test(fails_with_invalid_token);
-    succeed();
-}
-
-int main(int argc, char* argv[]) {
-   return !runtests();
-}
 

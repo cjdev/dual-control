@@ -1,7 +1,7 @@
 CXXFLAGS += -fPIC -fno-stack-protector
 CFLAGS += -fPIC -fno-stack-protector
 
-OBJS = dual_control.o argument.o
+OBJS = dual_control.o argument.o dual_control_integrate.o
 
 MODULELIB = pam_dual_control.so
 
@@ -26,6 +26,9 @@ distclean: clean
 
 dual_control.o: dual_control.h
 
+dual_control_test: dual_control_test.o dual_control.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+
 argument_test: argument_test.o argument.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
@@ -36,10 +39,11 @@ conversation_test: conversation_test.o conversation.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
 .PHONY: test
-test: validator_test conversation_test argument_test
+test: validator_test conversation_test argument_test dual_control_test
 	@./validator_test
 	@./conversation_test
 	@./argument_test
+	@./dual_control_test
 
 .PHONY: install
 install: $(OBJS)

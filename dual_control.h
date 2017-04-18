@@ -8,21 +8,14 @@
 
 class dual_control_ifc {
     public:
+        virtual ~dual_control_ifc() {}
         virtual int authenticate(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments ) = 0;
         virtual int setcred(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments) = 0;
 };
 
-class dual_control : public dual_control_ifc {
-    private:
-        std::shared_ptr<dual_control_ifc> delegate_;
-    public:
-        int authenticate(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments ) {
-            return delegate_->authenticate(handle, flags, arguments);
-        }
-        int setcred(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments) {
-            return delegate_->setcred(handle, flags, arguments);
-        }
-};
+typedef std::shared_ptr<dual_control_ifc> dual_control;
+
+dual_control create_dual_control();
 
 #endif
 

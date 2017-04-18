@@ -1,20 +1,23 @@
-#include <security/pam_modules.h>
-#include <string>
-#include <memory>
-#include <vector>
 
-#include "argument.h"
 #include "dual_control.h"
 
-extern dual_control dc;
+class impl : public dual_control_ifc {
+    public:
+        int authenticate(pam_handle *handle, int flags, const std::vector<const std::string> &arguments );
+        int setcred(pam_handle *handle, int flags, const std::vector<const std::string> &arguments);
+};
 
-PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    std::vector<const std::string> arguments = convert_arguments(argc, argv);
-    return dc.authenticate(pamh, flags, arguments);
+int impl::setcred(pam_handle *handle, int flags, const std::vector<const std::string> &arguments) {
+    return PAM_SUCCESS;
 }
 
-PAM_EXTERN int pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv) {
-    std::vector<const std::string> arguments = convert_arguments(argc, argv);
-    return dc.setcred(pamh, flags, arguments);
+int impl::authenticate(pam_handle *handle, int flags, const std::vector<const std::string> &arguments) {
+    return -1209342;
 }
+
+dual_control create_dual_control() {
+    return dual_control(new impl);
+}
+
+
 
