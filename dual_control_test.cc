@@ -1,11 +1,34 @@
 #include <security/pam_modules.h>
+#include <string>
 
 #include "dual_control.h"
 #include "validator.h"
-
-#include "test_util.h"
 #include "conversation.h"
+#include "logger.h"
+#include "test_util.h"
 
+
+class mock_logger : public logger_ifc {
+    private:
+        int result_;
+        std::string user_name_;
+        std::string token_;
+    public:
+        void log(int result, const std::string &user_name, const std::string &token) {
+            result_ = result;
+            user_name_ = user_name;
+            token_ = token;
+        }
+        int logged_result() {
+            return result_;
+        }
+        std::string logged_user_name() {
+            return user_name_;
+        }
+        std::string logged_token() {
+            return token_;
+        }
+};
 
 class fake_conversations : public conversations_ifc {
     private:
@@ -101,15 +124,38 @@ int authenticate_fails_with_wrong_token() {
     succeed();
 }
 
+int logs_authentication() {
+    //given
+    dual_control_configuration configuration;
+    std::string user("user");
+    std::string token("token");
+    configuration.validator = validator(new fake_validator(user, token));
+    configuration.conversations = conversations(new fake_conversations(user, token));
+    mock_logger *test_logger = new mock_logger;
+    configuration.logger = logger(test_logger);
+    dual_control dc(create_dual_control(configuration));
+    pam_handle_t *handle = (pam_handle_t*)"";
+    std::vector<const std::string> arguments;
+
+    //when
+    dc->authenticate(handle, 0, arguments);
+
+    //then
+    check (test_logger->logged_result() == PAM_SUCCESS, "logged result should be success");
+    check (test_logger->logged_user_name() == user, "logged user name should be user");
+    check (test_logger->logged_token() == token, "logged token should be token");
+    succeed();
+}
 
 RESET_VARS_START
 RESET_VARS_END
 
 int runtests() {
-    test(setcred_returns_success);
-    test(authenticate_validates_with_received_token);
-    test(authenticate_fails_with_wrong_user);
-    test(authenticate_fails_with_wrong_token);
+//    test(setcred_returns_success);
+//    test(authenticate_validates_with_received_token);
+//    test(authenticate_fails_with_wrong_user);
+//    test(authenticate_fails_with_wrong_token);
+    test(logs_authentication);
     succeed();
 }
 
@@ -160,21 +206,6 @@ void log_failure() {
     log_failure_invoked = 1;
 }
 
-int pam_sm_authenticate_validates_with_received_token() {
-    // given
-    token_to_return = "user:pin";
-    pam_handle_t *handle = (pam_handle_t*)"";
-
-    // when
-    pam_sm_authenticate(handle, 0, 0, NULL);
-
-    // then
-    checkstr("pin",validated_token, "validated token");
-    checkstr("user",validated_user, "validated user");
-    check(passed_pam_handle == handle, "incorrect handle");
-    succeed();
-}
-
 int pam_sm_authenticate_success_invokes_log_success() {
     // given
     validation_to_return = 1;
@@ -194,27 +225,6 @@ int pam_sm_authenticate_fail_invokes_log_failure() {
    succeed();
 }
 
-int succeeds_with_valid_token() {
-    //given
-    validation_to_return = 1;
-
-    //when
-    int result = pam_sm_authenticate(NULL, 0, 0, NULL);
-
-    //then
-    return result == PAM_SUCCESS;
-}
-
-int fails_with_invalid_token() {
-    //given
-    validation_to_return = 0;
-
-    //when
-    int result = pam_sm_authenticate(NULL, 0, 0, NULL);
-
-    //then
-    return result == PAM_AUTH_ERR;
-}
 */
 
 

@@ -8,7 +8,7 @@
 
 #include "validator.h"
 #include "conversation.h"
-
+#include "logger.h"
 
 class dual_control_ifc {
     public:
@@ -22,6 +22,9 @@ typedef std::shared_ptr<dual_control_ifc> dual_control;
 struct dual_control_configuration {
     validator validator;
     conversations conversations;
+    logger logger;
+    dual_control_configuration()
+        : logger(new logger_ifc) {}
 };
 
 dual_control create_dual_control(const dual_control_configuration &configuration);
