@@ -1,7 +1,7 @@
 CXXFLAGS += -fPIC -fno-stack-protector
 CFLAGS += -fPIC -fno-stack-protector
 
-OBJS = dual_control.o
+OBJS = dual_control.o argument.o
 
 MODULELIB = pam_dual_control.so
 

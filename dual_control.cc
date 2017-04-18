@@ -4,8 +4,7 @@
 #include <vector>
 
 #include "argument.h"
-
-std::vector<const std::string> convert_arguments(int argc, const char **argv);
+#include "dual_control.h"
 
 extern dual_control dc;
 
