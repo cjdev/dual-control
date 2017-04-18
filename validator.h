@@ -7,12 +7,21 @@
 #include "user.h"
 #include "token.h"
 
-class validator {
+class validator_ifc {
+    public:
+        virtual ~validator_ifc() {}
+        virtual bool validate(const std::string &user, const std::string &token) = 0;
+};
+
+typedef std::shared_ptr<validator_ifc> validator;
+
+
+class old_validator {
     private:
         directory_p directory_;
         user_token_supplier_p user_token_supplier_;
     public:
-        validator(const directory_p &directory, const user_token_supplier_p &user_token_supplier):
+        old_validator(const directory_p &directory, const user_token_supplier_p &user_token_supplier):
             directory_(directory),
             user_token_supplier_(user_token_supplier) {}
         bool validate(const std::string &user, const std::string &token);

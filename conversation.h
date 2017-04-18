@@ -3,13 +3,37 @@
 
 #include <security/pam_modules.h>
 #include <string>
+#include <memory>
 
 #include "pam.h"
+
+
+
+class conversation_result {
+    private:
+        std::string token_;
+        std::string user_name_;
+    public:
+        conversation_result(std::string user_name, std::string token)
+            : token_(token),
+              user_name_(user_name) {}
+        std::string token() { return token_; }
+        std::string user_name() { return user_name_; }
+};
+
+class conversations_ifc {
+    public:
+        virtual ~conversations_ifc() {}
+        virtual conversation_result initiate_conversation() = 0;
+};
+typedef std::shared_ptr<conversations_ifc> conversations;
+
+
 
 class token_conversation {
     public:
         virtual ~token_conversation() {}
-        virtual std::string token() { return""; }
+        virtual std::string token() { return ""; }
         virtual std::string user_name() { return ""; }
 };
 

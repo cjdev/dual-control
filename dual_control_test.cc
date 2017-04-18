@@ -1,12 +1,40 @@
 #include <security/pam_modules.h>
 
 #include "dual_control.h"
+#include "validator.h"
+
 #include "test_util.h"
+#include "conversation.h"
+
+
+class fake_conversations : public conversations_ifc {
+    private:
+        std::string user_name_;
+        std::string token_;
+    public:
+        fake_conversations(const std::string &user_name, const std::string &token) : user_name_(user_name), token_(token) {}
+        conversation_result initiate_conversation() {
+            return conversation_result(user_name_, token_);
+        }
+};
+
+class fake_validator : public validator_ifc {
+    private:
+        std::string user_;
+        std::string token_;
+    public:
+        fake_validator(const std::string &user, const std::string &token): user_(user), token_(token) {}
+        bool validate(const std::string &user, const std::string &token) {
+            return user_ == user && token_ == token;
+        }
+};
+
 
 int setcred_returns_success() {
     //given
+    dual_control_configuration configuration;
     pam_handle *pamh(0);
-    dual_control dc(create_dual_control());
+    dual_control dc(create_dual_control(configuration));
     std::vector<const std::string> arguments;
 
     //when
@@ -18,11 +46,32 @@ int setcred_returns_success() {
 
 }
 
+int authenticate_validates_with_received_token() {
+    // given
+    dual_control_configuration configuration;
+    std::string user("user");
+    std::string token("token");
+    configuration.validator = validator(new fake_validator(user, token));
+    configuration.conversations = conversations(new fake_conversations(user, token));
+    dual_control dc(create_dual_control(configuration));
+    pam_handle_t *handle = (pam_handle_t*)"";
+    std::vector<const std::string> arguments;
+
+    // when
+    int actual = dc->authenticate(handle, 0, arguments);
+
+    // then
+    check(actual == PAM_SUCCESS, "should be valid");
+    succeed();
+}
+
+
 RESET_VARS_START
 RESET_VARS_END
 
 int runtests() {
     test(setcred_returns_success);
+    test(authenticate_validates_with_received_token);
     succeed();
 }
 

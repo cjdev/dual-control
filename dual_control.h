@@ -6,6 +6,10 @@
 #include <vector>
 #include <security/pam_modules.h>
 
+#include "validator.h"
+#include "conversation.h"
+
+
 class dual_control_ifc {
     public:
         virtual ~dual_control_ifc() {}
@@ -15,7 +19,14 @@ class dual_control_ifc {
 
 typedef std::shared_ptr<dual_control_ifc> dual_control;
 
-dual_control create_dual_control();
+struct dual_control_configuration {
+    validator validator;
+    conversations conversations;
+};
+
+dual_control create_dual_control(const dual_control_configuration &configuration);
+
+
 
 #endif
 
