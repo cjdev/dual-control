@@ -30,7 +30,7 @@ int impl::authenticate(pam_handle *handle, int flags, const std::vector<const st
     if (validator_->validate(user, token)) {
         return PAM_SUCCESS;
     }
-    return 1212;
+    return PAM_AUTH_ERR;
 }
 
 dual_control create_dual_control(const dual_control_configuration &configuration) {

@@ -61,7 +61,43 @@ int authenticate_validates_with_received_token() {
     int actual = dc->authenticate(handle, 0, arguments);
 
     // then
-    check(actual == PAM_SUCCESS, "should be valid");
+    check(actual == PAM_SUCCESS, "should be success");
+    succeed();
+}
+
+int authenticate_fails_with_wrong_user() {
+    // given
+    dual_control_configuration configuration;
+    std::string token("token");
+    configuration.validator = validator(new fake_validator("user", token));
+    configuration.conversations = conversations(new fake_conversations("wrong user", token));
+    dual_control dc(create_dual_control(configuration));
+    pam_handle_t *handle = (pam_handle_t*)"";
+    std::vector<const std::string> arguments;
+
+    // when
+    int actual = dc->authenticate(handle, 0, arguments);
+
+    // then
+    check(actual == PAM_AUTH_ERR, "should be auth err");
+    succeed();
+}
+
+int authenticate_fails_with_wrong_token() {
+    // given
+    dual_control_configuration configuration;
+    std::string user("user");
+    configuration.validator = validator(new fake_validator(user, "token"));
+    configuration.conversations = conversations(new fake_conversations(user, "wrong token"));
+    dual_control dc(create_dual_control(configuration));
+    pam_handle_t *handle = (pam_handle_t*)"";
+    std::vector<const std::string> arguments;
+
+    // when
+    int actual = dc->authenticate(handle, 0, arguments);
+
+    // then
+    check(actual == PAM_AUTH_ERR, "should be auth err");
     succeed();
 }
 
@@ -72,6 +108,8 @@ RESET_VARS_END
 int runtests() {
     test(setcred_returns_success);
     test(authenticate_validates_with_received_token);
+    test(authenticate_fails_with_wrong_user);
+    test(authenticate_fails_with_wrong_token);
     succeed();
 }
 
