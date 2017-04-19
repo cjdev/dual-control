@@ -14,13 +14,12 @@ extern dual_control dc;
 PAM_EXTERN int pam_sm_authenticate (pam_handle_t *pamh, int flags, int argc,
                                     const char **argv)
 {
-    return dc->authenticate (pam_request (pamh, flags, argc, argv));
+    return dc.authenticate (pam_request (pamh, flags, argc, argv));
 }
 
 PAM_EXTERN int pam_sm_setcred (pam_handle_t *pamh, int flags, int argc,
                                const char **argv)
 {
-    std::vector<const std::string> arguments = convert_arguments (argc, argv);
-    return dc->setcred (pamh, flags, arguments);
+    return dc.setcred (pam_request ( pamh, flags, argc, argv));
 }
 
