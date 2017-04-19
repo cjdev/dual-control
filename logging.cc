@@ -8,15 +8,15 @@ static const char program_name[] = "pam_dual_control";
 
 void log_success()
 {
-    openlog(program_name, 0, LOG_AUTHPRIV);
-    syslog(LOG_NOTICE, "dual control succeeded");
+    openlog (program_name, 0, LOG_AUTHPRIV);
+    syslog (LOG_NOTICE, "dual control succeeded");
     closelog();
 }
 
 void log_failure()
 {
-    openlog(program_name, 0, LOG_AUTHPRIV);
-    syslog(LOG_NOTICE, "dual control failed");
+    openlog (program_name, 0, LOG_AUTHPRIV);
+    syslog (LOG_NOTICE, "dual control failed");
     closelog();
 }
 

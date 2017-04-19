@@ -8,14 +8,16 @@
 class pam_conversation
 {
 public:
-    virtual int conv(const std::vector<const struct pam_message *> &prompts, std::vector<struct pam_response *> &answers) = 0;
+    virtual int conv (const std::vector<const struct pam_message *> &prompts,
+                      std::vector<struct pam_response *> &answers) = 0;
 };
 typedef std::shared_ptr<pam_conversation> pam_conversation_p;
 
 class pam
 {
 public:
-    virtual int get_conversation(pam_handle_t *pamh, std::shared_ptr<pam_conversation> &conversation) = 0;
+    virtual int get_conversation (pam_handle_t *pamh,
+                                  std::shared_ptr<pam_conversation> &conversation) = 0;
 };
 typedef std::shared_ptr<pam> pam_p;
 

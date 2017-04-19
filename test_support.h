@@ -9,20 +9,21 @@
 #include <pwd.h>
 #include <sys/stat.h>
 // SYSLOG
-void fake_openlog(const char *ident, int logopt, int facility);
-void fake_syslog(int priority, const char *format, ...);
-void fake_closelog(void);
+void fake_openlog (const char *ident, int logopt, int facility);
+void fake_syslog (int priority, const char *format, ...);
+void fake_closelog (void);
 
 // PWD
-int fake_getpwnam_r(const char *nam, struct passwd *pwd, char *buffer, size_t bufsize, struct passwd **result);
+int fake_getpwnam_r (const char *nam, struct passwd *pwd, char *buffer,
+                     size_t bufsize, struct passwd **result);
 
 // SYS_STAT
-int fake_stat(const char *path, struct stat *stat);
+int fake_stat (const char *path, struct stat *stat);
 
 // STDIO
-FILE *fake_fopen(const char *path, const char *mode);
-char *fake_fgets(char *buf, int n, FILE *fp);
-int fake_fclose(FILE *fp);
+FILE *fake_fopen (const char *path, const char *mode);
+char *fake_fgets (char *buf, int n, FILE *fp);
+int fake_fclose (FILE *fp);
 
 
 #ifdef UNIT_TEST

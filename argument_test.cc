@@ -14,14 +14,14 @@ int convert_single_argument_to_cplusplus()
     const char **argv = &arg;
 
     //when
-    std::vector<const std::string> actual = convert_arguments(nargs, argv);
+    std::vector<const std::string> actual = convert_arguments (nargs, argv);
 
     //then
-    std::vector<std::string> temp(1);
+    std::vector<std::string> temp (1);
     temp[0] = arg;
-    std::vector<const std::string> expected(temp.begin(), temp.end());
+    std::vector<const std::string> expected (temp.begin(), temp.end());
 
-    check(actual == expected, "did not convert to c++");
+    check (actual == expected, "did not convert to c++");
     succeed();
 }
 
@@ -32,12 +32,12 @@ int convert_no_arguments_to_cplusplus()
     const char **argv = 0;
 
     //when
-    std::vector<const std::string> actual = convert_arguments(nargs, argv);
+    std::vector<const std::string> actual = convert_arguments (nargs, argv);
 
     //then
     std::vector<const std::string> expected;
 
-    check(actual == expected, "did not convert to c++");
+    check (actual == expected, "did not convert to c++");
     succeed();
 }
 
@@ -51,16 +51,16 @@ int convert_multiple_arguments_to_cplusplus()
     const char *argv[] = {arg1,arg2,arg3};
 
     //when
-    std::vector<const std::string> actual = convert_arguments(nargs, argv);
+    std::vector<const std::string> actual = convert_arguments (nargs, argv);
 
     //then
     std::vector<std::string> temp;
-    temp.push_back(arg1);
-    temp.push_back(arg2);
-    temp.push_back(arg3);
-    std::vector<const std::string> expected(temp.begin(), temp.end());
+    temp.push_back (arg1);
+    temp.push_back (arg2);
+    temp.push_back (arg3);
+    std::vector<const std::string> expected (temp.begin(), temp.end());
 
-    check(actual == expected, "did not convert to c++");
+    check (actual == expected, "did not convert to c++");
     succeed();
 }
 
@@ -69,8 +69,8 @@ RESET_VARS_END
 
 int run_tests()
 {
-    test(convert_single_argument_to_cplusplus);
-    test(convert_no_arguments_to_cplusplus);
+    test (convert_single_argument_to_cplusplus);
+    test (convert_no_arguments_to_cplusplus);
     succeed();
 }
 

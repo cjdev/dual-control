@@ -20,8 +20,10 @@ class dual_control_ifc
 {
 public:
     virtual ~dual_control_ifc() {}
-    virtual int authenticate(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments ) = 0;
-    virtual int setcred(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments) = 0;
+    virtual int authenticate (pam_handle_t *handle, int flags,
+                              const std::vector<const std::string> &arguments ) = 0;
+    virtual int setcred (pam_handle_t *handle, int flags,
+                         const std::vector<const std::string> &arguments) = 0;
 };
 typedef std::shared_ptr<dual_control_ifc> dual_control;
 
@@ -30,7 +32,8 @@ struct dual_control_configuration {
     conversations conversations;
     logger logger;
 };
-dual_control create_dual_control(const dual_control_configuration &configuration);
+dual_control create_dual_control (const dual_control_configuration
+                                  &configuration);
 
 #endif
 

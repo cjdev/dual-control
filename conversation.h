@@ -15,9 +15,9 @@ private:
     std::string token_;
     std::string user_name_;
 public:
-    conversation_result(std::string user_name, std::string token)
-        : token_(token),
-          user_name_(user_name) {}
+    conversation_result (std::string user_name, std::string token)
+        : token_ (token),
+          user_name_ (user_name) {}
     std::string token()
     {
         return token_;
@@ -35,7 +35,7 @@ public:
     virtual ~conversations_ifc() {}
     virtual conversation_result initiate_conversation()
     {
-        return conversation_result("","");
+        return conversation_result ("","");
     }
 };
 
@@ -44,8 +44,10 @@ class conversations : public conversations_ifc
 private:
     std::shared_ptr<conversations_ifc> delegate_;
 public:
-    conversations() : conversations(std::shared_ptr<conversations_ifc>(new conversations_ifc)) {}
-    conversations(const std::shared_ptr<conversations_ifc> &delegate) : delegate_(delegate) {}
+    conversations() : conversations (std::shared_ptr<conversations_ifc>
+                                         (new conversations_ifc)) {}
+    conversations (const std::shared_ptr<conversations_ifc> &delegate) :
+        delegate_ (delegate) {}
     conversation_result initiate_conversation()
     {
         return delegate_->initiate_conversation();
@@ -71,8 +73,8 @@ class pam_token_conversation : public token_conversation
 public:
     std::string user_;
     std::string token_;
-    pam_token_conversation(pam_handle_t *pamh);
-    pam_token_conversation(pam_handle_t *pamh, const pam_p);
+    pam_token_conversation (pam_handle_t *pamh);
+    pam_token_conversation (pam_handle_t *pamh, const pam_p);
     std::string token();
     std::string user_name();
 };
