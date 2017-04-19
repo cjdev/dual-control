@@ -1,3 +1,9 @@
+/* PAM handlers class interface. The methods on the dual control class
+ * correspond directly to the specified PAM handler entrypoints.
+ *
+ * See "dual_control_integrate.cc"
+ */
+
 #ifndef _DUAL_CONTROL_H
 #define _DUAL_CONTROL_H
 

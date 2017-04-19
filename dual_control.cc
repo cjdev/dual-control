@@ -1,4 +1,3 @@
-
 #include "dual_control.h"
 #include "conversation.h"
 #include "validator.h"

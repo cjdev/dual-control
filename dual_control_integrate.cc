@@ -1,3 +1,6 @@
+/* PAM native handler entrypoints. Keep these dumb so the logic can
+ * be tested.
+ */
 #include <security/pam_modules.h>
 #include <string>
 #include <memory>
