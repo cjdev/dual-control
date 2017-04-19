@@ -21,7 +21,6 @@ int fake_getpwnam_r (const char *nam, struct passwd *pwd, char *buffer,
     return !ok;
 }
 
-
 const char *fake_stat_path = "";
 int fake_stat (const char *path, struct stat *stat)
 {
@@ -61,10 +60,7 @@ int fake_fclose (FILE *fp)
     return 0;
 }
 
-
 // STDIO
-
-
 
 RESET_VARS_START
 fake_user = "msmith";
@@ -74,7 +70,6 @@ fake_stat_path = "/home/msmith/.dual_control";
 fake_fopen_path = fake_stat_path;
 fake_fopen_mode = "r";
 RESET_VARS_END
-
 
 int validate_compares_to_user_token()
 {
@@ -128,5 +123,4 @@ int main (int argc, char **argv)
     int rval = !runtests();
     return rval;
 }
-
 

@@ -5,7 +5,6 @@
 
 #include "user.h"
 
-
 class user_token_supplier
 {
 public:
@@ -13,5 +12,5 @@ public:
 };
 typedef std::shared_ptr<user_token_supplier> user_token_supplier_p;
 
-
 #endif
+

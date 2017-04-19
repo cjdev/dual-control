@@ -45,3 +45,4 @@ pam_p get_system_pam()
 {
     return (pam_p)new pam_impl;
 }
+

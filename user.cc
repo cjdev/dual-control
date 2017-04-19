@@ -55,6 +55,3 @@ const std::shared_ptr<user> create_user (const std::string &user_name)
     return rval;
 }
 
-
-
-

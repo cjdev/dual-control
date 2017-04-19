@@ -7,7 +7,6 @@
 #include "test_util.h"
 #include "pam.h"
 
-
 class fake_pam_conversation : public pam_conversation
 {
 private:
@@ -133,7 +132,6 @@ public:
     }
 };
 
-
 int returns_correct_token()
 {
     //given
@@ -157,7 +155,6 @@ int returns_correct_user_name()
     pam_conversation_p fake_conversation = (pam_conversation_p) new
                                            fake_pam_conversation ("sally:token");
     pam_p pam = (pam_p)new fake_pam (fake_conversation);
-
 
     //when
     pam_token_conversation conversation (pamh, pam);
@@ -260,7 +257,6 @@ int prompts_user_with_correct_text()
                                             match_prompt_text_conversation ("Dual control token: ");
     pam_p pam = (pam_p)new fake_pam (match_conversation);
 
-
     // when / then
     try {
         pam_token_conversation conversation (pamh, pam);
@@ -278,7 +274,6 @@ int prompts_user_with_correct_style()
     pam_conversation_p match_conversation = (pam_conversation_p) new
                                             match_prompt_style_conversation (PAM_PROMPT_ECHO_OFF);
     pam_p pam = (pam_p)new fake_pam (match_conversation);
-
 
     // when / then
     try {
@@ -346,5 +341,4 @@ int main (int argc, char *args[])
 {
     return !run_tests();
 }
-
 

@@ -3,7 +3,6 @@
 #include "user.h"
 #include "test_util.h"
 
-
 bool gets_home_directory()
 {
     //given
@@ -20,7 +19,6 @@ bool gets_home_directory()
            "directories do not match");
     return expected_home_directory == actual_home_directory;
 }
-
 
 std::shared_ptr<struct passwd> fake_passwd;
 int fake_getpwnam_r (const char *nam, struct passwd *pwd, char *buffer,
@@ -84,6 +82,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-
-
 

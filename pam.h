@@ -24,3 +24,4 @@ typedef std::shared_ptr<pam> pam_p;
 pam_p get_system_pam();
 
 #endif
+

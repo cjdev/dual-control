@@ -36,7 +36,6 @@ public:
     }
 };
 
-
 bool validator_validates()
 {
 
@@ -48,10 +47,8 @@ bool validator_validates()
     directory_p directory (new fake_directory (user_name));
     old_validator validator (directory, user_token_supplier);
 
-
     // when
     bool actual = validator.validate (user_name, "token");
-
 
     // then
     check (actual, "should be valid");
@@ -68,10 +65,8 @@ bool validator_fails_unknown_user()
     directory_p directory (new fake_directory);
     old_validator validator (directory, user_token_supplier);
 
-
     // when
     bool actual = validator.validate ("notuser", token);
-
 
     // then
     check (!actual, "should not be valid");
@@ -87,10 +82,8 @@ bool validator_fails_incorrect_token()
     directory_p directory (new fake_directory (user_name));
     old_validator validator (directory, user_token_supplier);
 
-
     // when
     bool actual = validator.validate (user_name, "token");
-
 
     // then
     check (!actual, "should not be valid");

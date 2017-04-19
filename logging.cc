@@ -3,7 +3,6 @@
 #include "logging.h"
 #include "test_support.h"
 
-
 static const char program_name[] = "pam_dual_control";
 
 void log_success()
@@ -19,5 +18,4 @@ void log_failure()
     syslog (LOG_NOTICE, "dual control failed");
     closelog();
 }
-
 

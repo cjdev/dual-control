@@ -7,13 +7,11 @@
 #include "logger.h"
 #include "test_util.h"
 
-
 template<class T>
 std::shared_ptr<T> share (T *t)
 {
     return std::shared_ptr<T> (t);
 }
-
 
 void use_validator (dual_control_configuration &config,
                     validator_ifc *value)
@@ -87,7 +85,6 @@ public:
         return user_ == user && token_ == token;
     }
 };
-
 
 int setcred_returns_success()
 {
@@ -221,7 +218,6 @@ int logs_authentication_failure()
     succeed();
 }
 
-
 RESET_VARS_START
 RESET_VARS_END
 
@@ -240,5 +236,4 @@ int main (int argc, char *argv[])
 {
     return !runtests();
 }
-
 

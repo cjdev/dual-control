@@ -12,7 +12,6 @@ public:
     //        virtual std::string home_directory() = 0;
 };
 
-
 typedef std::shared_ptr<user> user_p;
 class directory
 {

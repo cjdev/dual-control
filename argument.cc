@@ -14,3 +14,4 @@ std::vector<const std::string> convert_arguments (int nargs,
 
     return std::vector<const std::string> (temp.begin(), temp.end());
 }
+

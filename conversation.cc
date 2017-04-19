@@ -63,3 +63,4 @@ std::string pam_token_conversation::user_name()
 {
     return user_;
 }
+

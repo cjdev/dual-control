@@ -7,8 +7,6 @@
 
 #include "pam.h"
 
-
-
 class conversation_result
 {
 private:
@@ -27,7 +25,6 @@ public:
         return user_name_;
     }
 };
-
 
 class conversations_ifc
 {

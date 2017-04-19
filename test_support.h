@@ -25,7 +25,6 @@ FILE *fake_fopen (const char *path, const char *mode);
 char *fake_fgets (char *buf, int n, FILE *fp);
 int fake_fclose (FILE *fp);
 
-
 #ifdef UNIT_TEST
 // SYSLOG
 #define openlog(IDENT, LOGOPT, FACILITY) fake_openlog(IDENT, LOGOPT, FACILITY)

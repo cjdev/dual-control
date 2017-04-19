@@ -48,5 +48,3 @@ dual_control create_dual_control (const dual_control_configuration
     return dual_control (new impl (configuration));
 }
 
-
-
