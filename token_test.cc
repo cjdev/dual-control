@@ -11,24 +11,27 @@ const char *fake_user_token = "";
 
 // all the fake system calls
 const char *fake_home_dir = "";
-int fake_getpwnam_r(const char *nam, struct passwd *pwd, char *buffer, size_t bufsize, struct passwd **result) {
-  strcpy(buffer, fake_home_dir);
-  pwd->pw_dir = buffer;
-  int ok = !strcmp(nam, fake_user);
-  *result = ok ? pwd : 0;
-  return !ok;
+int fake_getpwnam_r(const char *nam, struct passwd *pwd, char *buffer, size_t bufsize, struct passwd **result)
+{
+    strcpy(buffer, fake_home_dir);
+    pwd->pw_dir = buffer;
+    int ok = !strcmp(nam, fake_user);
+    *result = ok ? pwd : 0;
+    return !ok;
 }
 
 
 const char *fake_stat_path = "";
-int fake_stat(const char *path, struct stat *stat) {
+int fake_stat(const char *path, struct stat *stat)
+{
     return (strcmp(fake_stat_path, path));
 }
 
 const char *fake_fopen_path = "";
 const char *fake_fopen_mode = "";
 FILE *_fhandle = 0;
-FILE *fake_fopen(const char *path, const char *mode) {
+FILE *fake_fopen(const char *path, const char *mode)
+{
     static FILE handle;
     int path_matches = !strcmp(fake_fopen_path, path);
     int mode_matches = !strcmp(fake_fopen_mode, mode);
@@ -41,16 +44,18 @@ FILE *fake_fopen(const char *path, const char *mode) {
     }
 }
 
-char *fake_fgets(char *buf, int n, FILE *fp) {
+char *fake_fgets(char *buf, int n, FILE *fp)
+{
     if (_fhandle == fp && fp != 0) {
-       strncpy(buf, fake_user_token, n - 1);
+        strncpy(buf, fake_user_token, n - 1);
         return buf;
     } else {
         return 0;
     }
 }
 
-int fake_fclose(FILE *fp) {
+int fake_fclose(FILE *fp)
+{
     return 0;
 }
 
@@ -69,7 +74,8 @@ fake_fopen_mode = "r";
 RESET_VARS_END
 
 
-int validate_compares_to_user_token() {
+int validate_compares_to_user_token()
+{
 
     // given
 
@@ -83,7 +89,8 @@ int validate_compares_to_user_token() {
 
 }
 
-int validates_from_the_right_user() {
+int validates_from_the_right_user()
+{
     //given
 
     //when
@@ -94,7 +101,8 @@ int validates_from_the_right_user() {
     succeed();
 }
 
-int validates_user_specific_token() {
+int validates_user_specific_token()
+{
     //given
 
     //when
@@ -105,14 +113,16 @@ int validates_user_specific_token() {
     succeed();
 }
 
-int runtests() {
+int runtests()
+{
     test(validate_compares_to_user_token);
     test(validates_from_the_right_user);
     test(validates_user_specific_token);
     succeed();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     int rval = !runtests();
     return rval;
 }

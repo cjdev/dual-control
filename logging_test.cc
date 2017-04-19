@@ -7,20 +7,23 @@
 
 int logged_priority = -1000;
 const char *logged_message = "";
-void fake_syslog(int priority, const char *message, ...) {
+void fake_syslog(int priority, const char *message, ...)
+{
     logged_priority = priority;
     logged_message = message;
 }
 
 int close_log_invoked = 0;
-void fake_closelog(void) {
+void fake_closelog(void)
+{
     close_log_invoked = 1;
 }
 
 int opened_facility = -1000;
 const char *opened_program_name = "";
 int opened_logopt = -1000;
-void fake_openlog(const char *ident, int logopt, int facility) {
+void fake_openlog(const char *ident, int logopt, int facility)
+{
     opened_facility = facility;
     opened_program_name = ident;
     opened_logopt = logopt;
@@ -34,7 +37,8 @@ const char *opened_program_name = "";
 int opened_logopt = -1000;
 RESET_VARS_END
 
-int test_log_success() {
+int test_log_success()
+{
     // given
 
     // when
@@ -50,7 +54,8 @@ int test_log_success() {
     succeed();
 }
 
-int test_log_failure() {
+int test_log_failure()
+{
     //given
 
     //when
@@ -66,13 +71,15 @@ int test_log_failure() {
     succeed();
 }
 
-int test_runner() {
+int test_runner()
+{
     test(test_log_success);
     test(test_log_failure);
     succeed();
 }
 
-int main(int numargs, char **args) {
+int main(int numargs, char **args)
+{
     return !test_runner();
 }
 

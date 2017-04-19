@@ -3,7 +3,8 @@
 
 #include "validator.h"
 
-bool old_validator::validate(const std::string &user_name, const std::string &token) {
+bool old_validator::validate(const std::string &user_name, const std::string &token)
+{
     user_p found_user = directory_->find_user(user_name);
 
     if (!found_user) {

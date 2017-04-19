@@ -6,7 +6,8 @@
 #include "argument.h"
 #include "test_util.h"
 
-int convert_single_argument_to_cplusplus() {
+int convert_single_argument_to_cplusplus()
+{
     //given
     int nargs = 1;
     const char *arg = "blah";
@@ -24,7 +25,8 @@ int convert_single_argument_to_cplusplus() {
     succeed();
 }
 
-int convert_no_arguments_to_cplusplus() {
+int convert_no_arguments_to_cplusplus()
+{
     //given
     int nargs = 0;
     const char **argv = 0;
@@ -39,7 +41,8 @@ int convert_no_arguments_to_cplusplus() {
     succeed();
 }
 
-int convert_multiple_arguments_to_cplusplus() {
+int convert_multiple_arguments_to_cplusplus()
+{
     //given
     int nargs = 3;
     const char *arg1 = "one";
@@ -64,12 +67,14 @@ int convert_multiple_arguments_to_cplusplus() {
 RESET_VARS_START
 RESET_VARS_END
 
-int run_tests() {
+int run_tests()
+{
     test(convert_single_argument_to_cplusplus);
     test(convert_no_arguments_to_cplusplus);
     succeed();
 }
 
-int main() {
+int main()
+{
     return !run_tests();
 }

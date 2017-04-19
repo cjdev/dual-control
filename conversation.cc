@@ -6,7 +6,8 @@
 #include "conversation.h"
 #include "pam.h"
 
-pam_token_conversation::pam_token_conversation(pam_handle_t *pamh, const pam_p pam) {
+pam_token_conversation::pam_token_conversation(pam_handle_t *pamh, const pam_p pam)
+{
     pam_conversation_p pam_conversation;
     int get_conversation_result = pam->get_conversation(pamh, pam_conversation);
     if (get_conversation_result != 0) {
@@ -39,10 +40,12 @@ pam_token_conversation::pam_token_conversation(pam_handle_t *pamh, const pam_p p
     token_ = token;
 }
 
-std::string pam_token_conversation::token() {
+std::string pam_token_conversation::token()
+{
     return token_;
 }
 
-std::string pam_token_conversation::user_name() {
+std::string pam_token_conversation::user_name()
+{
     return user_;
 }

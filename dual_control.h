@@ -16,11 +16,12 @@
 #include "conversation.h"
 #include "logger.h"
 
-class dual_control_ifc {
-    public:
-        virtual ~dual_control_ifc() {}
-        virtual int authenticate(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments ) = 0;
-        virtual int setcred(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments) = 0;
+class dual_control_ifc
+{
+public:
+    virtual ~dual_control_ifc() {}
+    virtual int authenticate(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments ) = 0;
+    virtual int setcred(pam_handle_t *handle, int flags, const std::vector<const std::string> &arguments) = 0;
 };
 typedef std::shared_ptr<dual_control_ifc> dual_control;
 
