@@ -29,21 +29,21 @@ dual_control.o: dual_control.h
 dual_control_test: dual_control_test.o dual_control.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
-argument_test: argument_test.o argument.o
+request_test: request_test.o request.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
 validator_test: validator_test.o validator.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
-conversation_test: conversation_test.o conversation.o
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+# conversation_test: conversation_test.o conversation.o
+# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
 .PHONY: test
-test: validator_test conversation_test argument_test dual_control_test
+test: validator_test request_test dual_control_test
 	@./validator_test
-	@./conversation_test
-	@./argument_test
+	@./request_test
 	@./dual_control_test
+#	@./conversation_test
 
 .PHONY: install
 install: $(OBJS)
