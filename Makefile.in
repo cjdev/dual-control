@@ -55,6 +55,6 @@ endif
 
 .PHONY: format
 format:
-	@astyle --options=astylerc *.cc *.h
+	@./format.sh
 
 
