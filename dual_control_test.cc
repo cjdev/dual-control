@@ -20,10 +20,10 @@ void use_validator (dual_control_configuration &config,
     config.validator = validator (share (value));
 }
 
-void use_conversations (dual_control_configuration &config,
-                        conversations_ifc *value)
+void use_conversation (dual_control_configuration &config,
+                       conversation_ifc *value)
 {
-    config.conversations = conversations (share (value));
+    config.conversation = conversation (share (value));
 }
 
 void use_logger (dual_control_configuration &config, logger_ifc *value)
@@ -59,17 +59,17 @@ public:
     }
 };
 
-class fake_conversations : public conversations_ifc
+class fake_conversation : public conversation_ifc
 {
 private:
     std::string user_name_;
     std::string token_;
 public:
-    fake_conversations (const std::string &user_name,
-                        const std::string &token) : user_name_ (user_name), token_ (token) {}
-    conversation_result initiate_conversation()
+    fake_conversation (const std::string &user_name,
+                       const std::string &token) : user_name_ (user_name), token_ (token) {}
+    conversation_result initiate (const pam_request &request)
     {
-        return conversation_result (user_name_, token_);
+        return {user_name_, token_};
     }
 };
 
@@ -114,7 +114,7 @@ int authenticate_validates_with_received_token()
     std::string user ("user");
     std::string token ("token");
     use_validator (configuration, new fake_validator (user, token));
-    use_conversations (configuration, new fake_conversations (user, token));
+    use_conversation (configuration, new fake_conversation (user, token));
     dual_control dc (create_dual_control (configuration));
     pam_handle_t *handle (0);
     std::vector<const std::string> arguments;
@@ -133,8 +133,8 @@ int authenticate_fails_with_wrong_user()
     dual_control_configuration configuration;
     std::string token ("token");
     use_validator (configuration, new fake_validator ("user", token));
-    use_conversations (configuration, new fake_conversations ("wrong user",
-                       token));
+    use_conversation (configuration, new fake_conversation ("wrong user",
+                      token));
     dual_control dc (create_dual_control (configuration));
 
     // when
@@ -151,8 +151,8 @@ int authenticate_fails_with_wrong_token()
     dual_control_configuration configuration;
     std::string user ("user");
     use_validator (configuration, new fake_validator (user, "token"));
-    use_conversations (configuration, new fake_conversations (user,
-                       "wrong token"));
+    use_conversation (configuration, new fake_conversation (user,
+                      "wrong token"));
     dual_control dc (create_dual_control (configuration));
 
     // when
@@ -170,7 +170,7 @@ int logs_authentication()
     std::string user ("user");
     std::string token ("token");
     use_validator (configuration, new fake_validator (user, token));
-    use_conversations (configuration, new fake_conversations (user, token));
+    use_conversation (configuration, new fake_conversation (user, token));
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);
     dual_control dc (create_dual_control (configuration));
@@ -196,7 +196,7 @@ int logs_authentication_failure()
     std::string token ("token");
     use_validator (configuration, new fake_validator (user,
                    "not the received token"));
-    use_conversations (configuration, new fake_conversations (user, token));
+    use_conversation (configuration, new fake_conversation (user, token));
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);
     dual_control dc (create_dual_control (configuration));

@@ -20,7 +20,7 @@ int dual_control_ifc::setcred ( const pam_request &request)
 class impl : public dual_control_ifc
 {
 private:
-    conversations conversations_;
+    conversation conversation_;
     validator validator_;
     logger logger_;
 public:
@@ -30,7 +30,7 @@ public:
 };
 
 impl::impl (const dual_control_configuration &configuration) :
-    conversations_ (configuration.conversations),
+    conversation_ (configuration.conversation),
     validator_ (configuration.validator),
     logger_ (configuration.logger) {}
 
@@ -41,15 +41,12 @@ int impl::setcred (const pam_request &request)
 
 int impl::authenticate (const pam_request &request)
 {
+    conversation_result input (conversation_.initiate (request));
 
-    conversation_result conversation = conversations_.initiate_conversation();
-    std::string user_name = conversation.user_name();
-    std::string token = conversation.token();
+    int auth_result = validator_.validate (input.user_name,
+                                           input.token) ? PAM_SUCCESS : PAM_AUTH_ERR;
 
-    int auth_result = validator_.validate (user_name,
-                                           token) ? PAM_SUCCESS : PAM_AUTH_ERR;
-
-    logger_.log (auth_result, user_name, token);
+    logger_.log (auth_result, input.user_name, input.token);
     return auth_result;
 }
 

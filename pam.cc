@@ -1,11 +1,17 @@
-#include <string>
 #include <vector>
-#include <memory>
+#include <tuple>
 #include <security/pam_modules.h>
 #include <security/pam_appl.h>
 
 #include "pam.h"
 
+std::tuple<int,std::vector<pam_response>> pam_ifc::conv (pam_handle *handle,
+                                       const std::vector<pam_message> &prompts)
+{
+    return std::make_tuple (PAM_SERVICE_ERR, std::vector<pam_response>());
+}
+
+/*
 class pam_conversation_impl : public pam_conversation
 {
 private:
@@ -45,4 +51,5 @@ pam_p get_system_pam()
 {
     return (pam_p)new pam_impl;
 }
+*/
 

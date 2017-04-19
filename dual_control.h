@@ -16,7 +16,7 @@
 
 struct dual_control_configuration {
     validator validator;
-    conversations conversations;
+    conversation conversation;
     logger logger;
 };
 

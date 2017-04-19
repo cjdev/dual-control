@@ -3,25 +3,33 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <tuple>
 #include <security/pam_modules.h>
 
-class pam_conversation
+class pam_ifc
 {
 public:
-    virtual int conv (const std::vector<const struct pam_message *> &prompts,
-                      std::vector<struct pam_response *> &answers) = 0;
-};
-typedef std::shared_ptr<pam_conversation> pam_conversation_p;
+    virtual std::tuple<int,std::vector<pam_response>> conv (pam_handle *handle,
+            const std::vector<pam_message> &prompts);
 
-class pam
+};
+
+class pam : public pam_ifc
 {
+    typedef std::shared_ptr<pam_ifc> delegate;
+private:
+    delegate delegate_;
 public:
-    virtual int get_conversation (pam_handle_t *pamh,
-                                  std::shared_ptr<pam_conversation> &conversation) = 0;
+    pam (const delegate &delegate) : delegate_ (delegate) {}
+    pam() : pam (delegate (new pam_ifc)) {}
+    std::tuple<int,std::vector<pam_response>> conv (pam_handle *handle,
+                                           const std::vector<pam_message> &prompts)
+    {
+        return delegate_-> conv (handle, prompts);
+    }
 };
-typedef std::shared_ptr<pam> pam_p;
 
-pam_p get_system_pam();
+pam system_pam();
 
 #endif
 

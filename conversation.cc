@@ -4,8 +4,8 @@
 #include <string>
 
 #include "conversation.h"
-#include "pam.h"
 
+/*
 pam_token_conversation::pam_token_conversation (pam_handle_t *pamh,
         const pam_p pam)
 {
@@ -63,4 +63,5 @@ std::string pam_token_conversation::user_name()
 {
     return user_;
 }
+*/
 
