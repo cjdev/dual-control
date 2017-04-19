@@ -1,6 +1,21 @@
+#include <string>
+#include <vector>
+#include <security/pam_modules.h>
+
+#include "request.h"
 #include "dual_control.h"
 #include "conversation.h"
 #include "validator.h"
+
+int dual_control_ifc::authenticate (const pam_request &request)
+{
+    return PAM_SERVICE_ERR;
+}
+
+int dual_control_ifc::setcred ( const pam_request &request)
+{
+    return PAM_SERVICE_ERR;
+}
 
 class impl : public dual_control_ifc
 {
@@ -10,10 +25,8 @@ private:
     logger logger_;
 public:
     impl (const dual_control_configuration &configuration);
-    int authenticate (pam_handle *handle, int flags,
-                      const std::vector<const std::string> &arguments );
-    int setcred (pam_handle *handle, int flags,
-                 const std::vector<const std::string> &arguments);
+    int authenticate (const pam_request &request);
+    int setcred (const pam_request &request);
 };
 
 impl::impl (const dual_control_configuration &configuration) :
@@ -21,14 +34,12 @@ impl::impl (const dual_control_configuration &configuration) :
     validator_ (configuration.validator),
     logger_ (configuration.logger) {}
 
-int impl::setcred (pam_handle *handle, int flags,
-                   const std::vector<const std::string> &arguments)
+int impl::setcred (const pam_request &request)
 {
     return PAM_SUCCESS;
 }
 
-int impl::authenticate (pam_handle *handle, int flags,
-                        const std::vector<const std::string> &arguments)
+int impl::authenticate (const pam_request &request)
 {
 
     conversation_result conversation = conversations_.initiate_conversation();
@@ -45,6 +56,7 @@ int impl::authenticate (pam_handle *handle, int flags,
 dual_control create_dual_control (const dual_control_configuration
                                   &configuration)
 {
-    return dual_control (new impl (configuration));
+    return dual_control (std::shared_ptr<dual_control_ifc> (new impl (
+                             configuration)));
 }
 

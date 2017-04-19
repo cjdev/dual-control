@@ -1,6 +1,7 @@
 #include <security/pam_modules.h>
 #include <string>
 
+#include "request.h"
 #include "dual_control.h"
 #include "validator.h"
 #include "conversation.h"
@@ -86,16 +87,19 @@ public:
     }
 };
 
+pam_request req()
+{
+    return pam_request (0, 0, 0, 0);
+}
+
 int setcred_returns_success()
 {
     //given
     dual_control_configuration configuration;
-    pam_handle *pamh (0);
     dual_control dc (create_dual_control (configuration));
-    std::vector<const std::string> arguments;
 
     //when
-    int result = dc->setcred (pamh, 0, arguments);
+    int result = dc.setcred (req());
 
     //then
     checkint (PAM_SUCCESS, result, "function return");
@@ -116,7 +120,7 @@ int authenticate_validates_with_received_token()
     std::vector<const std::string> arguments;
 
     // when
-    int actual = dc->authenticate (handle, 0, arguments);
+    int actual = dc.authenticate (req());
 
     // then
     check (actual == PAM_SUCCESS, "should be success");
@@ -132,11 +136,9 @@ int authenticate_fails_with_wrong_user()
     use_conversations (configuration, new fake_conversations ("wrong user",
                        token));
     dual_control dc (create_dual_control (configuration));
-    pam_handle_t *handle (0);
-    std::vector<const std::string> arguments;
 
     // when
-    int actual = dc->authenticate (handle, 0, arguments);
+    int actual = dc.authenticate (req());
 
     // then
     check (actual == PAM_AUTH_ERR, "should be auth err");
@@ -152,11 +154,9 @@ int authenticate_fails_with_wrong_token()
     use_conversations (configuration, new fake_conversations (user,
                        "wrong token"));
     dual_control dc (create_dual_control (configuration));
-    pam_handle_t *handle (0);
-    std::vector<const std::string> arguments;
 
     // when
-    int actual = dc->authenticate (handle, 0, arguments);
+    int actual = dc.authenticate (req());
 
     // then
     check (actual == PAM_AUTH_ERR, "should be auth err");
@@ -174,11 +174,9 @@ int logs_authentication()
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);
     dual_control dc (create_dual_control (configuration));
-    pam_handle_t *handle (0);
-    std::vector<const std::string> arguments;
 
     //when
-    dc->authenticate (handle, 0, arguments);
+    dc.authenticate (req());
 
     //then
     check (test_logger->logged_result() == PAM_SUCCESS,
@@ -202,11 +200,9 @@ int logs_authentication_failure()
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);
     dual_control dc (create_dual_control (configuration));
-    pam_handle_t *handle (0);
-    std::vector<const std::string> arguments;
 
     //when
-    dc->authenticate (handle, 0, arguments);
+    dc.authenticate (req());
 
     //then
     check (test_logger->logged_result() == PAM_AUTH_ERR,
