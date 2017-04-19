@@ -53,3 +53,8 @@ else
 	@echo installation recipe not known for $(UNAME_S)
 endif
 
+.PHONY: format
+format:
+	@astyle --options=astylerc *.cc *.h
+
+

@@ -1,0 +1,6 @@
+This project uses Artistic Style (astyle) for formatting. The configuration
+file is `astylerc`.
+
+`make format` runs the style program with the configuration
+
+
