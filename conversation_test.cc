@@ -94,7 +94,7 @@ std::shared_ptr<T> share (T *t) {
     return std::shared_ptr<T>(t);
 }
 
-bool uses_pam_correctly()
+bool returns_user_and_token()
 {
 
     // given
@@ -128,12 +128,47 @@ bool uses_pam_correctly()
     succeed();
 }
 
+bool returns_user_and_token_from_pam_conversation()
+{
+
+    // given
+    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
+    std::string user ("user1");
+    std::string token ("token1");
+    pam_message prompt;
+    prompt.msg_style = PAM_PROMPT_ECHO_OFF;
+    prompt.msg = const_cast<char *>("Dual control token: ");
+    pam_response response;
+    response.resp_retcode = 0;
+    std::string response_text(user + ":" + token);
+    response.resp = const_cast<char *>(response_text.c_str());
+    conversation_data conversation_data = {
+        std::vector<pam_message>(&prompt, &prompt + 1),
+        std::vector<pam_response>(&response, &response + 1),
+        PAM_SUCCESS
+    };
+    pam pam (share (new fake_pam (handle, conversation_data)));
+    pam_request request (handle, 0, 0, 0);
+
+    conversation conversation (create_conversation (pam));
+
+    // when
+    conversation_result actual = conversation.initiate (request);
+
+    // then
+    check(actual.user_name == user, "user name does not match");
+    check(actual.token == token, "token does not match");
+
+    succeed();
+}
+
 RESET_VARS_START
 RESET_VARS_END
 
 int run_tests()
 {
-    test (uses_pam_correctly);
+    test (returns_user_and_token);
+    test (returns_user_and_token_from_pam_conversation);
     succeed();
 }
 

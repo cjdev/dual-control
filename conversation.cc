@@ -13,9 +13,18 @@ namespace
 {
     class impl : public conversation_ifc
     {
+        private:
+            pam pam_;
         public:
+           impl(pam &pam) : pam_(pam) {}
            conversation_result initiate (const pam_request &request) {
-               return {"user","token"};
+           pam_conv *out;
+           int result = pam_.get:_conv(request.handle(),
+               /*int get_conv (pam_handle *handle, const pam_conv **out)
+    {
+        return delegate_->get_conv (handle, out);
+    }
+    */
            }
     };
 }
