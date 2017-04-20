@@ -45,7 +45,7 @@ bool validator_validates()
                 token));
     std::string user_name = "msmith";
     directory_p directory (new fake_directory (user_name));
-    old_validator validator (directory, user_token_supplier);
+    validator validator = create_validator (directory, user_token_supplier);
 
     // when
     bool actual = validator.validate (user_name, "token");
@@ -63,7 +63,7 @@ bool validator_fails_unknown_user()
     user_token_supplier_p user_token_supplier (new fake_user_token_supplier (
                 token));
     directory_p directory (new fake_directory);
-    old_validator validator (directory, user_token_supplier);
+    validator validator = create_validator (directory, user_token_supplier);
 
     // when
     bool actual = validator.validate ("notuser", token);
@@ -80,7 +80,7 @@ bool validator_fails_incorrect_token()
     user_token_supplier_p user_token_supplier (new fake_user_token_supplier);
     std::string user_name = "msmith";
     directory_p directory (new fake_directory (user_name));
-    old_validator validator (directory, user_token_supplier);
+    validator validator = create_validator (directory, user_token_supplier);
 
     // when
     bool actual = validator.validate (user_name, "token");
