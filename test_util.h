@@ -1,8 +1,8 @@
 #ifndef _TESTUTIL_H
 #define _TESTUTIL_H
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
+#include <cstdio>
 #define check(assertion, msg) \
     if (!(assertion)) { \
       fprintf(stderr, "assertion failed: %s\n", msg); \

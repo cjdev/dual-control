@@ -12,4 +12,5 @@ Makefile
 autom4te.cache/
 *_test
 *_test
+*.orig
 

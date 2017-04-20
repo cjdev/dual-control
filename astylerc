@@ -1,0 +1,13 @@
+# Artistic style configuration for this project
+
+--style=linux
+--indent-col1-comments
+--break-blocks
+--pad-first-paren-out
+--pad-header
+--break-one-line-headers
+--add-braces
+--close-templates
+--max-code-length=76
+--align-pointer=name
+

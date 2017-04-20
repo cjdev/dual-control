@@ -1,0 +1,7 @@
+This project uses Artistic Style (astyle) for formatting. The configuration
+file is `astylerc`. Additionally blank lines are normalized by collapsing
+multiple consecutive newlines and by ensuring every source file ends with
+a single newline.
+
+`make format` runs all formatting.
+
