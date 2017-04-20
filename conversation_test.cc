@@ -190,6 +190,28 @@ int returns_empty_user_and_token_when_pam_cant_create_conversation()
     succeed();
 }
 
+int returns_empty_user_and_token_when_conversation_fails() {
+    pam_message prompt;
+    prompt.msg_style = PAM_PROMPT_ECHO_OFF;
+    prompt.msg = const_cast<char *> ("Dual control token: ");
+    conversation_data conversation_data = {
+        std::vector<pam_message>(&prompt, &prompt + 1),
+        std::vector<pam_response> (),
+        PAM_SERVICE_ERR
+    };
+    pam pam (share (new fake_pam (0, conversation_data)));
+    conversation conversation = create_conversation (pam);
+    pam_request request(0, 0, 0, 0);
+
+    //when
+    conversation_result actual = conversation.initiate (request);
+
+    //then
+    check (actual.user_name == "", "user name does not match");
+    check (actual.token == "", "token does not match");
+    succeed();
+}
+
 RESET_VARS_START
 RESET_VARS_END
 
@@ -201,6 +223,7 @@ int run_tests()
     test (returns_empty_token_when_colon_end);
     test (returns_empty_user_when_colon_start);
     test (returns_empty_user_and_token_when_pam_cant_create_conversation);
+    test (returns_empty_user_and_token_when_conversation_fails);
     succeed();
 }
 
@@ -210,9 +233,6 @@ int main (int argc, char **argv)
 }
 
 /*
-int returns_empty_user_and_token_when_pam_cant_create_conversation()
-int prompts_user_with_correct_text()
-int prompts_user_with_correct_style()
 int returns_empty_user_and_token_when_conversation_fails()
 int returns_empty_user_and_token_when_conversation_answer_fails()
 */

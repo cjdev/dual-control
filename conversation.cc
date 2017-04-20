@@ -31,8 +31,12 @@ public:
         std::vector<pam_response *> responses (1);
         int conv_result = conv->conv (1, messages.data(), responses.data(),
                                       conv->appdata_ptr);
-        std::string answer (responses[0]->resp);
 
+        if (conv_result != PAM_SUCCESS) {
+            return err;
+        }
+
+        std::string answer (responses[0]->resp);
         std::string::iterator delim = std::find (answer.begin(), answer.end(), ':');
 
         if (delim == answer.end()) {
