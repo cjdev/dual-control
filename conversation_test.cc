@@ -190,18 +190,19 @@ int returns_empty_user_and_token_when_pam_cant_create_conversation()
     succeed();
 }
 
-int returns_empty_user_and_token_when_conversation_fails() {
+int returns_empty_user_and_token_when_conversation_fails()
+{
     pam_message prompt;
     prompt.msg_style = PAM_PROMPT_ECHO_OFF;
     prompt.msg = const_cast<char *> ("Dual control token: ");
     conversation_data conversation_data = {
-        std::vector<pam_message>(&prompt, &prompt + 1),
+        std::vector<pam_message> (&prompt, &prompt + 1),
         std::vector<pam_response> (),
         PAM_SERVICE_ERR
     };
     pam pam (share (new fake_pam (0, conversation_data)));
     conversation conversation = create_conversation (pam);
-    pam_request request(0, 0, 0, 0);
+    pam_request request (0, 0, 0, 0);
 
     //when
     conversation_result actual = conversation.initiate (request);
@@ -212,7 +213,8 @@ int returns_empty_user_and_token_when_conversation_fails() {
     succeed();
 }
 
-int returns_empty_user_and_token_when_conversation_answer_fails() {
+int returns_empty_user_and_token_when_conversation_answer_fails()
+{
     pam_message prompt;
     prompt.msg_style = PAM_PROMPT_ECHO_OFF;
     prompt.msg = const_cast<char *> ("Dual control token: ");
@@ -227,7 +229,7 @@ int returns_empty_user_and_token_when_conversation_answer_fails() {
     };
     pam pam (share (new fake_pam (0, conversation_data)));
     conversation conversation = create_conversation (pam);
-    pam_request request(0, 0, 0, 0);
+    pam_request request (0, 0, 0, 0);
 
     //when
     conversation_result actual = conversation.initiate (request);
@@ -258,9 +260,4 @@ int main (int argc, char **argv)
 {
     return !run_tests();
 }
-
-/*
-int returns_empty_user_and_token_when_conversation_fails()
-int returns_empty_user_and_token_when_conversation_answer_fails()
-*/
 
