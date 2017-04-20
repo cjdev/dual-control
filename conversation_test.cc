@@ -70,15 +70,22 @@ class fake_pam : public pam_ifc
 private:
     pam_handle *expected_handle_;
     conversation_data conversation_data_;
+    int get_response_;
     pam_conv conv_;
 public:
     fake_pam (pam_handle *expected_handle,
               const conversation_data &conversation_data)
         : expected_handle_ (expected_handle),
-          conversation_data_ (conversation_data)
+          conversation_data_ (conversation_data),
+          get_response_ (PAM_SUCCESS)
     {}
+    fake_pam (int get_response) : get_response_ (get_response) {}
     int get_conv (pam_handle *handle, const pam_conv **out)
     {
+        if (get_response_ != PAM_SUCCESS) {
+            return get_response_;
+        }
+
         if (expected_handle_ != handle) {
             throw std::string ("unexpected handle");
         }
@@ -97,7 +104,9 @@ std::shared_ptr<T> share (T *t)
     return std::shared_ptr<T> (t);
 }
 
-conversation make_conversation(pam_handle *expected_handle, const std::string &answer) {
+conversation make_conversation (pam_handle *expected_handle,
+                                const std::string &answer)
+{
     pam_message prompt;
     prompt.msg_style = PAM_PROMPT_ECHO_OFF;
     prompt.msg = const_cast<char *> ("Dual control token: ");
@@ -115,10 +124,12 @@ conversation make_conversation(pam_handle *expected_handle, const std::string &a
 
 }
 
-bool check_conversation_response(const std::string &answer, const std::string &expected_user, const std::string &expected_token) {
+bool check_conversation_response (const std::string &answer,
+                                  const std::string &expected_user, const std::string &expected_token)
+{
     // given
     pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
-    conversation conversation (make_conversation(handle, answer));
+    conversation conversation (make_conversation (handle, answer));
     pam_request request (handle, 0, 0, 0);
 
     // when
@@ -135,27 +146,48 @@ bool returns_user_and_token()
 {
     std::string user ("user");
     std::string token ("token");
-    return check_conversation_response(user + ":" + token, user, token);
+    return check_conversation_response (user + ":" + token, user, token);
 }
 
-int returns_empty_user_and_token_when_no_colon() {
-    return check_conversation_response("nocolon", "", "");
- }
+int returns_empty_user_and_token_when_no_colon()
+{
+    return check_conversation_response ("nocolon", "", "");
+}
 
-int returns_empty_user_and_token_when_empty_answer() {
-    return check_conversation_response("", "", "");
- }
+int returns_empty_user_and_token_when_empty_answer()
+{
+    return check_conversation_response ("", "", "");
+}
 
-int returns_empty_token_when_colon_end() {
+int returns_empty_token_when_colon_end()
+{
     std::string user ("user");
     std::string token ("");
-    return check_conversation_response(user + ":" + token, user, token);
+    return check_conversation_response (user + ":" + token, user, token);
 }
 
-int returns_empty_user_when_colon_start() {
+int returns_empty_user_when_colon_start()
+{
     std::string user ("");
     std::string token ("token");
-    return check_conversation_response(user + ":" + token, user, token);
+    return check_conversation_response (user + ":" + token, user, token);
+}
+
+int returns_empty_user_and_token_when_pam_cant_create_conversation()
+{
+    // given
+    pam pam (share (new fake_pam (PAM_SERVICE_ERR)));
+    conversation conversation = create_conversation (pam);
+    pam_request request (0, 0, 0, 0);
+
+    // when
+    conversation_result actual = conversation.initiate (request);
+
+    // then
+    check (actual.user_name == "", "user name does not match");
+    check (actual.token == "", "token does not match");
+
+    succeed();
 }
 
 RESET_VARS_START
@@ -168,6 +200,7 @@ int run_tests()
     test (returns_empty_user_and_token_when_empty_answer);
     test (returns_empty_token_when_colon_end);
     test (returns_empty_user_when_colon_start);
+    test (returns_empty_user_and_token_when_pam_cant_create_conversation);
     succeed();
 }
 
@@ -177,8 +210,6 @@ int main (int argc, char **argv)
 }
 
 /*
-int returns_empty_token_when_colon_end()
-int returns_empty_user_when_colon_begin()
 int returns_empty_user_and_token_when_pam_cant_create_conversation()
 int prompts_user_with_correct_text()
 int prompts_user_with_correct_style()

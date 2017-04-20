@@ -7,6 +7,7 @@
 
 namespace
 {
+conversation_result err = {"",""};
 class impl : public conversation_ifc
 {
 private:
@@ -17,6 +18,11 @@ public:
     {
         const pam_conv *conv;
         int get_conv_result = pam_.get_conv (request.handle(), &conv);
+
+        if (get_conv_result != PAM_SUCCESS) {
+            return err;
+        }
+
         pam_message msg;
         msg.msg = const_cast<char *> ("Dual control token: ");
         msg.msg_style = PAM_PROMPT_ECHO_OFF;
@@ -27,16 +33,17 @@ public:
                                       conv->appdata_ptr);
         std::string answer (responses[0]->resp);
 
-        std::string user;
-        std::string token;
         std::string::iterator delim = std::find (answer.begin(), answer.end(), ':');
 
-        if (delim != answer.end()) {
-            user = std::string (answer.begin(), delim);
-            token = std::string (delim + 1, answer.end());
+        if (delim == answer.end()) {
+            return err;
         }
 
-        return {user, token};
+        return {
+            std::string (answer.begin(), delim),
+            std::string (delim + 1, answer.end())
+        };
+
     }
 };
 }
