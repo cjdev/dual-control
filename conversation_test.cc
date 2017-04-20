@@ -1,320 +1,130 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <algorithm>
+#include <memory>
+#include <cstring>
 #include <security/pam_modules.h>
 
+#include <iostream>
+
+#include "request.h"
 #include "conversation.h"
 #include "test_util.h"
 #include "pam.h"
 
-class fake_pam_conversation : public pam_conversation
+struct conversation_data {
+    std::vector<pam_message> expected_prompts;
+    std::vector<pam_response> responses;
+    int return_value;
+};
+
+bool same_prompts (const std::vector<pam_message> &expected,
+                   int num_prompts, const pam_message **actual)
 {
-private:
-    pam_response response_;
-    std::string answer_;
-public:
-    fake_pam_conversation (const std::string &answer) : answer_ (answer) {}
-    int conv (const std::vector<const struct pam_message *> &prompts,
-              std::vector<struct pam_response *> &answers)
-    {
-        if (prompts.size() != 1) {
-            throw std::string ("test only supports one prompt");
+    if (expected.size() != num_prompts) {
+        return false;
+    }
+
+    for (int i=0; i< num_prompts; ++i) {
+        if (expected[i].msg_style != actual[i]->msg_style) {
+            return false;
         }
 
-        response_.resp_retcode = 0;
-        response_.resp = const_cast<char *> (answer_.c_str());
-        answers.resize (1);
-        answers[0] = &response_;
-        return 0;
+        if (std::strcmp (expected[i].msg, actual[i]->msg)) {
+            return false;
+        }
     }
-};
 
-class fake_failing_conversation: public pam_conversation
+    return true;
+}
+
+template<class T>
+T *address_of (T &t)
 {
+    return &t;
+}
 
-public:
-    int conv (const std::vector<const struct pam_message *> &prompts,
-              std::vector<struct pam_response *> &answers)
-    {
-        return 1;
+int fake_conv (int num_msg, const struct pam_message **msg,
+               struct pam_response **resp, void *appdata_ptr)
+{
+    conversation_data *data = reinterpret_cast<conversation_data *>
+                              (appdata_ptr);
+
+    if (data->return_value != PAM_SUCCESS) {
+        return data->return_value;
     }
-};
 
-class fake_failing_answer_conversation: public pam_conversation
+    if (!same_prompts (data->expected_prompts, num_msg, msg)) {
+        throw std::string ("unexpected prompts");
+    }
+
+    std::vector<pam_response> &responses = data->responses;
+    std::transform (responses.begin(), responses.end(), resp,
+                    address_of<pam_response>);
+    return data->return_value;
+}
+
+class fake_pam : public pam_ifc
 {
 private:
-    pam_response response_;
-    std::string answer_;
+    pam_handle *expected_handle_;
+    conversation_data conversation_data_;
+    pam_conv conv_;
 public:
-    fake_failing_answer_conversation() : answer_ ("ok:1") {}
-    int conv (const std::vector<const struct pam_message *> &prompts,
-              std::vector<struct pam_response *> &answers)
+    fake_pam(pam_handle* expected_handle, const conversation_data &conversation_data)
+        : expected_handle_(expected_handle),
+          conversation_data_(conversation_data)
+    {}
+    int get_conv (pam_handle *handle, const pam_conv **out)
     {
-        if (prompts.size() != 1) {
-            throw std::string ("test only supports one prompt");
+        if (expected_handle_ != handle) {
+            throw std::string("unexpected handle");
         }
-
-        response_.resp_retcode = 13;
-        response_.resp = const_cast<char *> (answer_.c_str());
-        answers.resize (1);
-        answers[0] = &response_;
-        return 0;
-    }
-};
-
-class match_prompt_text_conversation : public pam_conversation
-{
-private:
-    pam_response response_;
-    std::string answer_;
-    std::string prompt_;
-public:
-    match_prompt_text_conversation (const std::string &prompt) : prompt_
-        (prompt), answer_ ("ok:123") {}
-    int conv (const std::vector<const struct pam_message *> &prompts,
-              std::vector<struct pam_response *> &answers)
-    {
-        if (prompt_ != prompts[0]->msg) {
-            throw std::string ("prompt does not match");
-        }
-
-        response_.resp_retcode = 0;
-        response_.resp = const_cast<char *> (answer_.c_str());
-        answers.resize (1);
-        answers[0] = &response_;
-        return 0;
+        conv_.appdata_ptr = reinterpret_cast<void *>(&conversation_data_);
+        conv_.conv = fake_conv;
+        *out = &conv_;
+        return PAM_SUCCESS;
     }
 
 };
 
-class match_prompt_style_conversation : public pam_conversation
-{
-private:
-    pam_response response_;
-    std::string answer_;
-    int style_;
-public:
-    match_prompt_style_conversation (int style) : style_ (style),
-        answer_ ("ok:123") {}
-    int conv (const std::vector<const struct pam_message *> &prompts,
-              std::vector<struct pam_response *> &answers)
-    {
-        if (style_ != prompts[0]->msg_style) {
-            throw std::string ("style does not match");
-        }
-
-        response_.resp_retcode = 0;
-        response_.resp = const_cast<char *> (answer_.c_str());
-        answers.resize (1);
-        answers[0] = &response_;
-        return 0;
-    }
-
-};
-
-class fake_pam : public pam
-{
-private:
-    std::shared_ptr<pam_conversation> conversation_;
-public:
-    fake_pam (std::shared_ptr<pam_conversation> conversation) : conversation_
-        (conversation) {}
-    fake_pam() {}
-    int get_conversation (pam_handle_t *pamh,
-                          std::shared_ptr<pam_conversation> &conversation)
-    {
-        if (conversation_) {
-            conversation = conversation_;
-            return 0;
-        }
-
-        return 12;
-    }
-};
-
-int returns_correct_token()
-{
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_pam_conversation ("user:code");
-    pam_p pam = (pam_p)new fake_pam (fake_conversation);
-
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.token() == "code", "returned incorrect token");
-    succeed();
+template<class T>
+std::shared_ptr<T> share (T *t) {
+    return std::shared_ptr<T>(t);
 }
 
-int returns_correct_user_name()
+bool uses_pam_correctly()
 {
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_pam_conversation ("sally:token");
-    pam_p pam = (pam_p)new fake_pam (fake_conversation);
 
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.user_name() == "sally", "returned incorrect user name");
-    succeed();
-}
-
-int returns_empty_user_and_token_when_no_colon()
-{
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_pam_conversation ("sally");
-    pam_p pam = (pam_p)new fake_pam (fake_conversation);
-
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.user_name() == "", "did not return empty user name");
-    check (conversation.token() == "", "did not return empty token");
-    succeed();
-}
-
-int returns_empty_user_and_token_when_empty_answer()
-{
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_pam_conversation ("");
-    pam_p pam = (pam_p)new fake_pam (fake_conversation);
-
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.user_name() == "", "did not return empty user name");
-    check (conversation.token() == "", "did not return empty token");
-    succeed();
-}
-
-int returns_empty_token_when_colon_end()
-{
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_pam_conversation ("sally:");
-    pam_p pam = (pam_p)new fake_pam (fake_conversation);
-
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.user_name() == "sally",
-           "did not return empty user name");
-    check (conversation.token() == "", "did not return empty token");
-    succeed();
-}
-
-int returns_empty_user_when_colon_begin()
-{
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_pam_conversation (":token");
-    pam_p pam = (pam_p)new fake_pam (fake_conversation);
-
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.user_name() == "", "did not return empty user name");
-    check (conversation.token() == "token", "did not return empty token");
-    succeed();
-}
-
-int returns_empty_user_and_token_when_pam_cant_create_conversation()
-{
     // given
-    pam_handle_t *pamh;
-    pam_p pam = (pam_p)new fake_pam;
+    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
+    std::string user ("user");
+    std::string token ("token");
+    pam_message prompt;
+    prompt.msg_style = PAM_PROMPT_ECHO_OFF;
+    prompt.msg = const_cast<char *>("Dual control token: ");
+    pam_response response;
+    response.resp_retcode = 0;
+    std::string response_text(user + ":" + token);
+    response.resp = const_cast<char *>(response_text.c_str());
+    conversation_data conversation_data = {
+        std::vector<pam_message>(&prompt, &prompt + 1),
+        std::vector<pam_response>(&response, &response + 1),
+        PAM_SUCCESS
+    };
+    pam pam (share (new fake_pam (handle, conversation_data)));
+    pam_request request (handle, 0, 0, 0);
 
-    //when
-    pam_token_conversation conversation (pamh, pam);
+    conversation conversation (create_conversation (pam));
 
-    //then
-    check (conversation.user_name() == "", "did not return empty user name");
-    check (conversation.token() == "", "did not return empty token");
-    succeed();
+    // when
+    conversation_result actual = conversation.initiate (request);
 
-}
+    // then
+    check(actual.user_name == user, "user name does not match");
+    check(actual.token == token, "token does not match");
 
-int prompts_user_with_correct_text()
-{
-    // given
-    pam_handle_t *pamh;
-    pam_conversation_p match_conversation = (pam_conversation_p) new
-                                            match_prompt_text_conversation ("Dual control token: ");
-    pam_p pam = (pam_p)new fake_pam (match_conversation);
-
-    // when / then
-    try {
-        pam_token_conversation conversation (pamh, pam);
-        succeed();
-    } catch (const std::string &x) {
-        fail();
-    }
-
-}
-
-int prompts_user_with_correct_style()
-{
-    // given
-    pam_handle_t *pamh;
-    pam_conversation_p match_conversation = (pam_conversation_p) new
-                                            match_prompt_style_conversation (PAM_PROMPT_ECHO_OFF);
-    pam_p pam = (pam_p)new fake_pam (match_conversation);
-
-    // when / then
-    try {
-        pam_token_conversation conversation (pamh, pam);
-        succeed();
-    } catch (const std::string &x) {
-        fail();
-    }
-}
-
-int returns_empty_user_and_token_when_conversation_fails()
-{
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_failing_conversation;
-    pam_p pam = (pam_p) new fake_pam (fake_conversation);
-
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.user_name() == "", "did not return empty user name");
-    check (conversation.token() == "", "did not return empty token");
-    succeed();
-}
-
-int returns_empty_user_and_token_when_conversation_answer_fails()
-{
-    //given
-    pam_handle_t *pamh;
-    pam_conversation_p fake_conversation = (pam_conversation_p) new
-                                           fake_failing_answer_conversation;
-    pam_p pam = (pam_p) new fake_pam (fake_conversation);
-
-    //when
-    pam_token_conversation conversation (pamh, pam);
-
-    //then
-    check (conversation.user_name() == "", "did not return empty user name");
-    check (conversation.token() == "", "did not return empty token");
     succeed();
 }
 
@@ -323,22 +133,26 @@ RESET_VARS_END
 
 int run_tests()
 {
-    test (returns_correct_token);
-    test (returns_correct_user_name);
-    test (returns_empty_user_and_token_when_no_colon);
-    test (returns_empty_token_when_colon_end);
-    test (returns_empty_user_when_colon_begin);
-    test (returns_empty_user_and_token_when_empty_answer);
-    test (returns_empty_user_and_token_when_pam_cant_create_conversation);
-    test (prompts_user_with_correct_text);
-    test (prompts_user_with_correct_style);
-    test (returns_empty_user_and_token_when_conversation_fails);
-    test (returns_empty_user_and_token_when_conversation_answer_fails);
+    test (uses_pam_correctly);
     succeed();
 }
 
-int main (int argc, char *args[])
+int main (int argc, char **argv)
 {
     return !run_tests();
 }
+
+/*
+ * int returns_correct_token()
+int returns_correct_user_name()
+int returns_empty_user_and_token_when_no_colon()
+int returns_empty_user_and_token_when_empty_answer()
+int returns_empty_token_when_colon_end()
+int returns_empty_user_when_colon_begin()
+int returns_empty_user_and_token_when_pam_cant_create_conversation()
+int prompts_user_with_correct_text()
+int prompts_user_with_correct_style()
+int returns_empty_user_and_token_when_conversation_fails()
+int returns_empty_user_and_token_when_conversation_answer_fails()
+*/
 

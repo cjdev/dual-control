@@ -35,15 +35,15 @@ request_test: request_test.o request.o
 validator_test: validator_test.o validator.o
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
-# conversation_test: conversation_test.o conversation.o
-# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+conversation_test: conversation_test.o conversation.o
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
 .PHONY: test
-test: validator_test request_test dual_control_test
+test: validator_test request_test dual_control_test conversation_test
 	@./validator_test
 	@./request_test
 	@./dual_control_test
-#	@./conversation_test
+	@./conversation_test
 
 .PHONY: install
 install: $(OBJS)

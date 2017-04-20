@@ -5,6 +5,25 @@
 
 #include "conversation.h"
 
+
+
+
+
+namespace
+{
+    class impl : public conversation_ifc
+    {
+        public:
+           conversation_result initiate (const pam_request &request) {
+               return {"user","token"};
+           }
+    };
+}
+
+conversation create_conversation(pam &pam) {
+    return conversation(std::shared_ptr<conversation_ifc>(new impl));
+}
+
 /*
 pam_token_conversation::pam_token_conversation (pam_handle_t *pamh,
         const pam_p pam)

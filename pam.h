@@ -1,17 +1,16 @@
 #ifndef _PAM_H
 #define _PAM_H
-#include <string>
-#include <vector>
 #include <memory>
-#include <tuple>
+#include <vector>
 #include <security/pam_modules.h>
 
 class pam_ifc
 {
 public:
-    virtual std::tuple<int,std::vector<pam_response>> conv (pam_handle *handle,
-            const std::vector<pam_message> &prompts);
-
+    virtual int get_conv (pam_handle *handle, const pam_conv **out)
+    {
+        return PAM_SERVICE_ERR;
+    }
 };
 
 class pam : public pam_ifc
@@ -22,10 +21,9 @@ private:
 public:
     pam (const delegate &delegate) : delegate_ (delegate) {}
     pam() : pam (delegate (new pam_ifc)) {}
-    std::tuple<int,std::vector<pam_response>> conv (pam_handle *handle,
-                                           const std::vector<pam_message> &prompts)
+    int get_conv (pam_handle *handle, const pam_conv **out)
     {
-        return delegate_-> conv (handle, prompts);
+        return delegate_->get_conv (handle, out);
     }
 };
 

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "request.h"
+#include "pam.h"
 
 struct conversation_result {
     std::string user_name;
@@ -39,6 +40,8 @@ inline conversation wrap (conversation_ifc *delegate)
 {
     return conversation (std::shared_ptr<conversation_ifc> (delegate));
 };
+
+conversation create_conversation(pam &pam);
 
 #endif
 
