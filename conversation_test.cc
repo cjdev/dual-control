@@ -165,6 +165,64 @@ bool returns_user_and_token_from_pam_conversation()
     succeed();
 }
 
+int returns_empty_user_and_token_when_no_colon() {
+    // given
+    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
+    pam_message prompt;
+    prompt.msg_style = PAM_PROMPT_ECHO_OFF;
+    prompt.msg = const_cast<char *> ("Dual control token: ");
+    pam_response response;
+    response.resp_retcode = 0;
+    std::string response_text ("this_has_no_colon");
+    response.resp = const_cast<char *> (response_text.c_str());
+    conversation_data conversation_data = {
+        std::vector<pam_message> (&prompt, &prompt + 1),
+        std::vector<pam_response> (&response, &response + 1),
+        PAM_SUCCESS
+    };
+    pam pam (share (new fake_pam (handle, conversation_data)));
+    pam_request request (handle, 0, 0, 0);
+
+    conversation conversation (create_conversation (pam));
+
+    // when
+    conversation_result actual = conversation.initiate (request);
+
+    // then
+    check (actual.user_name == "", "user name does not match");
+    check (actual.token == "", "token does not match");
+    succeed();
+ }
+
+int returns_empty_user_and_token_when_empty_answer() {
+    // given
+    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
+    pam_message prompt;
+    prompt.msg_style = PAM_PROMPT_ECHO_OFF;
+    prompt.msg = const_cast<char *> ("Dual control token: ");
+    pam_response response;
+    response.resp_retcode = 0;
+    std::string response_text ("");
+    response.resp = const_cast<char *> (response_text.c_str());
+    conversation_data conversation_data = {
+        std::vector<pam_message> (&prompt, &prompt + 1),
+        std::vector<pam_response> (&response, &response + 1),
+        PAM_SUCCESS
+    };
+    pam pam (share (new fake_pam (handle, conversation_data)));
+    pam_request request (handle, 0, 0, 0);
+
+    conversation conversation (create_conversation (pam));
+
+    // when
+    conversation_result actual = conversation.initiate (request);
+
+    // then
+    check (actual.user_name == "", "user name does not match");
+    check (actual.token == "", "token does not match");
+    succeed();
+ }
+
 RESET_VARS_START
 RESET_VARS_END
 
@@ -172,6 +230,8 @@ int run_tests()
 {
     test (returns_user_and_token);
     test (returns_user_and_token_from_pam_conversation);
+    test (returns_empty_user_and_token_when_no_colon);
+    test (returns_empty_user_and_token_when_empty_answer);
     succeed();
 }
 
@@ -181,9 +241,6 @@ int main (int argc, char **argv)
 }
 
 /*
- * int returns_correct_token()
-int returns_correct_user_name()
-int returns_empty_user_and_token_when_no_colon()
 int returns_empty_user_and_token_when_empty_answer()
 int returns_empty_token_when_colon_end()
 int returns_empty_user_when_colon_begin()
