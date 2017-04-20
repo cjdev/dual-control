@@ -36,6 +36,10 @@ public:
             return err;
         }
 
+        if (responses[0]->resp_retcode != 0) {
+            return err;
+        }
+
         std::string answer (responses[0]->resp);
         std::string::iterator delim = std::find (answer.begin(), answer.end(), ':');
 
