@@ -115,87 +115,47 @@ conversation make_conversation(pam_handle *expected_handle, const std::string &a
 
 }
 
-bool returns_user_and_token()
-{
-
+bool check_conversation_response(const std::string &answer, const std::string &expected_user, const std::string &expected_token) {
     // given
     pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
-    std::string user ("user");
-    std::string token ("token");
-    conversation conversation (make_conversation(handle, user + ":" + token));
+    conversation conversation (make_conversation(handle, answer));
     pam_request request (handle, 0, 0, 0);
 
     // when
     conversation_result actual = conversation.initiate (request);
 
     // then
-    check (actual.user_name == user, "user name does not match");
-    check (actual.token == token, "token does not match");
+    check (actual.user_name == expected_user, "user name does not match");
+    check (actual.token == expected_token, "token does not match");
 
     succeed();
+}
+
+bool returns_user_and_token()
+{
+    std::string user ("user");
+    std::string token ("token");
+    return check_conversation_response(user + ":" + token, user, token);
 }
 
 int returns_empty_user_and_token_when_no_colon() {
-
-    // given
-    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
-    conversation conversation (make_conversation(handle, "nocolon"));
-    pam_request request (handle, 0, 0, 0);
-
-    // when
-    conversation_result actual = conversation.initiate (request);
-
-    // then
-    check (actual.user_name == "", "user name does not match");
-    check (actual.token == "", "token does not match");
-    succeed();
+    return check_conversation_response("nocolon", "", "");
  }
 
 int returns_empty_user_and_token_when_empty_answer() {
-    // given
-    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
-    conversation conversation (make_conversation(handle, ""));
-    pam_request request (handle, 0, 0, 0);
-
-    // when
-    conversation_result actual = conversation.initiate (request);
-
-    // then
-    check (actual.user_name == "", "user name does not match");
-    check (actual.token == "", "token does not match");
-    succeed();
+    return check_conversation_response("", "", "");
  }
 
 int returns_empty_token_when_colon_end() {
-    // given
-    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
-    std::string user("user");
-    conversation conversation (make_conversation(handle, user + ":"));
-    pam_request request (handle, 0, 0, 0);
-
-    // when
-    conversation_result actual = conversation.initiate (request);
-
-    // then
-    check (actual.user_name == user, "user name does not match");
-    check (actual.token == "", "token should be empty");
-    succeed();
+    std::string user ("user");
+    std::string token ("");
+    return check_conversation_response(user + ":" + token, user, token);
 }
 
 int returns_empty_user_when_colon_start() {
-    // given
-    pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
-    std::string token("token");
-    conversation conversation (make_conversation(handle, ":" + token));
-    pam_request request (handle, 0, 0, 0);
-
-    // when
-    conversation_result actual = conversation.initiate (request);
-
-    // then
-    check (actual.user_name == "", "user name does not match");
-    check (actual.token == token, "token should be empty");
-    succeed();
+    std::string user ("");
+    std::string token ("token");
+    return check_conversation_response(user + ":" + token, user, token);
 }
 
 RESET_VARS_START
