@@ -3,7 +3,7 @@
 
 #include "request.h"
 
-std::vector<std::string> pam_request::arguments()
+std::vector<std::string> pam_request::arguments() const
 {
     std::vector<std::string> rval;
 

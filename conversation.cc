@@ -18,20 +18,39 @@ namespace
         public:
            impl(pam &pam) : pam_(pam) {}
            conversation_result initiate (const pam_request &request) {
-           pam_conv *out;
-           int result = pam_.get:_conv(request.handle(),
-               /*int get_conv (pam_handle *handle, const pam_conv **out)
-    {
-        return delegate_->get_conv (handle, out);
-    }
-    */
+               const pam_conv *conv;
+               int get_conv_result = pam_.get_conv (request.handle(), &conv);
+               pam_message msg;
+               msg.msg = const_cast<char *>("Dual control token: ");
+               msg.msg_style = PAM_PROMPT_ECHO_OFF;
+               std::vector<const pam_message *> messages;
+               messages.push_back(&msg);
+               std::vector<pam_response *> responses(1);
+               int conv_result = conv->conv(1, messages.data(), responses.data(), conv->appdata_ptr);
+               std::string answer(responses[0]->resp);
+
+                std::string user;
+                std::string token;
+               std::string::iterator delim = std::find (answer.begin(), answer.end(), ':');
+                if (delim != answer.end()) {
+                    user = std::string(answer.begin(), delim);
+                    token = std::string(delim + 1, answer.end());
+                }
+
+               return {user, token};
            }
     };
 }
 
 conversation create_conversation(pam &pam) {
-    return conversation(std::shared_ptr<conversation_ifc>(new impl));
+    return conversation(std::shared_ptr<conversation_ifc>(new impl(pam)));
 }
+
+/*
+int (*conv)(int num_msg, const struct pam_message **msg,
+                struct pam_response **resp, void *appdata_ptr)
+   */
+
 
 /*
 pam_token_conversation::pam_token_conversation (pam_handle_t *pamh,

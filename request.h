@@ -17,12 +17,12 @@ public:
           flags_ (flags),
           argc_ (argc),
           argv_ (argv) {}
-    std::vector<std::string> arguments();
-    int flags()
+    std::vector<std::string> arguments() const;
+    int flags() const
     {
         return flags_;
     }
-    pam_handle *handle()
+    pam_handle *handle() const
     {
         return handle_;
     }
