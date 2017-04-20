@@ -72,16 +72,18 @@ private:
     conversation_data conversation_data_;
     pam_conv conv_;
 public:
-    fake_pam(pam_handle* expected_handle, const conversation_data &conversation_data)
-        : expected_handle_(expected_handle),
-          conversation_data_(conversation_data)
+    fake_pam (pam_handle *expected_handle,
+              const conversation_data &conversation_data)
+        : expected_handle_ (expected_handle),
+          conversation_data_ (conversation_data)
     {}
     int get_conv (pam_handle *handle, const pam_conv **out)
     {
         if (expected_handle_ != handle) {
-            throw std::string("unexpected handle");
+            throw std::string ("unexpected handle");
         }
-        conv_.appdata_ptr = reinterpret_cast<void *>(&conversation_data_);
+
+        conv_.appdata_ptr = reinterpret_cast<void *> (&conversation_data_);
         conv_.conv = fake_conv;
         *out = &conv_;
         return PAM_SUCCESS;
@@ -90,8 +92,9 @@ public:
 };
 
 template<class T>
-std::shared_ptr<T> share (T *t) {
-    return std::shared_ptr<T>(t);
+std::shared_ptr<T> share (T *t)
+{
+    return std::shared_ptr<T> (t);
 }
 
 bool returns_user_and_token()
@@ -103,14 +106,14 @@ bool returns_user_and_token()
     std::string token ("token");
     pam_message prompt;
     prompt.msg_style = PAM_PROMPT_ECHO_OFF;
-    prompt.msg = const_cast<char *>("Dual control token: ");
+    prompt.msg = const_cast<char *> ("Dual control token: ");
     pam_response response;
     response.resp_retcode = 0;
-    std::string response_text(user + ":" + token);
-    response.resp = const_cast<char *>(response_text.c_str());
+    std::string response_text (user + ":" + token);
+    response.resp = const_cast<char *> (response_text.c_str());
     conversation_data conversation_data = {
-        std::vector<pam_message>(&prompt, &prompt + 1),
-        std::vector<pam_response>(&response, &response + 1),
+        std::vector<pam_message> (&prompt, &prompt + 1),
+        std::vector<pam_response> (&response, &response + 1),
         PAM_SUCCESS
     };
     pam pam (share (new fake_pam (handle, conversation_data)));
@@ -122,8 +125,8 @@ bool returns_user_and_token()
     conversation_result actual = conversation.initiate (request);
 
     // then
-    check(actual.user_name == user, "user name does not match");
-    check(actual.token == token, "token does not match");
+    check (actual.user_name == user, "user name does not match");
+    check (actual.token == token, "token does not match");
 
     succeed();
 }
@@ -137,14 +140,14 @@ bool returns_user_and_token_from_pam_conversation()
     std::string token ("token1");
     pam_message prompt;
     prompt.msg_style = PAM_PROMPT_ECHO_OFF;
-    prompt.msg = const_cast<char *>("Dual control token: ");
+    prompt.msg = const_cast<char *> ("Dual control token: ");
     pam_response response;
     response.resp_retcode = 0;
-    std::string response_text(user + ":" + token);
-    response.resp = const_cast<char *>(response_text.c_str());
+    std::string response_text (user + ":" + token);
+    response.resp = const_cast<char *> (response_text.c_str());
     conversation_data conversation_data = {
-        std::vector<pam_message>(&prompt, &prompt + 1),
-        std::vector<pam_response>(&response, &response + 1),
+        std::vector<pam_message> (&prompt, &prompt + 1),
+        std::vector<pam_response> (&response, &response + 1),
         PAM_SUCCESS
     };
     pam pam (share (new fake_pam (handle, conversation_data)));
@@ -156,8 +159,8 @@ bool returns_user_and_token_from_pam_conversation()
     conversation_result actual = conversation.initiate (request);
 
     // then
-    check(actual.user_name == user, "user name does not match");
-    check(actual.token == token, "token does not match");
+    check (actual.user_name == user, "user name does not match");
+    check (actual.token == token, "token does not match");
 
     succeed();
 }
