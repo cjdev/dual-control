@@ -44,6 +44,7 @@ test: validator_test request_test dual_control_test conversation_test
 	@./request_test
 	@./dual_control_test
 	@./conversation_test
+	@echo Tests Passing
 
 .PHONY: install
 install: $(OBJS)
