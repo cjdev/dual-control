@@ -10,26 +10,18 @@
  */
 
 #include <memory>
-#include <vector>
-#include <string>
-#include <pwd.h>
-#include <unistd.h>
-#include <iostream>
 
 #include "user.h"
-#include "test_support.h"
 
-user::user (struct passwd *sys_info) : info (sys_info)
-{
+namespace {
+    class directory_impl : public directory_ifc {
+        public:
+          std::vector<user> find_user (const std::string &user_name);
+    };
 }
 
-std::string user::home_directory()
-{
-    return info->pw_dir;
-}
 
-// concrete user implementation
-
+/*
 class concrete_user : public user
 {
 private:
@@ -65,4 +57,5 @@ const std::shared_ptr<user> create_user (const std::string &user_name)
 
     return rval;
 }
+*/
 
