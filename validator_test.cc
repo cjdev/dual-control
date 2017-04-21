@@ -35,7 +35,7 @@ private:
 public:
     fake_user_token_supplier (const std::string &token) : token_ (token) {}
     fake_user_token_supplier() : token_ ("_NOT_A_TOKEN") {}
-    virtual std::string token (user user)
+    virtual std::string token (const user &user)
     {
         return token_;
     }
@@ -52,14 +52,13 @@ bool validator_validates()
 
     // given
     std::string token = "token";
-    user_token_supplier_p user_token_supplier (new fake_user_token_supplier (
-                token));
+    user_token_supplier user_token_supplier (share(new fake_user_token_supplier(token)));
     std::string user_name = "msmith";
     directory directory (share (new fake_directory (user_name)));
     validator validator = create_validator (directory, user_token_supplier);
 
     // when
-    bool actual = validator.validate (user_name, "token");
+    bool actual = validator.validate (user_name, token);
 
     // then
     check (actual, "should be valid");
@@ -71,8 +70,7 @@ bool validator_fails_unknown_user()
 
     // given
     std::string token = "token";
-    user_token_supplier_p user_token_supplier (new fake_user_token_supplier (
-                token));
+    user_token_supplier user_token_supplier (share(new fake_user_token_supplier));
     directory directory (share (new fake_directory));
     validator validator = create_validator (directory, user_token_supplier);
 
@@ -88,7 +86,7 @@ bool validator_fails_incorrect_token()
 {
 
     // given
-    user_token_supplier_p user_token_supplier (new fake_user_token_supplier);
+    user_token_supplier user_token_supplier (share(new fake_user_token_supplier));
     std::string user_name = "msmith";
     directory directory (share (new fake_directory (user_name)));
     validator validator = create_validator (directory, user_token_supplier);

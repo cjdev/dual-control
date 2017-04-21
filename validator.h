@@ -34,7 +34,7 @@ public:
 };
 
 validator create_validator (const directory &directory,
-                            const user_token_supplier_p &token_supplier);
+                            const user_token_supplier &token_supplier);
 
 #endif
 
