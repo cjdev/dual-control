@@ -52,7 +52,8 @@ bool validator_validates()
 
     // given
     std::string token = "token";
-    user_token_supplier user_token_supplier (share(new fake_user_token_supplier(token)));
+    user_token_supplier user_token_supplier (share (new
+            fake_user_token_supplier (token)));
     std::string user_name = "msmith";
     directory directory (share (new fake_directory (user_name)));
     validator validator = create_validator (directory, user_token_supplier);
@@ -70,7 +71,8 @@ bool validator_fails_unknown_user()
 
     // given
     std::string token = "token";
-    user_token_supplier user_token_supplier (share(new fake_user_token_supplier));
+    user_token_supplier user_token_supplier (share (new
+            fake_user_token_supplier));
     directory directory (share (new fake_directory));
     validator validator = create_validator (directory, user_token_supplier);
 
@@ -86,7 +88,8 @@ bool validator_fails_incorrect_token()
 {
 
     // given
-    user_token_supplier user_token_supplier (share(new fake_user_token_supplier));
+    user_token_supplier user_token_supplier (share (new
+            fake_user_token_supplier));
     std::string user_name = "msmith";
     directory directory (share (new fake_directory (user_name)));
     validator validator = create_validator (directory, user_token_supplier);
