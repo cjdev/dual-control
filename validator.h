@@ -33,7 +33,8 @@ public:
     }
 };
 
-validator create_validator(const directory_p &directory, const user_token_supplier_p &token_supplier);
+validator create_validator (const directory &directory,
+                            const user_token_supplier_p &token_supplier);
 
 #endif
 

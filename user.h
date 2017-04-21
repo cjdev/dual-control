@@ -5,21 +5,47 @@
 #include <memory>
 #include <pwd.h>
 
-class user
+class user_ifc
 {
 public:
-    virtual ~user() {}
-    //        virtual std::string home_directory() = 0;
+    virtual ~user_ifc() {}
 };
 
-typedef std::shared_ptr<user> user_p;
-class directory
+class user : public user_ifc
+{
+private:
+    std::shared_ptr<user_ifc> delegate_;
+public:
+    user (std::shared_ptr<user_ifc> delegate) : delegate_ (delegate) {}
+    user() : user (std::shared_ptr<user_ifc> (new user_ifc)) {}
+};
+
+class directory_ifc
 {
 public:
-    virtual ~directory() {}
-    virtual const user_p find_user (const std::string &user_name) = 0;
+    virtual ~directory_ifc() {}
+    virtual std::vector<user> find_user (const std::string &user_name)
+    {
+        return std::vector<user>();
+    }
 };
 
-typedef std::shared_ptr<directory> directory_p;
+class directory : public directory_ifc
+{
+private:
+    std::shared_ptr<directory_ifc> delegate_;
+public:
+    directory (std::shared_ptr<directory_ifc> delegate) : delegate_
+        (delegate) {}
+    directory() : directory (std::shared_ptr<directory_ifc>
+                                 (new directory_ifc)) {}
+    std::vector<user> find_user (const std::string &user_name)
+    {
+        return delegate_->find_user (user_name);
+    }
+
+    static directory create();
+};
+
 #endif
 
