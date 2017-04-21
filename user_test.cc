@@ -56,7 +56,20 @@ int find_user_happy() {
     //then
     check(!results.empty(), "user should have been found");
     succeed();
+}
 
+int user_not_found() {
+    //given
+    pwd test_pwd(pwd::delegate(new fake_pwd("user")));
+    unistd test_unistd(unistd::delegate(new fake_unistd(_SC_GETPW_R_SIZE_MAX)));
+    directory directory(directory::create(test_unistd, test_pwd));
+
+    //when
+    std::vector<user> results = directory.find_user("not_user");
+
+    //then
+    check(results.empty(), "user should not have been found");
+    succeed();
 
 }
 
