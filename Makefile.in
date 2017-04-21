@@ -3,14 +3,15 @@ CFLAGS += -fPIC -fno-stack-protector
 
 OBJS = dual_control.o request.o dual_control_integrate.o validator.o conversation.o
 TESTS = dual_control_test validator_test conversation_test request_test
-TESTOBJS = $(patsubst %,%.o,$TESTS)
+TESTOBJS = $(patsubst %,%.o,$(TESTS))
+SRCS := $(OBJS:.o=.cc) $(TESTOBJS:.o=.cc)
 
 MODULELIB = pam_dual_control.so
 
 UNAME_S := $(shell uname -s)
 
 .PHONY: all
-all: dual_control.a
+all: dual_control.a .depend
 
 dual_control.a: $(OBJS)
 	ar rvs $@ $^
@@ -19,41 +20,25 @@ dual_control.a: $(OBJS)
 .PHONY: clean
 clean:
 	@rm -f *.o *.a
-	@rm -f dual_control_test
+	@rm -f *_test
+	@rm ./.depend
 
 .PHONY: distclean
 distclean: clean
 	@git clean -xdf
 
-#
-# -include $(DEPS)
-#
-# %.o: %.cc
-# 	$(CXX) $(CXXFLAGS) -MM -MF $(patsubst %.o,%.d,$@) -o $@ $<
+.depend: $(SRCS)
+	rm -f ./.depend
+	$(CXX) $(CXXFLAGS) -MM $^ > ./.depend;
+
+include .depend
 
 $(TESTS): %: %.o $(OBJS)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-
-dual_control.o: dual_control.h
-
-# dual_control_test: dual_control_test.o dual_control.o
-# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-#
-# request_test: request_test.o request.o
-# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-#
-# validator_test: validator_test.o validator.o
-# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-#
-# conversation_test: conversation_test.o conversation.o
-# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+	@./$@
 
 .PHONY: test
-test: validator_test request_test dual_control_test conversation_test
-	@./validator_test
-	@./request_test
-	@./dual_control_test
-	@./conversation_test
+test: $(TESTS)
 	@echo Tests Passing
 
 .PHONY: install
