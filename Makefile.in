@@ -55,6 +55,6 @@ endif
 
 .PHONY: format
 format:
-	@./format.sh
+	@./format.sh *.cc *.h
 
 
