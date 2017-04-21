@@ -1,12 +1,13 @@
 CXXFLAGS += -fPIC -fno-stack-protector -std=c++14
 CFLAGS += -fPIC -fno-stack-protector
 
-OBJS = dual_control.o request.o dual_control_integrate.o
+OBJS = dual_control.o request.o dual_control_integrate.o validator.o conversation.o
+TESTS = dual_control_test validator_test conversation_test request_test
+TESTOBJS = $(patsubst %,%.o,$TESTS)
 
 MODULELIB = pam_dual_control.so
 
 UNAME_S := $(shell uname -s)
-
 
 .PHONY: all
 all: dual_control.a
@@ -24,19 +25,28 @@ clean:
 distclean: clean
 	@git clean -xdf
 
+#
+# -include $(DEPS)
+#
+# %.o: %.cc
+# 	$(CXX) $(CXXFLAGS) -MM -MF $(patsubst %.o,%.d,$@) -o $@ $<
+
+$(TESTS): %: %.o $(OBJS)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+
 dual_control.o: dual_control.h
 
-dual_control_test: dual_control_test.o dual_control.o
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-
-request_test: request_test.o request.o
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-
-validator_test: validator_test.o validator.o
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-
-conversation_test: conversation_test.o conversation.o
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+# dual_control_test: dual_control_test.o dual_control.o
+# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+#
+# request_test: request_test.o request.o
+# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+#
+# validator_test: validator_test.o validator.o
+# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+#
+# conversation_test: conversation_test.o conversation.o
+# 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
 .PHONY: test
 test: validator_test request_test dual_control_test conversation_test
