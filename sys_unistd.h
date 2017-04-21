@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <unistd.h>
+
 class unistd_ifc {
     public:
         virtual long int sysconf(int name) { return -1; }

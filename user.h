@@ -14,7 +14,9 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include <pwd.h>
+
+#include "sys_unistd.h"
+#include "sys_pwd.h"
 
 class user_ifc
 {
@@ -43,19 +45,20 @@ public:
 
 class directory : public directory_ifc
 {
-private:
-    std::shared_ptr<directory_ifc> delegate_;
-public:
-    directory (std::shared_ptr<directory_ifc> delegate) : delegate_
+    public:
+        typedef std::shared_ptr<directory_ifc> delegate;
+    private:
+        delegate delegate_;
+    public:
+    directory (delegate delegate) : delegate_
         (delegate) {}
-    directory() : directory (std::shared_ptr<directory_ifc>
-                                 (new directory_ifc)) {}
+    directory() : directory(delegate(new directory_ifc)) {}
     std::vector<user> find_user (const std::string &user_name)
     {
         return delegate_->find_user (user_name);
     }
 
-    static directory create();
+    static directory create(unistd &unistd, pwd &pwd);
 };
 
 #endif

@@ -10,16 +10,38 @@
  */
 
 #include <memory>
+#include <vector>
+
 
 #include "user.h"
+#include "sys_unistd.h"
+#include "sys_pwd.h"
 
 namespace {
     class directory_impl : public directory_ifc {
+        private:
+            unistd unistd_;
+            pwd pwd_;
         public:
-          std::vector<user> find_user (const std::string &user_name);
+          directory_impl(unistd &unistd, pwd &pwd) : unistd_(unistd), pwd_(pwd) {}
+          std::vector<user> find_user (const std::string &user_name) {
+              std::vector<char> buffer (unistd_.sysconf (_SC_GETPW_R_SIZE_MAX));
+              passwd sys_passwd;
+              passwd *found_passwd(0);
+              int result = pwd_.getpwnam_r(user_name.c_str(), &sys_passwd,
+                      buffer.data(), buffer.size(), &found_passwd);
+              std::vector<user> return_value;
+              if (found_passwd) {
+                  return_value.push_back(user());
+              }
+              return return_value;
+          }
     };
 }
 
+directory directory::create(unistd &unistd, pwd &pwd) {
+    return directory(delegate(new directory_impl(unistd, pwd)));
+}
 
 /*
 class concrete_user : public user

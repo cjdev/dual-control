@@ -11,9 +11,53 @@
 
 #include "user.h"
 #include "test_util.h"
+#include "sys_pwd.h"
+#include "sys_unistd.h"
+
+class fake_pwd : public pwd_ifc {
+    private:
+        passwd passwd_;
+        std::string expected_user_name_;
+    public:
+        fake_pwd(const std::string expected_user_name) : expected_user_name_(expected_user_name) {}
+        int getpwnam_r(const char *user_name, passwd *out, char *buffer,
+                       size_t buffer_sz, passwd **result) {
+            if (expected_user_name_ == user_name)  {
+                *out = passwd_;
+                *result = out;
+            }
+            return 0;
+        }
+};
+
+class fake_unistd : public unistd_ifc {
+    private:
+        int expected_name_;
+    public:
+        fake_unistd(int expected_name) : expected_name_(expected_name) {}
+        long int sysconf(int name) {
+            if (name == expected_name_) {
+            return 0;
+            }
+            return -1;
+        }
+};
 
 int find_user_happy() {
-    fail();
+    //given
+    std::string user_name("user");
+    pwd test_pwd(pwd::delegate(new fake_pwd(user_name)));
+    unistd test_unistd(unistd::delegate(new fake_unistd(_SC_GETPW_R_SIZE_MAX)));
+    directory directory(directory::create(test_unistd, test_pwd));
+
+    //when
+    std::vector<user> results = directory.find_user(user_name);
+
+    //then
+    check(!results.empty(), "user should have been found");
+    succeed();
+
+
 }
 
 RESET_VARS_START
