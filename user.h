@@ -45,20 +45,20 @@ public:
 
 class directory : public directory_ifc
 {
-    public:
-        typedef std::shared_ptr<directory_ifc> delegate;
-    private:
-        delegate delegate_;
-    public:
+public:
+    typedef std::shared_ptr<directory_ifc> delegate;
+private:
+    delegate delegate_;
+public:
     directory (delegate delegate) : delegate_
         (delegate) {}
-    directory() : directory(delegate(new directory_ifc)) {}
+    directory() : directory (delegate (new directory_ifc)) {}
     std::vector<user> find_user (const std::string &user_name)
     {
         return delegate_->find_user (user_name);
     }
 
-    static directory create(unistd &unistd, pwd &pwd);
+    static directory create (unistd &unistd, pwd &pwd);
 };
 
 #endif
