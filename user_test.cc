@@ -9,87 +9,162 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-#include <memory>
-#include <iostream>
 #include "user.h"
 #include "test_util.h"
+#include "sys_pwd.h"
+#include "sys_unistd.h"
 
-bool gets_home_directory()
+class fake_pwd : public pwd_ifc
 {
-    //given
-    const char *expected_home_directory = "home/msmith";
-    struct passwd test_passwd;
-    test_passwd.pw_dir = const_cast<char *> (expected_home_directory);
-    user test_user (&test_passwd);
+private:
+    std::string expected_user_name_;
+public:
+    fake_pwd (const std::string expected_user_name) : expected_user_name_
+        (expected_user_name) {}
+    int getpwnam_r (const char *user_name, passwd *out, char *buffer,
+                    size_t buffer_sz, passwd **result)
+    {
+        if (expected_user_name_ == user_name)  {
+            *result = out;
+        } else {
+            *result = 0;
+        }
 
-    //when
-    std::string actual_home_directory = test_user.home_directory();
-
-    //then
-    check (expected_home_directory == actual_home_directory,
-           "directories do not match");
-    return expected_home_directory == actual_home_directory;
-}
-
-std::shared_ptr<struct passwd> fake_passwd;
-int fake_getpwnam_r (const char *nam, struct passwd *pwd, char *buffer,
-                     size_t bufsize, struct passwd **result)
-{
-    if (fake_passwd) {
-        *pwd = *fake_passwd;
-        *result = pwd;
         return 0;
     }
+};
 
-    return -1;
+class match_buffer_pwd : public pwd_ifc
+{
+private:
+    long int expected_buffer_sz_;
+public:
+    match_buffer_pwd (long int buffer_sz) : expected_buffer_sz_ (buffer_sz) {}
+    int getpwnam_r (const char *user_name, passwd *out, char *buffer,
+                    size_t buffer_sz, passwd **result)
+    {
+
+        if (expected_buffer_sz_ == buffer_sz && buffer != 0) {
+            *result = out;
+        } else {
+            *result = 0;
+        }
+
+        return 0;
+    }
+};
+
+class stub_pwnam_err_pwd : public pwd_ifc
+{
+public:
+    int getpwnam_r (const char *user_name, passwd *out, char *buffer,
+                    size_t buffer_sz, passwd **result)
+    {
+        *result = out;
+        return 3;
+    }
+
+};
+
+class fake_unistd : public unistd_ifc
+{
+private:
+    int expected_name_;
+    long int return_value_;
+public:
+    fake_unistd (int expected_name, long int return_value = 0)
+        : expected_name_ (expected_name),
+          return_value_ (return_value) {}
+    long int sysconf (int name)
+    {
+        if (name == expected_name_) {
+            return return_value_;
+        }
+
+        return -1;
+    }
+};
+
+int find_user_happy()
+{
+    //given
+    std::string user_name ("user");
+    pwd test_pwd (pwd::delegate (new fake_pwd (user_name)));
+    unistd test_unistd (unistd::delegate (new fake_unistd (
+            _SC_GETPW_R_SIZE_MAX)));
+    directory directory (directory::create (test_unistd, test_pwd));
+
+    //when
+    std::vector<user> results = directory.find_user (user_name);
+
+    //then
+    check (!results.empty(), "user should have been found");
+    succeed();
 }
 
-bool create_user_succeeds()
+int user_not_found()
 {
-    // given
-    std::string username ("msmith");
-    std::string home_directory ("this is my home");
-    fake_passwd.reset (new struct passwd);
-    fake_passwd->pw_dir = const_cast<char *> (home_directory.c_str());
+    //given
+    pwd test_pwd (pwd::delegate (new fake_pwd ("user")));
+    unistd test_unistd (unistd::delegate (new fake_unistd (
+            _SC_GETPW_R_SIZE_MAX)));
+    directory directory (directory::create (test_unistd, test_pwd));
 
-    // when
-    std::shared_ptr<user> user (create_user (username));
+    //when
+    std::vector<user> results = directory.find_user ("not_user");
 
-    // then
-    check (user, "user should be returned");
-    check (user->home_directory() == home_directory,
-           "home directory does not match");
-
+    //then
+    check (results.empty(), "user should not have been found");
     succeed();
 
 }
 
-bool create_user_nonexistent()
+int find_user_passes_buffer_and_size()
 {
-    // given
-    std::string username ("msmith");
+    //given
+    long int buffer_sz = 5976;
+    unistd test_unistd (unistd::delegate (new fake_unistd (_SC_GETPW_R_SIZE_MAX,
+                                          buffer_sz)));
+    pwd match_pwd (pwd::delegate (new match_buffer_pwd (buffer_sz)));
+    directory directory (directory::create (test_unistd, match_pwd));
 
-    // when
-    std::shared_ptr<user> user (create_user (username));
+    //when
+    std::vector<user> results = directory.find_user ("does_not_matter");
 
     // then
-    check (!user, "no user should be returned");
+    check (!results.empty(), "match failed");
+    succeed();
+}
 
+int find_user_fails_on_pwnam_r_error_and_result_ok()
+{
+    //given
+    unistd test_unistd (unistd::delegate (new fake_unistd (
+            _SC_GETPW_R_SIZE_MAX)));
+    pwd stub_pwd (pwd::delegate (new stub_pwnam_err_pwd));
+    directory directory (directory::create (test_unistd, stub_pwd));
+
+    //when
+    std::vector<user> results = directory.find_user ("does_not_matter");
+
+    // then
+    check (results.empty(), "did not check return");
     succeed();
 }
 
 RESET_VARS_START
-fake_passwd.reset ((struct passwd *)0);
 RESET_VARS_END
 
 int run_tests()
 {
-    test (gets_home_directory);
-    test (create_user_succeeds);
-    test (create_user_nonexistent);
+    test (find_user_happy);
+    test (user_not_found);
+    test (find_user_passes_buffer_and_size);
+    test (find_user_fails_on_pwnam_r_error_and_result_ok);
     succeed();
 }
-int main (int argc, char *argv[])
+
+int main (int argc, char **argv)
 {
     return !run_tests();
 }
