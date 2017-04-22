@@ -47,6 +47,16 @@ class match_buffer_pwd : public pwd_ifc {
         }
 };
 
+class stub_pwnam_err_pwd : public pwd_ifc {
+    public:
+        int getpwnam_r(const char *user_name, passwd *out, char *buffer,
+                       size_t buffer_sz, passwd **result) {
+            *result = out;
+            return 3;
+        }
+
+};
+
 class fake_unistd : public unistd_ifc {
     private:
         int expected_name_;
@@ -109,6 +119,20 @@ int find_user_passes_buffer_and_size()  {
     succeed();
 }
 
+int find_user_fails_on_pwnam_r_error_and_result_ok()  {
+    //given
+    unistd test_unistd(unistd::delegate(new fake_unistd(_SC_GETPW_R_SIZE_MAX)));
+    pwd stub_pwd(pwd::delegate(new stub_pwnam_err_pwd));
+    directory directory(directory::create(test_unistd, stub_pwd));
+
+    //when
+    std::vector<user> results = directory.find_user("does_not_matter");
+
+    // then
+    check(results.empty(), "did not check return");
+    succeed();
+}
+
 RESET_VARS_START
 RESET_VARS_END
 
@@ -116,6 +140,7 @@ int run_tests() {
     test(find_user_happy);
     test(user_not_found);
     test(find_user_passes_buffer_and_size);
+    test(find_user_fails_on_pwnam_r_error_and_result_ok);
     succeed();
 }
 

@@ -31,7 +31,7 @@ namespace {
               int result = pwd_.getpwnam_r(user_name.c_str(), &sys_passwd,
                       buffer.data(), buffer.size(), &found_passwd);
               std::vector<user> return_value;
-              if (found_passwd) {
+              if (!result && found_passwd) {
                   return_value.push_back(user());
               }
               return return_value;
