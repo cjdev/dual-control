@@ -18,6 +18,20 @@
 
 namespace
 {
+
+class user_impl : public user_ifc {
+    private:
+        std::string home_directory_;
+        std::string user_name_;
+    public:
+        user_impl(const passwd user_info) :
+            home_directory_(std::string(user_info.pw_dir)),
+            user_name_(std::string(user_info.pw_name)) {}
+        std::string home_directory() {
+            return home_directory_;
+        }
+};
+
 class directory_impl : public directory_ifc
 {
 private:
@@ -35,7 +49,7 @@ public:
         std::vector<user> return_value;
 
         if (!result && found_passwd) {
-            return_value.push_back (user());
+            return_value.push_back (std::shared_ptr<user_ifc>(new user_impl(sys_passwd)));
         }
 
         return return_value;

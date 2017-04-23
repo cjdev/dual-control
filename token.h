@@ -27,18 +27,25 @@ public:
 
 class user_token_supplier : public user_token_supplier_ifc
 {
-private:
-    std::shared_ptr<user_token_supplier_ifc> delegate_;
-public:
-    user_token_supplier (std::shared_ptr<user_token_supplier_ifc> delegate) :
+    public:
+        typedef std::shared_ptr<user_token_supplier_ifc> delegate;
+    private:
+        delegate delegate_;
+    public:
+        user_token_supplier (delegate delegate) :
         delegate_ (delegate) {}
-    user_token_supplier() : user_token_supplier (
-            std::shared_ptr<user_token_supplier_ifc> (new user_token_supplier_ifc)) {}
-    std::string token (const user &user)
-    {
-        return delegate_->token (user);
-    }
+        user_token_supplier() : user_token_supplier (
+           delegate (new user_token_supplier_ifc)) {}
+        std::string token (const user &user)
+        {
+            return delegate_->token (user);
+        }
 };
+
+class file_reader_ifc {
+    public:
+        std::string read(
+}
 
 #endif
 
