@@ -19,25 +19,52 @@
 class user_token_supplier_ifc
 {
 public:
-    virtual std::string token (const user &user)
+    virtual ~user_token_supplier_ifc() {}
+    virtual std::string token (user &user)
     {
-        return "";
+        return "virtual supplier";
     }
+};
+
+
+class file_reader_ifc {
+    public:
+        virtual std::string read(std::string file_path) {
+            return "";
+        }
+};
+
+class file_reader : public file_reader_ifc {
+    public:
+        typedef std::shared_ptr<file_reader_ifc> delegate;
+    private:
+        delegate delegate_;
+    public:
+        file_reader(delegate delegate) :
+            delegate_(delegate) {}
+        file_reader() : delegate_(delegate(new file_reader_ifc)) {}
+        std::string read(std::string file_path) {
+            return delegate_->read(file_path);
+        }
+    static file_reader create ();
 };
 
 class user_token_supplier : public user_token_supplier_ifc
 {
-private:
-    std::shared_ptr<user_token_supplier_ifc> delegate_;
-public:
-    user_token_supplier (std::shared_ptr<user_token_supplier_ifc> delegate) :
+    public:
+        typedef std::shared_ptr<user_token_supplier_ifc> delegate;
+    private:
+        delegate delegate_;
+    public:
+        user_token_supplier (delegate delegate) :
         delegate_ (delegate) {}
-    user_token_supplier() : user_token_supplier (
-            std::shared_ptr<user_token_supplier_ifc> (new user_token_supplier_ifc)) {}
-    std::string token (const user &user)
-    {
-        return delegate_->token (user);
-    }
+        user_token_supplier() : user_token_supplier (
+           delegate (new user_token_supplier_ifc)) {}
+        std::string token (user &user)
+        {
+            return delegate_->token (user);
+        }
+    static user_token_supplier create (file_reader &file_reader);
 };
 
 #endif

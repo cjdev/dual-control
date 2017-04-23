@@ -9,129 +9,63 @@
  * at https://github.com/cjdev/dual-control.
  */
 
+#include <memory>
 #include <cstring>
 #include <pwd.h>
 #include <cstdio>
 #include <sys/stat.h>
 
+
 #include "token.h"
 #include "test_util.h"
+#include "user.h"
 
-const char *fake_user = "";
-const char *fake_user_token = "";
+class fake_file_reader : public file_reader_ifc {
+    public:
+        std::string read(std::string file_path) {
+            return file_path;
+        }
+};
 
-// all the fake system calls
-const char *fake_home_dir = "";
-int fake_getpwnam_r (const char *nam, struct passwd *pwd, char *buffer,
-                     size_t bufsize, struct passwd **result)
-{
-    strcpy (buffer, fake_home_dir);
-    pwd->pw_dir = buffer;
-    int ok = !strcmp (nam, fake_user);
-    *result = ok ? pwd : 0;
-    return !ok;
+class fake_user : public user_ifc {
+    private:
+        std::string home_directory_;
+    public:
+        fake_user(std::string &user_name) :
+            home_directory_("home/" + user_name) {
+            }
+        std::string home_directory() {
+            return home_directory_;
+        }
+};
+
+int reads_from_the_right_file () {
+    //given
+    file_reader test_file_reader(file_reader::delegate(new fake_file_reader));
+    std::string user_name = "user";
+    std::string expected = "home/" + user_name + "/.dual_control";
+    user test_user(user::delegate(new fake_user(user_name)));
+    user_token_supplier supplier(user_token_supplier::create(test_file_reader));
+
+    //when
+    std::string actual = supplier.token(test_user);
+
+    //then
+    check(actual == expected, "read wrong file");
+    succeed();
 }
 
-const char *fake_stat_path = "";
-int fake_stat (const char *path, struct stat *stat)
-{
-    return (strcmp (fake_stat_path, path));
-}
 
-const char *fake_fopen_path = "";
-const char *fake_fopen_mode = "";
-FILE *_fhandle = 0;
-FILE *fake_fopen (const char *path, const char *mode)
-{
-    static FILE handle;
-    int path_matches = !strcmp (fake_fopen_path, path);
-    int mode_matches = !strcmp (fake_fopen_mode, mode);
-
-    if (path_matches && mode_matches) {
-        _fhandle = &handle;
-        return &handle;
-    } else {
-        _fhandle = 0;
-        return 0;
-    }
-}
-
-char *fake_fgets (char *buf, int n, FILE *fp)
-{
-    if (_fhandle == fp && fp != 0) {
-        strncpy (buf, fake_user_token, n - 1);
-        return buf;
-    } else {
-        return 0;
-    }
-}
-
-int fake_fclose (FILE *fp)
-{
-    return 0;
-}
-
-// STDIO
 
 RESET_VARS_START
-fake_user = "msmith";
-fake_user_token = "123456";
-fake_home_dir = "/home/msmith";
-fake_stat_path = "/home/msmith/.dual_control";
-fake_fopen_path = fake_stat_path;
-fake_fopen_mode = "r";
 RESET_VARS_END
 
-int validate_compares_to_user_token()
-{
-
-    // given
-
-    // when
-    int valid = validate_token ("msmith", "123456");
-
-    // then
-    check (valid, "expected result to be valid");
-
-    succeed();
-
-}
-
-int validates_from_the_right_user()
-{
-    //given
-
-    //when
-    int valid = validate_token ("jbalcita", "12346");
-
-    //then
-    check (!valid, "expected result to be invalid");
+int run_tests() {
+    test(reads_from_the_right_file);
     succeed();
 }
 
-int validates_user_specific_token()
-{
-    //given
-
-    //when
-    int valid = validate_token ("msmith", "654321");
-
-    //then
-    check (!valid, "expected result to be invalid");
-    succeed();
-}
-
-int runtests()
-{
-    test (validate_compares_to_user_token);
-    test (validates_from_the_right_user);
-    test (validates_user_specific_token);
-    succeed();
-}
-
-int main (int argc, char **argv)
-{
-    int rval = !runtests();
-    return rval;
+int main(int argc, char *argv[]) {
+    return !run_tests();
 }
 
