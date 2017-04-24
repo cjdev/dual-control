@@ -32,7 +32,7 @@ class fake_user : public user_ifc {
         std::string home_directory_;
     public:
         fake_user(std::string &user_name) :
-            home_directory_("home/" + user_name + "/.dual_control") {
+            home_directory_("home/" + user_name) {
             }
         std::string home_directory() {
             return home_directory_;
@@ -44,7 +44,7 @@ int reads_from_the_right_file () {
     file_reader test_file_reader(file_reader::delegate(new fake_file_reader));
     std::string user_name = "user";
     std::string expected = "home/" + user_name + "/.dual_control";
-    user test_user(std::shared_ptr<fake_user>((new fake_user(user_name))));
+    user test_user(user::delegate(new fake_user(user_name)));
     user_token_supplier supplier(user_token_supplier::create(test_file_reader));
 
     //when
@@ -54,6 +54,8 @@ int reads_from_the_right_file () {
     check(actual == expected, "read wrong file");
     succeed();
 }
+
+
 
 RESET_VARS_START
 RESET_VARS_END

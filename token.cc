@@ -24,7 +24,7 @@ namespace
         public:
             impl(file_reader &file_reader) : file_reader_(file_reader) {}
             std::string token(user &user) {
-                std::string file_path(user.home_directory());
+                std::string file_path(user.home_directory() + "/.dual_control");
                 std::string fetched_token(file_reader_.read(file_path));
                 return fetched_token;
             }
