@@ -37,7 +37,7 @@ public:
     }
 };
 
-class file_reader_with_open_err : public file_reader_ifc {
+class file_reader_with_open_fail : public file_reader_ifc {
     public:
         bool open (std::ifstream &token_file, std::string &fetched_token) {
             return false;
@@ -78,9 +78,9 @@ int reads_from_the_right_file ()
     succeed();
 }
 
-int returns_empty_string_if_file_open_error() {
+int returns_empty_string_if_file_open_fail() {
     //given
-    file_reader test_file_reader (file_reader::delegate (new file_reader_with_open_err));
+    file_reader test_file_reader (file_reader::delegate (new file_reader_with_open_fail));
     user test_user (user::delegate (new fake_user));
     user_token_supplier supplier (user_token_supplier::create (
                                       test_file_reader));
@@ -99,7 +99,7 @@ RESET_VARS_END
 int run_tests()
 {
     test (reads_from_the_right_file);
-    test (returns_empty_string_if_file_open_error);
+    test (returns_empty_string_if_file_open_fail);
     succeed();
 }
 
