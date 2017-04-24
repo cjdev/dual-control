@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
 
 #include "user.h"
 #include "sys_unistd.h"
@@ -18,7 +19,6 @@
 
 namespace
 {
-
 class user_impl : public user_ifc {
     private:
         std::string home_directory_;

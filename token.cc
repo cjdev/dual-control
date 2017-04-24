@@ -24,8 +24,28 @@ namespace
         public:
             impl(file_reader &file_reader) : file_reader_(file_reader) {}
             std::string token(user &user) {
-                std::string filepath = user.home_directory() + "/" + ".dual_control";
-                file_reader_.read(filepath);
+                std::string file_path(user.home_directory());
+                std::string fetched_token(file_reader_.read(file_path));
+                return fetched_token;
+            }
+    };
+
+    class file_reader_impl : public file_reader_ifc {
+        public:
+            std::string read(std::string file_path) {
+                return file_path;
             }
     };
 }
+
+file_reader file_reader::create ()
+{
+    return file_reader (std::shared_ptr<file_reader_ifc>(new file_reader_impl ));
+}
+
+user_token_supplier user_token_supplier::create (file_reader &file_reader)
+{
+    return user_token_supplier (std::shared_ptr<user_token_supplier_ifc>(new impl (file_reader)));
+}
+
+
