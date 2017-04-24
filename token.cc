@@ -12,6 +12,9 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 #include "token.h"
 #include "user.h"
@@ -26,18 +29,31 @@ public:
     impl (file_reader &file_reader) : file_reader_ (file_reader) {}
     std::string token (user &user)
     {
-        std::string file_path (user.home_directory() + "/.dual_control");
-        std::string fetched_token (file_reader_.read (file_path));
-        return fetched_token;
+        const std::string file_path (user.home_directory() + "/.dual_control");
+        std::ifstream token_file;
+        std::string fetched_token;
+
+        bool token_file_opened = file_reader_.open(token_file, file_path);
+
+        if (!token_file_opened) {
+            return "";
+        }
+
+        std::string result = file_reader_.getline(token_file, fetched_token);
+        return result;
     }
 };
 
 class file_reader_impl : public file_reader_ifc
 {
 public:
-    std::string read (std::string file_path)
-    {
-        return file_path;
+    bool open(std::ifstream &token_file, const std::string &file_path) {
+        token_file.open(file_path);
+        return token_file.good();
+    }
+    std::string getline(std::ifstream &token_file, std::string &fetched_token) {
+        std::getline(token_file, fetched_token);
+        return fetched_token;
     }
 };
 }

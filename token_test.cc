@@ -14,6 +14,8 @@
 #include <pwd.h>
 #include <cstdio>
 #include <sys/stat.h>
+#include <fstream>
+#include <istream>
 
 #include "token.h"
 #include "test_util.h"
@@ -21,11 +23,16 @@
 
 class fake_file_reader : public file_reader_ifc
 {
-public:
-    std::string read (std::string file_path)
-    {
-        return file_path;
-    }
+    private:
+        std::string file_path_;
+    public:
+        bool open(std::ifstream &token_file, const std::string &file_path) {
+            file_path_ = file_path;
+            return true;
+        }
+        std::string getline(std::ifstream &token_file, std::string &fetched_token) {
+            return file_path_;
+        }
 };
 
 class fake_user : public user_ifc

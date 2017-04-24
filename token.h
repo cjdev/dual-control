@@ -29,6 +29,12 @@ public:
 class file_reader_ifc
 {
 public:
+    virtual std::string getline(std::ifstream &token_file, std::string &fetched_token) {
+        return "";
+    }
+    virtual bool open(std::ifstream &token_file, const std::string &file_path) {
+        return false;
+    }
     virtual std::string read (std::string file_path)
     {
         return "";
@@ -45,6 +51,12 @@ public:
     file_reader (delegate delegate) :
         delegate_ (delegate) {}
     file_reader() : delegate_ (delegate (new file_reader_ifc)) {}
+    bool open(std::ifstream &token_file, const std::string &file_path) {
+        return delegate_->open(token_file, file_path);
+    }
+    std::string getline(std::ifstream &token_file, std::string &fetched_token) {
+        return delegate_->getline(token_file, fetched_token);
+    }
     std::string read (std::string file_path)
     {
         return delegate_->read (file_path);
