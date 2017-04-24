@@ -71,3 +71,4 @@ conversation create_conversation (pam &pam)
 {
     return conversation (std::shared_ptr<conversation_ifc> (new impl (pam)));
 }
+

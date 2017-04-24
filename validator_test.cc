@@ -34,6 +34,7 @@ public:
         if (user_name == user_name_) {
             result.push_back (user());
         }
+
         return result;
     }
 };

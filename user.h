@@ -22,24 +22,27 @@ class user_ifc
 {
 public:
     virtual ~user_ifc() {}
-    virtual std::string home_directory() {
+    virtual std::string home_directory()
+    {
         return "virtual";
     }
 };
 
 class user : public user_ifc
 {
-    public:
-        typedef std::shared_ptr<user_ifc> delegate;
-    private:
-        delegate delegate_;
-    public:
-        user (delegate delegate) : delegate_ (delegate) {
-        }
-        user() : user (delegate (new user_ifc)) {}
-        std::string home_directory() {
-            return delegate_-> home_directory();
-        }
+public:
+    typedef std::shared_ptr<user_ifc> delegate;
+private:
+    delegate delegate_;
+public:
+    user (delegate delegate) : delegate_ (delegate)
+    {
+    }
+    user() : user (delegate (new user_ifc)) {}
+    std::string home_directory()
+    {
+        return delegate_-> home_directory();
+    }
     static user create (const passwd &passwd);
 };
 
