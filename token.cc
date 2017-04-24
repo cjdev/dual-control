@@ -21,12 +21,13 @@
 
 namespace
 {
-class impl : public user_token_supplier_ifc
+class user_token_supplier_impl : public user_token_supplier_ifc
 {
 private:
     file_reader file_reader_;
 public:
-    impl (file_reader &file_reader) : file_reader_ (file_reader) {}
+    user_token_supplier_impl (file_reader &file_reader) : file_reader_
+        (file_reader) {}
     std::string token (user &user)
     {
         const std::string file_path (user.home_directory() + "/.dual_control");
@@ -39,8 +40,7 @@ public:
             return "";
         }
 
-        std::string result = file_reader_.getline (token_file, fetched_token);
-        return result;
+        return file_reader_.getline (token_file, fetched_token);
     }
 };
 
@@ -62,13 +62,13 @@ public:
 
 file_reader file_reader::create ()
 {
-    return file_reader (std::shared_ptr<file_reader_ifc> (new
+    return file_reader (file_reader::delegate (new
                         file_reader_impl ));
 }
 
 user_token_supplier user_token_supplier::create (file_reader &file_reader)
 {
-    return user_token_supplier (std::shared_ptr<user_token_supplier_ifc>
-                                (new impl (file_reader)));
+    return user_token_supplier (user_token_supplier::delegate
+                                (new user_token_supplier_impl (file_reader)));
 }
 
