@@ -33,13 +33,13 @@ public:
         std::ifstream token_file;
         std::string fetched_token;
 
-        bool token_file_opened = file_reader_.open(token_file, file_path);
+        bool token_file_opened = file_reader_.open (token_file, file_path);
 
         if (!token_file_opened) {
             return "";
         }
 
-        std::string result = file_reader_.getline(token_file, fetched_token);
+        std::string result = file_reader_.getline (token_file, fetched_token);
         return result;
     }
 };
@@ -47,12 +47,14 @@ public:
 class file_reader_impl : public file_reader_ifc
 {
 public:
-    bool open(std::ifstream &token_file, const std::string &file_path) {
-        token_file.open(file_path);
+    bool open (std::ifstream &token_file, const std::string &file_path)
+    {
+        token_file.open (file_path);
         return token_file.good();
     }
-    std::string getline(std::ifstream &token_file, std::string &fetched_token) {
-        std::getline(token_file, fetched_token);
+    std::string getline (std::ifstream &token_file, std::string &fetched_token)
+    {
+        std::getline (token_file, fetched_token);
         return fetched_token;
     }
 };
