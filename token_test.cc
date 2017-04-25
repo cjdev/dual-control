@@ -15,7 +15,6 @@
 #include <cstdio>
 #include <sys/stat.h>
 #include <fstream>
-#include <istream>
 
 #include "token.h"
 #include "test_util.h"

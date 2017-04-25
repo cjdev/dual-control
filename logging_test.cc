@@ -13,9 +13,12 @@
 #include <cstring>
 #include <syslog.h>
 
-#include "logging.h"
+// #include "logging.h"
 #include "test_util.h"
 
+
+
+/*
 int logged_priority = -1000;
 const char *logged_message = "";
 void fake_syslog (int priority, const char *message, ...)
@@ -93,4 +96,5 @@ int main (int numargs, char **args)
 {
     return !test_runner();
 }
+*/
 

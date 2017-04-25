@@ -11,9 +11,10 @@
 
 #ifndef _TOKEN_H
 #define _TOKEN_H
+
 #include <string>
 #include <memory>
-#include <iostream>
+
 #include "user.h"
 
 class user_token_supplier_ifc
@@ -22,23 +23,19 @@ public:
     virtual ~user_token_supplier_ifc() {}
     virtual std::string token (user &user)
     {
-        return "virtual supplier";
+        return "";
     }
 };
 
 class file_reader_ifc
 {
 public:
-    virtual std::string getline (std::ifstream &token_file,
-                                 std::string &fetched_token)
-    {
-        return "";
-    }
     virtual bool open (std::ifstream &token_file, const std::string &file_path)
     {
         return false;
     }
-    virtual std::string read (std::string file_path)
+    virtual std::string getline (std::ifstream &token_file,
+                                 std::string &fetched_token)
     {
         return "";
     }
@@ -62,10 +59,7 @@ public:
     {
         return delegate_->getline (token_file, fetched_token);
     }
-    std::string read (std::string file_path)
-    {
-        return delegate_->read (file_path);
-    }
+
     static file_reader create ();
 };
 
