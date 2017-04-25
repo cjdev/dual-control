@@ -51,8 +51,8 @@ private:
     std::string home_directory_;
 public:
     fake_user() {}
-    fake_user (std::string &user_name) :
-        home_directory_ ("home/" + user_name)
+    fake_user (const std::string &home_directory) :
+        home_directory_ (home_directory)
     {
     }
     std::string home_directory()
@@ -64,10 +64,9 @@ public:
 int reads_from_the_right_file ()
 {
     //given
-    std::string user_name = "user";
-    std::string expected = "home/" + user_name + "/.dual_control";
+    std::string home_directory = "/somedir";
     file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
-    user test_user (user::delegate (new fake_user (user_name)));
+    user test_user (user::delegate (new fake_user (home_directory)));
     user_token_supplier supplier (user_token_supplier::create (
                                       test_file_reader));
 
@@ -75,6 +74,7 @@ int reads_from_the_right_file ()
     std::string actual = supplier.token (test_user);
 
     //then
+    std::string expected(home_directory + "/.dual_control");
     check (actual == expected, "read wrong file");
     succeed();
 }
