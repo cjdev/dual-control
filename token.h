@@ -35,7 +35,7 @@ public:
         return false;
     }
     virtual std::string getline (std::ifstream &token_file,
-                                 std::string &fetched_token)
+                                 std::string &line)
     {
         return "";
     }
@@ -55,9 +55,9 @@ public:
     {
         return delegate_->open (token_file, file_path);
     }
-    std::string getline (std::ifstream &token_file, std::string &fetched_token)
+    std::string getline (std::ifstream &token_file, std::string &line)
     {
-        return delegate_->getline (token_file, fetched_token);
+        return delegate_->getline (token_file, line);
     }
 
     static file_reader create ();

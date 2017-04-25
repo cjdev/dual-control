@@ -50,10 +50,10 @@ public:
         token_file.open (file_path);
         return token_file.good();
     }
-    std::string getline (std::ifstream &token_file, std::string &fetched_token)
+    std::string getline (std::ifstream &token_file, std::string &line)
     {
-        std::getline (token_file, fetched_token);
-        return fetched_token;
+        std::getline (token_file, line);
+        return line;
     }
 };
 }
