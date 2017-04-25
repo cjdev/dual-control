@@ -16,7 +16,7 @@
 #include <memory>
 
 #include "user.h"
-#include "file_reader.h"
+#include "sys_fstream.h"
 
 class user_token_supplier_ifc
 {
@@ -43,7 +43,7 @@ public:
     {
         return delegate_->token (user);
     }
-    static user_token_supplier create (file_reader &file_reader);
+    static user_token_supplier create (fstreams &fstreams);
 };
 
 #endif

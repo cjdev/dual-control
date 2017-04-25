@@ -16,35 +16,36 @@
 
 #include "token.h"
 #include "user.h"
+#include "sys_fstream.h"
 
 namespace
 {
 class user_token_supplier_impl : public user_token_supplier_ifc
 {
 private:
-    file_reader file_reader_;
+    fstreams fstreams_;
 public:
-    user_token_supplier_impl (file_reader &file_reader) : file_reader_
-        (file_reader) {}
+    user_token_supplier_impl (fstreams &fstreams) :
+        fstreams_(fstreams) {}
     std::string token (user &user)
     {
         const std::string file_path (user.home_directory() + "/.dual_control");
-        std::ifstream token_file;
-        std::string fetched_token;
+        std::vector<char> line(7);
 
-        bool token_file_opened = file_reader_.open (token_file, file_path);
+        fstreams::pstream stream(fstreams_.open_fstream(file_path));
 
-        if (!token_file_opened) {
+        if (!stream->good()) {
             return "";
         }
 
-        return file_reader_.getline (token_file, fetched_token);
+        stream->getline(line.data(), line.size());
+        return std::string(line.data());
     }
 };
 }
-user_token_supplier user_token_supplier::create (file_reader &file_reader)
+user_token_supplier user_token_supplier::create (fstreams &fstreams)
 {
     return user_token_supplier (user_token_supplier::delegate
-                                (new user_token_supplier_impl (file_reader)));
+                                (new user_token_supplier_impl (fstreams)));
 }
 

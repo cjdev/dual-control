@@ -15,36 +15,12 @@
 #include <cstdio>
 #include <sys/stat.h>
 #include <fstream>
+#include <sstream>
 
 #include "token.h"
 #include "test_util.h"
 #include "user.h"
-#include "file_reader.h"
-
-class fake_file_reader : public file_reader_ifc
-{
-private:
-    std::string file_path_;
-public:
-    bool open (std::ifstream &token_file, const std::string &file_path)
-    {
-        file_path_ = file_path;
-        return true;
-    }
-    std::string getline (std::ifstream &token_file, std::string &fetched_token)
-    {
-        return file_path_;
-    }
-};
-
-class file_reader_with_open_fail : public file_reader_ifc
-{
-public:
-    bool open (std::ifstream &token_file, std::string &fetched_token)
-    {
-        return false;
-    }
-};
+#include "sys_fstream.h"
 
 class fake_user : public user_ifc
 {
@@ -62,32 +38,57 @@ public:
     }
 };
 
+class fake_fstreams : public fstreams_ifc {
+    private:
+        std::string expected_file_path_;
+        std::string file_contents_;
+    public:
+        fake_fstreams(const std::string &expected_file_path, const std::string &file_contents)
+            : expected_file_path_(expected_file_path),
+              file_contents_(file_contents) {}
+        pstream open_fstream(const std::string &file_path) {
+            if (file_path == expected_file_path_) {
+                return fstreams::pstream(new std::istringstream(file_contents_));
+            } else {
+                return fstreams_ifc::open_fstream(file_path);
+            }
+
+        }
+};
+
 int reads_from_the_right_file ()
 {
     //given
     std::string home_directory = "/somedir";
-    file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
+    // hardcoded file name is .dual_control in the user's home directory
+    std::string token_file = home_directory + "/.dual_control";
+    std::string token("123456");
+    fstreams test_streams(fstreams::delegate(new fake_fstreams(token_file, token)));
+
+    //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
     user_token_supplier supplier (user_token_supplier::create (
-                                      test_file_reader));
+                                      test_streams));
 
     //when
     std::string actual = supplier.token (test_user);
 
     //then
-    std::string expected(home_directory + "/.dual_control");
-    check (actual == expected, "read wrong file");
+    check (actual == token, "token does not match");
     succeed();
 }
 
 int returns_empty_string_if_file_open_fail()
 {
     //given
-    file_reader test_file_reader (file_reader::delegate (new
-                                  file_reader_with_open_fail));
-    user test_user (user::delegate (new fake_user));
+    std::string home_directory = "/somedir";
+    // hardcoded file name is .dual_control in the user's home directory
+    std::string token_file = home_directory + "/.not_dual_control";
+    fstreams test_streams(fstreams::delegate(new fake_fstreams(token_file, "654321")));
+    user test_user (user::delegate (new fake_user (home_directory)));
     user_token_supplier supplier (user_token_supplier::create (
-                                      test_file_reader));
+                                      test_streams));
+
 
     //when
     std::string actual = supplier.token (test_user);
