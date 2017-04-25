@@ -19,6 +19,7 @@
 #include "token.h"
 #include "test_util.h"
 #include "user.h"
+#include "file_reader.h"
 
 class fake_file_reader : public file_reader_ifc
 {

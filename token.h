@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "user.h"
+#include "file_reader.h"
 
 class user_token_supplier_ifc
 {
@@ -25,42 +26,6 @@ public:
     {
         return "";
     }
-};
-
-class file_reader_ifc
-{
-public:
-    virtual bool open (std::ifstream &token_file, const std::string &file_path)
-    {
-        return false;
-    }
-    virtual std::string getline (std::ifstream &token_file,
-                                 std::string &line)
-    {
-        return "";
-    }
-};
-
-class file_reader : public file_reader_ifc
-{
-public:
-    typedef std::shared_ptr<file_reader_ifc> delegate;
-private:
-    delegate delegate_;
-public:
-    file_reader (delegate delegate) :
-        delegate_ (delegate) {}
-    file_reader() : delegate_ (delegate (new file_reader_ifc)) {}
-    bool open (std::ifstream &token_file, const std::string &file_path)
-    {
-        return delegate_->open (token_file, file_path);
-    }
-    std::string getline (std::ifstream &token_file, std::string &line)
-    {
-        return delegate_->getline (token_file, line);
-    }
-
-    static file_reader create ();
 };
 
 class user_token_supplier : public user_token_supplier_ifc
