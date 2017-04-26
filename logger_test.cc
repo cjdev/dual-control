@@ -23,15 +23,22 @@ class mock_syslog : public sys_syslog_ifc {
         int facility;
         std::string message;
         int priority;
+        bool closed;
+        std::string ident;
+        mock_syslog() : closed(false), facility(-1000), priority(-1000) {}
         void openlog(const char *ident, int logopt, int facility) {
             this->facility = facility;
+            this->ident = ident;
         }
         void vsyslog(int priority, const char *message, va_list args) {
             this->priority = priority;
             this->message = message;
         }
         void closelog()
-        {}
+        {
+            this->closed = true;
+        }
+
 
 };
 
@@ -52,6 +59,8 @@ int logs_success() {
     check(capture->facility == LOG_AUTHPRIV, "facility does not match");
     check(capture->message == user + " " + token + " " + "success", "message does not match");
     check(capture->priority == LOG_NOTICE, "priority does not match");
+    check(capture->closed, "syslog not closed");
+    check(capture->ident == "dual-control", "dual-control");
     succeed();
 }
 

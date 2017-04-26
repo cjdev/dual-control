@@ -24,9 +24,9 @@ namespace {
               const std::string &token) {
                 std::string message(user_name + " " + token + " success");
 
-                syslog_.openlog("", 0, LOG_AUTHPRIV);
+                syslog_.openlog("dual-control", 0, LOG_AUTHPRIV);
                 syslog_.syslog(LOG_NOTICE, message.c_str());
-                syslog_.closelog();
+               syslog_.closelog();
             }
     };
 }
