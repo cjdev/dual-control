@@ -27,8 +27,8 @@ public:
 
 class logger : public logger_ifc
 {
-    public:
-        typedef std::shared_ptr<logger_ifc> delegate;
+public:
+    typedef std::shared_ptr<logger_ifc> delegate;
 private:
     delegate delegate_;
 public:
@@ -40,7 +40,7 @@ public:
     {
         delegate_->log (result, user_name, token);
     }
-    static logger create(const sys_syslog &sys_syslog);
+    static logger create (const sys_syslog &sys_syslog);
 };
 
 #endif

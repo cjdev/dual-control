@@ -38,22 +38,25 @@ public:
     }
 };
 
-class fake_fstreams : public fstreams_ifc {
-    private:
-        std::string expected_file_path_;
-        std::string file_contents_;
-    public:
-        fake_fstreams(const std::string &expected_file_path, const std::string &file_contents)
-            : expected_file_path_(expected_file_path),
-              file_contents_(file_contents) {}
-        pstream open_fstream(const std::string &file_path) {
-            if (file_path == expected_file_path_) {
-                return fstreams::pstream(new std::istringstream(file_contents_));
-            } else {
-                return fstreams_ifc::open_fstream(file_path);
-            }
-
+class fake_fstreams : public fstreams_ifc
+{
+private:
+    std::string expected_file_path_;
+    std::string file_contents_;
+public:
+    fake_fstreams (const std::string &expected_file_path,
+                   const std::string &file_contents)
+        : expected_file_path_ (expected_file_path),
+          file_contents_ (file_contents) {}
+    pstream open_fstream (const std::string &file_path)
+    {
+        if (file_path == expected_file_path_) {
+            return fstreams::pstream (new std::istringstream (file_contents_));
+        } else {
+            return fstreams_ifc::open_fstream (file_path);
         }
+
+    }
 };
 
 int reads_from_the_right_file ()
@@ -62,8 +65,9 @@ int reads_from_the_right_file ()
     std::string home_directory = "/somedir";
     // hardcoded file name is .dual_control in the user's home directory
     std::string token_file = home_directory + "/.dual_control";
-    std::string token("123456");
-    fstreams test_streams(fstreams::delegate(new fake_fstreams(token_file, token)));
+    std::string token ("123456");
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
+                           token)));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
@@ -84,11 +88,11 @@ int returns_empty_string_if_file_open_fail()
     std::string home_directory = "/somedir";
     // hardcoded file name is .dual_control in the user's home directory
     std::string token_file = home_directory + "/.not_dual_control";
-    fstreams test_streams(fstreams::delegate(new fake_fstreams(token_file, "654321")));
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
+                           "654321")));
     user test_user (user::delegate (new fake_user (home_directory)));
     user_token_supplier supplier (user_token_supplier::create (
                                       test_streams));
-
 
     //when
     std::string actual = supplier.token (test_user);

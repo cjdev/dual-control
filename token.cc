@@ -26,20 +26,20 @@ private:
     fstreams fstreams_;
 public:
     user_token_supplier_impl (fstreams &fstreams) :
-        fstreams_(fstreams) {}
+        fstreams_ (fstreams) {}
     std::string token (user &user)
     {
         const std::string file_path (user.home_directory() + "/.dual_control");
-        std::vector<char> line(7);
+        std::vector<char> line (7);
 
-        fstreams::pstream stream(fstreams_.open_fstream(file_path));
+        fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
         if (!stream->good()) {
             return "";
         }
 
-        stream->getline(line.data(), line.size());
-        return std::string(line.data());
+        stream->getline (line.data(), line.size());
+        return std::string (line.data());
     }
 };
 }

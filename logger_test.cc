@@ -18,91 +18,98 @@
 #include "logger.h"
 #include "test_util.h"
 
-class mock_syslog : public sys_syslog_ifc {
-    public:
-        int facility;
-        std::string message;
-        int priority;
-        bool closed;
-        std::string ident;
-        mock_syslog() : closed(false), facility(-1000), priority(-1000) {}
-        void openlog(const char *ident, int logopt, int facility) {
-            this->facility = facility;
-            this->ident = ident;
-        }
-        void vsyslog(int priority, const char *message, va_list args) {
-            this->priority = priority;
-            this->message = message;
-        }
-        void closelog()
-        {
-            this->closed = true;
-        }
-
+class mock_syslog : public sys_syslog_ifc
+{
+public:
+    int facility;
+    std::string message;
+    int priority;
+    bool closed;
+    std::string ident;
+    mock_syslog() : closed (false), facility (-1000), priority (-1000) {}
+    void openlog (const char *ident, int logopt, int facility)
+    {
+        this->facility = facility;
+        this->ident = ident;
+    }
+    void vsyslog (int priority, const char *message, va_list args)
+    {
+        this->priority = priority;
+        this->message = message;
+    }
+    void closelog()
+    {
+        this->closed = true;
+    }
 
 };
 
-
-int logs_success() {
+int logs_success()
+{
     //given
     mock_syslog *capture = new mock_syslog;
-    sys_syslog::delegate test_delegate(capture);
-    sys_syslog test_syslog(test_delegate);
-    logger logger = logger::create(test_syslog);
-    std::string user("user");
-    std::string token("token");
+    sys_syslog::delegate test_delegate (capture);
+    sys_syslog test_syslog (test_delegate);
+    logger logger = logger::create (test_syslog);
+    std::string user ("user");
+    std::string token ("token");
 
     //when
-    logger.log(PAM_SUCCESS, user, token);
+    logger.log (PAM_SUCCESS, user, token);
 
     //then
-    check(capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check(capture->message == user + " " + token + " " + "success", "message does not match");
-    check(capture->priority == LOG_NOTICE, "priority does not match");
-    check(capture->closed, "syslog not closed");
-    check(capture->ident == "dual-control", "dual-control");
+    check (capture->facility == LOG_AUTHPRIV, "facility does not match");
+    check (capture->message == user + " " + token + " " + "success",
+           "message does not match");
+    check (capture->priority == LOG_NOTICE, "priority does not match");
+    check (capture->closed, "syslog not closed");
+    check (capture->ident == "dual-control", "dual-control");
     succeed();
 }
 
-int logs_failure() {
+int logs_failure()
+{
     //given
     mock_syslog *capture = new mock_syslog;
-    sys_syslog::delegate test_delegate(capture);
-    sys_syslog test_syslog(test_delegate);
-    logger logger = logger::create(test_syslog);
-    std::string user("user");
-    std::string token("token");
+    sys_syslog::delegate test_delegate (capture);
+    sys_syslog test_syslog (test_delegate);
+    logger logger = logger::create (test_syslog);
+    std::string user ("user");
+    std::string token ("token");
 
     //when
-    logger.log(PAM_AUTH_ERR, user, token);
+    logger.log (PAM_AUTH_ERR, user, token);
 
     //then
-    check(capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check(capture->message == user + " " + token + " " + "fail", "message does not match");
-    check(capture->priority == LOG_NOTICE, "priority does not match");
-    check(capture->closed, "syslog not closed");
-    check(capture->ident == "dual-control", "dual-control");
+    check (capture->facility == LOG_AUTHPRIV, "facility does not match");
+    check (capture->message == user + " " + token + " " + "fail",
+           "message does not match");
+    check (capture->priority == LOG_NOTICE, "priority does not match");
+    check (capture->closed, "syslog not closed");
+    check (capture->ident == "dual-control", "dual-control");
     succeed();
 }
 
-int logs_pam_service_error() {
+int logs_pam_service_error()
+{
     //given
     mock_syslog *capture = new mock_syslog;
-    sys_syslog::delegate test_delegate(capture);
-    sys_syslog test_syslog(test_delegate);
-    logger logger = logger::create(test_syslog);
-    std::string user("user");
-    std::string token("token");
+    sys_syslog::delegate test_delegate (capture);
+    sys_syslog test_syslog (test_delegate);
+    logger logger = logger::create (test_syslog);
+    std::string user ("user");
+    std::string token ("token");
 
     //when
-    logger.log(PAM_SERVICE_ERR, user, token);
+    logger.log (PAM_SERVICE_ERR, user, token);
 
     //then
-    check(capture->facility == LOG_AUTH, "facility does not match");
-    check(capture->message == "pam returned error", "message does not match");
-    check(capture->priority == LOG_ERR, "priority does not match");
-    check(capture->closed, "syslog not closed");
-    check(capture->ident == "dual-control", "dual-control");
+    check (capture->facility == LOG_AUTH, "facility does not match");
+    check (capture->message == user + " pam returned error",
+           "message does not match");
+    check (capture->priority == LOG_ERR, "priority does not match");
+    check (capture->closed, "syslog not closed");
+    check (capture->ident == "dual-control", "dual-control");
     succeed();
 }
 
@@ -121,7 +128,6 @@ int main (int numargs, char **args)
 {
     return !run_tests();
 }
-
 
 /*
 int logged_priority = -1000;

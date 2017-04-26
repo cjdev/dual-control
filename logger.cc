@@ -15,42 +15,50 @@
 #include "sys_syslog.h"
 #include "logger.h"
 
-namespace {
-    class impl : public logger_ifc {
-        private:
-            sys_syslog syslog_;
-        public:
-            impl(const sys_syslog &sys_syslog) : syslog_(sys_syslog) {}
-            void log (int result, const std::string &user_name,
-              const std::string &token) {
-                std::string message;
-                int facility;
-                int priority;
-                switch (result) {
-                   case PAM_SUCCESS:
-                       facility = LOG_AUTHPRIV;
-                       priority = LOG_NOTICE;
-                       message = user_name + " " + token + " " + "success";
-                       break;
-                   case PAM_AUTH_ERR:
-                       facility = LOG_AUTHPRIV;
-                       priority = LOG_NOTICE;
-                       message = user_name + " " + token + " " + "fail";
-                       break;
-                    default:
-                        facility = LOG_AUTH;
-                        priority = LOG_ERR;
-                        message = "pam returned error";
-                        break;
-                }
+namespace
+{
+class impl : public logger_ifc
+{
+private:
+    sys_syslog syslog_;
+public:
+    impl (const sys_syslog &sys_syslog) : syslog_ (sys_syslog) {}
+    void log (int result, const std::string &user_name,
+              const std::string &token)
+    {
+        std::string message;
+        int facility;
+        int priority;
 
-                syslog_.openlog("dual-control", 0, facility);
-                syslog_.syslog(priority, message.c_str());
-               syslog_.closelog();
-            }
-    };
+        switch (result) {
+        case PAM_SUCCESS:
+            facility = LOG_AUTHPRIV;
+            priority = LOG_NOTICE;
+            message = user_name + " " + token + " " + "success";
+            break;
+
+        case PAM_AUTH_ERR:
+            facility = LOG_AUTHPRIV;
+            priority = LOG_NOTICE;
+            message = user_name + " " + token + " " + "fail";
+            break;
+
+        default:
+            facility = LOG_AUTH;
+            priority = LOG_ERR;
+            message = user_name + " pam returned error";
+            break;
+        }
+
+        syslog_.openlog ("dual-control", 0, facility);
+        syslog_.syslog (priority, message.c_str());
+        syslog_.closelog();
+    }
+};
 }
 
-logger logger::create(const sys_syslog &sys_syslog) {
-    return logger(delegate(new impl(sys_syslog)));
+logger logger::create (const sys_syslog &sys_syslog)
+{
+    return logger (delegate (new impl (sys_syslog)));
 }
+
