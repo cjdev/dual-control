@@ -10,6 +10,7 @@
  */
 
 #include <syslog.h>
+#include <security/pam_modules.h>
 
 #include "sys_syslog.h"
 #include "logger.h"
@@ -22,7 +23,8 @@ namespace {
             impl(const sys_syslog &sys_syslog) : syslog_(sys_syslog) {}
             void log (int result, const std::string &user_name,
               const std::string &token) {
-                std::string message(user_name + " " + token + " success");
+                std::string pam_result = result == PAM_SUCCESS ? "success" : "fail";
+                std::string message(user_name + " " + token + " " + pam_result);
 
                 syslog_.openlog("dual-control", 0, LOG_AUTHPRIV);
                 syslog_.syslog(LOG_NOTICE, message.c_str());
