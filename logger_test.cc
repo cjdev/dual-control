@@ -9,13 +9,65 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-#include <cstdio>
-#include <cstring>
 #include <syslog.h>
+#include <security/pam_modules.h>
 
-// #include "logging.h"
+#include <iostream>
+
+#include "sys_syslog.h"
+#include "logger.h"
 #include "test_util.h"
 
+class mock_syslog : public sys_syslog_ifc {
+    public:
+        int facility;
+        std::string message;
+        int priority;
+        void openlog(const char *ident, int logopt, int facility) {
+            this->facility = facility;
+        }
+        void vsyslog(int priority, const char *message, va_list args) {
+            this->priority = priority;
+            this->message = message;
+        }
+        void closelog()
+        {}
+
+};
+
+
+int logs_success() {
+    //given
+    mock_syslog *capture = new mock_syslog;
+    sys_syslog::delegate test_delegate(capture);
+    sys_syslog test_syslog(test_delegate);
+    logger logger = logger::create(test_syslog);
+    std::string user("user");
+    std::string token("token");
+
+    //when
+    logger.log(PAM_SUCCESS, user, token);
+
+    //then
+    check(capture->facility == LOG_AUTHPRIV, "facility does not match");
+    check(capture->message == user + " " + token + " " + "success", "message does not match");
+    check(capture->priority == LOG_NOTICE, "priority does not match");
+    succeed();
+}
+
+RESET_VARS_START
+RESET_VARS_END
+
+int run_tests()
+{
+    test (logs_success);
+    succeed();
+}
+
+int main (int numargs, char **args)
+{
+    return !run_tests();
+}
 
 
 /*

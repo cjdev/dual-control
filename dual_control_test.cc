@@ -39,7 +39,7 @@ void use_conversation (dual_control_configuration &config,
 
 void use_logger (dual_control_configuration &config, logger_ifc *value)
 {
-    config.logger = logger (share (value));
+    config.logger = logger (logger::delegate (value));
 }
 
 class mock_logger : public logger_ifc
