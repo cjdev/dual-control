@@ -57,10 +57,9 @@ public:
         return delegate_->setcred (request);
     }
     static dual_control create (const dual_control_configuration
-                                  &configuration);
+                                &configuration);
 
 };
-
 
 #endif
 

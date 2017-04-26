@@ -16,18 +16,21 @@
 
 #include "pam.h"
 
-namespace {
+namespace
+{
 class impl : public pam_ifc
 {
 public:
-    int get_conv (pam_handle *handle, const pam_conv **out) {
-        return ::pam_get_item(handle, PAM_CONV, (const void **)out);
+    int get_conv (pam_handle *handle, const pam_conv **out)
+    {
+        return ::pam_get_item (handle, PAM_CONV, (const void **)out);
     }
 };
 }
 
-
-pam pam::create() {
-    static pam singleton(std::shared_ptr<pam_ifc>(new impl));
+pam pam::create()
+{
+    static pam singleton (std::shared_ptr<pam_ifc> (new impl));
     return singleton;
 }
+

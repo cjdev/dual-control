@@ -39,6 +39,5 @@ public:
     static pam create();
 };
 
-
 #endif
 

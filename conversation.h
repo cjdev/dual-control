@@ -53,6 +53,5 @@ inline conversation wrap (conversation_ifc *delegate)
     return conversation (std::shared_ptr<conversation_ifc> (delegate));
 };
 
-
 #endif
 

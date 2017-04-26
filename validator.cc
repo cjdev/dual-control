@@ -42,7 +42,7 @@ public:
 }
 
 validator validator::create (const directory &directory,
-                            const user_token_supplier &user_token_supplier)
+                             const user_token_supplier &user_token_supplier)
 {
     std::shared_ptr<validator_ifc> delegate (new impl (directory,
             user_token_supplier));

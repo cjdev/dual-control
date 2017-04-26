@@ -29,7 +29,8 @@ int dual_control_ifc::setcred ( const pam_request &request)
     return PAM_SERVICE_ERR;
 }
 
-namespace {
+namespace
+{
 class impl : public dual_control_ifc
 {
 private:
@@ -64,7 +65,7 @@ int impl::authenticate (const pam_request &request)
 }
 }
 dual_control dual_control::create (const dual_control_configuration
-                                  &configuration)
+                                   &configuration)
 {
     return dual_control (std::shared_ptr<dual_control_ifc> (new impl (
                              configuration)));
