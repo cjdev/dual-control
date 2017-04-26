@@ -85,6 +85,27 @@ int logs_failure() {
     succeed();
 }
 
+int logs_pam_service_error() {
+    //given
+    mock_syslog *capture = new mock_syslog;
+    sys_syslog::delegate test_delegate(capture);
+    sys_syslog test_syslog(test_delegate);
+    logger logger = logger::create(test_syslog);
+    std::string user("user");
+    std::string token("token");
+
+    //when
+    logger.log(PAM_SERVICE_ERR, user, token);
+
+    //then
+    check(capture->facility == LOG_AUTH, "facility does not match");
+    check(capture->message == "pam returned error", "message does not match");
+    check(capture->priority == LOG_ERR, "priority does not match");
+    check(capture->closed, "syslog not closed");
+    check(capture->ident == "dual-control", "dual-control");
+    succeed();
+}
+
 RESET_VARS_START
 RESET_VARS_END
 
@@ -92,6 +113,7 @@ int run_tests()
 {
     test (logs_success);
     test (logs_failure);
+    test (logs_pam_service_error);
     succeed();
 }
 

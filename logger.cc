@@ -23,11 +23,29 @@ namespace {
             impl(const sys_syslog &sys_syslog) : syslog_(sys_syslog) {}
             void log (int result, const std::string &user_name,
               const std::string &token) {
-                std::string pam_result = result == PAM_SUCCESS ? "success" : "fail";
-                std::string message(user_name + " " + token + " " + pam_result);
+                std::string message;
+                int facility;
+                int priority;
+                switch (result) {
+                   case PAM_SUCCESS:
+                       facility = LOG_AUTHPRIV;
+                       priority = LOG_NOTICE;
+                       message = user_name + " " + token + " " + "success";
+                       break;
+                   case PAM_AUTH_ERR:
+                       facility = LOG_AUTHPRIV;
+                       priority = LOG_NOTICE;
+                       message = user_name + " " + token + " " + "fail";
+                       break;
+                    default:
+                        facility = LOG_AUTH;
+                        priority = LOG_ERR;
+                        message = "pam returned error";
+                        break;
+                }
 
-                syslog_.openlog("dual-control", 0, LOG_AUTHPRIV);
-                syslog_.syslog(LOG_NOTICE, message.c_str());
+                syslog_.openlog("dual-control", 0, facility);
+                syslog_.syslog(priority, message.c_str());
                syslog_.closelog();
             }
     };
