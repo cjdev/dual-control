@@ -56,11 +56,11 @@ public:
     {
         return delegate_->setcred (request);
     }
+    static dual_control create (const dual_control_configuration
+                                  &configuration);
 
 };
 
-dual_control create_dual_control (const dual_control_configuration
-                                  &configuration);
 
 #endif
 

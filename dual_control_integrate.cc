@@ -20,7 +20,14 @@
 #include "request.h"
 #include "dual_control.h"
 
-dual_control dc;
+namespace {
+    dual_control initialize() {
+        dual_control_configuration configuration;
+        // ....
+        return dual_control::create(configuration);
+    }
+    dual_control dc = initialize();
+}
 
 PAM_EXTERN int pam_sm_authenticate (pam_handle_t *pamh, int flags, int argc,
                                     const char **argv)
