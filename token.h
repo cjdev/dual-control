@@ -11,15 +11,18 @@
 
 #ifndef _TOKEN_H
 #define _TOKEN_H
+
 #include <string>
 #include <memory>
-#include <iostream>
+
 #include "user.h"
+#include "sys_fstream.h"
 
 class user_token_supplier_ifc
 {
 public:
-    virtual std::string token (const user &user)
+    virtual ~user_token_supplier_ifc() {}
+    virtual std::string token (user &user)
     {
         return "";
     }
@@ -27,17 +30,20 @@ public:
 
 class user_token_supplier : public user_token_supplier_ifc
 {
-private:
-    std::shared_ptr<user_token_supplier_ifc> delegate_;
 public:
-    user_token_supplier (std::shared_ptr<user_token_supplier_ifc> delegate) :
+    typedef std::shared_ptr<user_token_supplier_ifc> delegate;
+private:
+    delegate delegate_;
+public:
+    user_token_supplier (delegate delegate) :
         delegate_ (delegate) {}
     user_token_supplier() : user_token_supplier (
-            std::shared_ptr<user_token_supplier_ifc> (new user_token_supplier_ifc)) {}
-    std::string token (const user &user)
+            delegate (new user_token_supplier_ifc)) {}
+    std::string token (user &user)
     {
         return delegate_->token (user);
     }
+    static user_token_supplier create (fstreams &fstreams);
 };
 
 #endif

@@ -46,7 +46,7 @@ private:
 public:
     fake_user_token_supplier (const std::string &token) : token_ (token) {}
     fake_user_token_supplier() : token_ ("_NOT_A_TOKEN") {}
-    virtual std::string token (const user &user)
+    std::string token (user &user)
     {
         return token_;
     }

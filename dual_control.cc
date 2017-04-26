@@ -17,6 +17,7 @@
 #include "dual_control.h"
 #include "conversation.h"
 #include "validator.h"
+#include "logger.h"
 
 int dual_control_ifc::authenticate (const pam_request &request)
 {

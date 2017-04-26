@@ -9,129 +9,111 @@
  * at https://github.com/cjdev/dual-control.
  */
 
+#include <memory>
 #include <cstring>
 #include <pwd.h>
 #include <cstdio>
 #include <sys/stat.h>
+#include <fstream>
+#include <sstream>
 
 #include "token.h"
 #include "test_util.h"
+#include "user.h"
+#include "sys_fstream.h"
 
-const char *fake_user = "";
-const char *fake_user_token = "";
-
-// all the fake system calls
-const char *fake_home_dir = "";
-int fake_getpwnam_r (const char *nam, struct passwd *pwd, char *buffer,
-                     size_t bufsize, struct passwd **result)
+class fake_user : public user_ifc
 {
-    strcpy (buffer, fake_home_dir);
-    pwd->pw_dir = buffer;
-    int ok = !strcmp (nam, fake_user);
-    *result = ok ? pwd : 0;
-    return !ok;
-}
-
-const char *fake_stat_path = "";
-int fake_stat (const char *path, struct stat *stat)
-{
-    return (strcmp (fake_stat_path, path));
-}
-
-const char *fake_fopen_path = "";
-const char *fake_fopen_mode = "";
-FILE *_fhandle = 0;
-FILE *fake_fopen (const char *path, const char *mode)
-{
-    static FILE handle;
-    int path_matches = !strcmp (fake_fopen_path, path);
-    int mode_matches = !strcmp (fake_fopen_mode, mode);
-
-    if (path_matches && mode_matches) {
-        _fhandle = &handle;
-        return &handle;
-    } else {
-        _fhandle = 0;
-        return 0;
+private:
+    std::string home_directory_;
+public:
+    fake_user() {}
+    fake_user (const std::string &home_directory) :
+        home_directory_ (home_directory)
+    {
     }
-}
-
-char *fake_fgets (char *buf, int n, FILE *fp)
-{
-    if (_fhandle == fp && fp != 0) {
-        strncpy (buf, fake_user_token, n - 1);
-        return buf;
-    } else {
-        return 0;
+    std::string home_directory()
+    {
+        return home_directory_;
     }
-}
+};
 
-int fake_fclose (FILE *fp)
+class fake_fstreams : public fstreams_ifc
 {
-    return 0;
+private:
+    std::string expected_file_path_;
+    std::string file_contents_;
+public:
+    fake_fstreams (const std::string &expected_file_path,
+                   const std::string &file_contents)
+        : expected_file_path_ (expected_file_path),
+          file_contents_ (file_contents) {}
+    pstream open_fstream (const std::string &file_path)
+    {
+        if (file_path == expected_file_path_) {
+            return fstreams::pstream (new std::istringstream (file_contents_));
+        } else {
+            return fstreams_ifc::open_fstream (file_path);
+        }
+
+    }
+};
+
+int reads_from_the_right_file ()
+{
+    //given
+    std::string home_directory = "/somedir";
+    // hardcoded file name is .dual_control in the user's home directory
+    std::string token_file = home_directory + "/.dual_control";
+    std::string token ("123456");
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
+                           token)));
+
+    //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
+    user test_user (user::delegate (new fake_user (home_directory)));
+    user_token_supplier supplier (user_token_supplier::create (
+                                      test_streams));
+
+    //when
+    std::string actual = supplier.token (test_user);
+
+    //then
+    check (actual == token, "token does not match");
+    succeed();
 }
 
-// STDIO
+int returns_empty_string_if_file_open_fail()
+{
+    //given
+    std::string home_directory = "/somedir";
+    // hardcoded file name is .dual_control in the user's home directory
+    std::string token_file = home_directory + "/.not_dual_control";
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
+                           "654321")));
+    user test_user (user::delegate (new fake_user (home_directory)));
+    user_token_supplier supplier (user_token_supplier::create (
+                                      test_streams));
+
+    //when
+    std::string actual = supplier.token (test_user);
+
+    //then
+    check (actual == "", "should have returned empty string");
+    succeed();
+}
 
 RESET_VARS_START
-fake_user = "msmith";
-fake_user_token = "123456";
-fake_home_dir = "/home/msmith";
-fake_stat_path = "/home/msmith/.dual_control";
-fake_fopen_path = fake_stat_path;
-fake_fopen_mode = "r";
 RESET_VARS_END
 
-int validate_compares_to_user_token()
+int run_tests()
 {
-
-    // given
-
-    // when
-    int valid = validate_token ("msmith", "123456");
-
-    // then
-    check (valid, "expected result to be valid");
-
-    succeed();
-
-}
-
-int validates_from_the_right_user()
-{
-    //given
-
-    //when
-    int valid = validate_token ("jbalcita", "12346");
-
-    //then
-    check (!valid, "expected result to be invalid");
+    test (reads_from_the_right_file);
+    test (returns_empty_string_if_file_open_fail);
     succeed();
 }
 
-int validates_user_specific_token()
+int main (int argc, char *argv[])
 {
-    //given
-
-    //when
-    int valid = validate_token ("msmith", "654321");
-
-    //then
-    check (!valid, "expected result to be invalid");
-    succeed();
-}
-
-int runtests()
-{
-    test (validate_compares_to_user_token);
-    test (validates_from_the_right_user);
-    test (validates_user_specific_token);
-    succeed();
-}
-
-int main (int argc, char **argv)
-{
-    int rval = !runtests();
-    return rval;
+    return !run_tests();
 }
 
