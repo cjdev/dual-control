@@ -19,8 +19,40 @@
 
 #include "request.h"
 #include "dual_control.h"
+#include "validator.h"
+#include "logger.h"
+#include "conversation.h"
+#include "user.h"
+#include "token.h"
+#include "sys_pwd.h"
+#include "sys_unistd.h"
+#include "sys_fstream.h"
+#include "pam.h"
+#include "sys_syslog.h"
 
-dual_control dc;
+namespace
+{
+dual_control initialize()
+{
+    dual_control_configuration configuration;
+    pwd pwd (pwd::create());
+    unistd unistd (unistd::create());
+    directory directory (directory::create (unistd, pwd));
+    fstreams fstreams (fstreams::create());
+    user_token_supplier user_token_supplier (user_token_supplier::create (
+                fstreams));
+    validator validator (validator::create (directory, user_token_supplier));
+    pam pam (pam::create());
+    conversation conversation (conversation::create (pam));
+    sys_syslog sys_syslog (sys_syslog::create());
+    logger logger (logger::create (sys_syslog));
+    configuration.validator = validator;
+    configuration.logger = logger;
+    configuration.conversation = conversation;
+    return dual_control::create (configuration);
+}
+dual_control dc = initialize();
+}
 
 PAM_EXTERN int pam_sm_authenticate (pam_handle_t *pamh, int flags, int argc,
                                     const char **argv)

@@ -107,7 +107,7 @@ int setcred_returns_success()
 {
     //given
     dual_control_configuration configuration;
-    dual_control dc (create_dual_control (configuration));
+    dual_control dc (dual_control::create (configuration));
 
     //when
     int result = dc.setcred (req());
@@ -126,7 +126,7 @@ int authenticate_validates_with_received_token()
     std::string token ("token");
     use_validator (configuration, new fake_validator (user, token));
     use_conversation (configuration, new fake_conversation (user, token));
-    dual_control dc (create_dual_control (configuration));
+    dual_control dc (dual_control::create (configuration));
     pam_handle_t *handle (0);
     std::vector<const std::string> arguments;
 
@@ -146,7 +146,7 @@ int authenticate_fails_with_wrong_user()
     use_validator (configuration, new fake_validator ("user", token));
     use_conversation (configuration, new fake_conversation ("wrong user",
                       token));
-    dual_control dc (create_dual_control (configuration));
+    dual_control dc (dual_control::create (configuration));
 
     // when
     int actual = dc.authenticate (req());
@@ -164,7 +164,7 @@ int authenticate_fails_with_wrong_token()
     use_validator (configuration, new fake_validator (user, "token"));
     use_conversation (configuration, new fake_conversation (user,
                       "wrong token"));
-    dual_control dc (create_dual_control (configuration));
+    dual_control dc (dual_control::create (configuration));
 
     // when
     int actual = dc.authenticate (req());
@@ -184,7 +184,7 @@ int logs_authentication()
     use_conversation (configuration, new fake_conversation (user, token));
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);
-    dual_control dc (create_dual_control (configuration));
+    dual_control dc (dual_control::create (configuration));
 
     //when
     dc.authenticate (req());
@@ -210,7 +210,7 @@ int logs_authentication_failure()
     use_conversation (configuration, new fake_conversation (user, token));
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);
-    dual_control dc (create_dual_control (configuration));
+    dual_control dc (dual_control::create (configuration));
 
     //when
     dc.authenticate (req());

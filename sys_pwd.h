@@ -42,7 +42,7 @@ public:
     {
         return delegate_-> getpwnam_r (user_name, out, buffer, buffer_sz, result);
     }
-    static pwd system();
+    static pwd create();
 };
 
 #endif

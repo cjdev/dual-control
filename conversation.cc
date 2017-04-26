@@ -67,7 +67,7 @@ public:
 };
 }
 
-conversation create_conversation (pam &pam)
+conversation conversation::create (pam &pam)
 {
     return conversation (std::shared_ptr<conversation_ifc> (new impl (pam)));
 }

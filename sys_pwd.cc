@@ -28,7 +28,7 @@ public:
 static pwd system_pwd (pwd::delegate (new impl));
 }
 
-pwd pwd::system()
+pwd pwd::create()
 {
     return system_pwd;
 }
