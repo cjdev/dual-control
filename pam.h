@@ -36,9 +36,9 @@ public:
     {
         return delegate_->get_conv (handle, out);
     }
+    static pam create();
 };
 
-pam system_pam();
 
 #endif
 

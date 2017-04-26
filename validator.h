@@ -42,10 +42,8 @@ public:
     {
         return delegate_->validate (user_name, token);
     }
+    static validator create(const directory &directory, const user_token_supplier &token_supplier);
 };
-
-validator create_validator (const directory &directory,
-                            const user_token_supplier &token_supplier);
 
 #endif
 

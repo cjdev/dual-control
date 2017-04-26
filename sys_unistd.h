@@ -40,7 +40,7 @@ public:
     {
         return delegate_->sysconf (name);
     }
-    static unistd system();
+    static unistd create();
 };
 
 #endif

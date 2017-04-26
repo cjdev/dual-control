@@ -25,7 +25,7 @@ public:
 static unistd sys_unistd (unistd::delegate (new impl));
 }
 
-unistd unistd::system()
+unistd unistd::create()
 {
     return sys_unistd;
 }
