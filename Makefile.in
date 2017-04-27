@@ -1,9 +1,9 @@
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++11 -lpam
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11
 CFLAGS += -fPIC -fno-stack-protector
-LDFLAGS += -lpam
+LDFLAGS = -lpam
 
-OBJS = dual_control.o request.o dual_control_integrate.o validator.o conversation.o user.o \
-		sys_unistd.o sys_pwd.o token.o sys_fstream.o sys_syslog.o logger.o pam.o
+INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o pam.o dual_control_integrate.o
+OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o
 TESTS = dual_control_test validator_test conversation_test request_test user_test token_test \
 		logger_test
 TESTOBJS = $(patsubst %,%.o,$(TESTS))
@@ -42,7 +42,7 @@ distclean: clean
 -include .depend
 
 $(TESTS): %: %.o $(OBJS)
-	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)  -o $@ $^
+	@$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 	@./$@
 
 .PHONY: test
@@ -52,7 +52,7 @@ test: $(TESTS)
 .PHONY: install
 install: $(OBJS)
 ifeq ($(UNAME_S), Linux)
-	ld $(LDFLAGS) -x --shared -lpam -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(OBJS)
+	ld $(LDFLAGS) -x --shared -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(OBJS) $(INTEGRATION_OBJS)
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
