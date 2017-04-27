@@ -1,5 +1,5 @@
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++11 -lpam
-CFLAGS += -fPIC -fno-stack-protector -lpam
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11
+CFLAGS += -fPIC -fno-stack-protector
 
 OBJS = dual_control.o request.o dual_control_integrate.o validator.o conversation.o user.o \
 		sys_unistd.o sys_pwd.o token.o sys_fstream.o sys_syslog.o logger.o pam.o
