@@ -14,7 +14,12 @@ MODULELIB = pam_dual_control.so
 UNAME_S := $(shell uname -s)
 
 .PHONY: all
-all: dual_control.a .depend
+all: version dual_control.a .depend
+
+.PHONY: version
+version:
+	@echo COMPILER VERSION --------------------------------
+	$(CXX) --version
 
 dual_control.a: $(OBJS)
 	ar rvs $@ $^
