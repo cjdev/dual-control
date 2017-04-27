@@ -42,6 +42,7 @@ class match_buffer_pwd : public pwd_ifc
 {
 private:
     long int expected_buffer_sz_;
+    std::string charbuf_;
 public:
     match_buffer_pwd (long int buffer_sz) : expected_buffer_sz_ (buffer_sz) {}
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
@@ -49,6 +50,8 @@ public:
     {
 
         if (expected_buffer_sz_ == buffer_sz && buffer != 0) {
+            out->pw_name = const_cast<char *>(charbuf_.c_str());
+            out->pw_dir = const_cast<char *>(charbuf_.c_str());
             *result = out;
         } else {
             *result = 0;
@@ -162,9 +165,9 @@ RESET_VARS_END
 int run_tests()
 {
     test (find_user_happy);
-//    test (user_not_found);
-//    test (find_user_passes_buffer_and_size);
-//    test (find_user_fails_on_pwnam_r_error_and_result_ok);
+    test (user_not_found);
+    test (find_user_passes_buffer_and_size);
+    test (find_user_fails_on_pwnam_r_error_and_result_ok);
     succeed();
 }
 
