@@ -9,7 +9,6 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-
 #include "user.h"
 #include "test_util.h"
 #include "sys_pwd.h"
@@ -22,13 +21,13 @@ private:
     std::string home_directory_;
 public:
     fake_pwd (const std::string expected_user_name) : expected_user_name_
-        (expected_user_name), home_directory_("/somehome") {}
+        (expected_user_name), home_directory_ ("/somehome") {}
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
                     size_t buffer_sz, passwd **result)
     {
         if (expected_user_name_ == user_name)  {
-            out->pw_dir = const_cast<char *>(home_directory_.c_str());
-            out->pw_name = const_cast<char *>(expected_user_name_.c_str());
+            out->pw_dir = const_cast<char *> (home_directory_.c_str());
+            out->pw_name = const_cast<char *> (expected_user_name_.c_str());
             *result = out;
         } else {
             *result = 0;
@@ -50,8 +49,8 @@ public:
     {
 
         if (expected_buffer_sz_ == buffer_sz && buffer != 0) {
-            out->pw_name = const_cast<char *>(charbuf_.c_str());
-            out->pw_dir = const_cast<char *>(charbuf_.c_str());
+            out->pw_name = const_cast<char *> (charbuf_.c_str());
+            out->pw_dir = const_cast<char *> (charbuf_.c_str());
             *result = out;
         } else {
             *result = 0;
