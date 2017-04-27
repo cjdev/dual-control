@@ -1,17 +1,18 @@
 install:
   - sudo apt-get install libpam0g-dev
 language: cpp
-sudo: required
-script:
-  - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
-  - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
-  - gcc --version
-  - ./configure && make && make test
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - gcc-6
-    - g++-6
-
+compiler: clang
+# sudo: required
+# script:
+#   - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
+#   - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
+#   - gcc --version
+#   - ./configure && make && make test
+# addons:
+#   apt:
+#     sources:
+#     - ubuntu-toolchain-r-test
+#     packages:
+#     - gcc-6
+#     - g++-6
+#
