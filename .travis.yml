@@ -1,16 +1,3 @@
 install:
   - sudo apt-get install libpam0g-dev
-dist: trusty
 language: cpp
-compiler: g++
-install: export CXX="g++-5"
-addons:
-  apt:
-    packages:
-    - g++-5
-notifications:
- email:
-  on_success: never
-  on_failure: always
-before_install: sudo apt-get update -qq
-
