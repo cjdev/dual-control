@@ -131,7 +131,7 @@ conversation make_conversation (pam_handle *expected_handle,
         PAM_SUCCESS
     };
     pam pam (share (new fake_pam (expected_handle, conversation_data)));
-    return create_conversation (pam);
+    return conversation::create (pam);
 
 }
 
@@ -188,7 +188,7 @@ int returns_empty_user_and_token_when_pam_cant_create_conversation()
 {
     // given
     pam pam (share (new fake_pam (PAM_SERVICE_ERR)));
-    conversation conversation = create_conversation (pam);
+    conversation conversation = conversation::create (pam);
     pam_request request (0, 0, 0, 0);
 
     // when
@@ -212,7 +212,7 @@ int returns_empty_user_and_token_when_conversation_fails()
         PAM_SERVICE_ERR
     };
     pam pam (share (new fake_pam (0, conversation_data)));
-    conversation conversation = create_conversation (pam);
+    conversation conversation = conversation::create (pam);
     pam_request request (0, 0, 0, 0);
 
     //when
@@ -239,7 +239,7 @@ int returns_empty_user_and_token_when_conversation_answer_fails()
         PAM_SUCCESS
     };
     pam pam (share (new fake_pam (0, conversation_data)));
-    conversation conversation = create_conversation (pam);
+    conversation conversation = conversation::create (pam);
     pam_request request (0, 0, 0, 0);
 
     //when
