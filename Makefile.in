@@ -50,7 +50,7 @@ test: $(TESTS)
 	@echo Tests Passing
 
 .PHONY: install
-install: $(OBJS)
+install: $(OBJS) $(INTEGRATION_OBJS)
 ifeq ($(UNAME_S), Linux)
 	ld $(LDFLAGS) -x --shared -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(OBJS) $(INTEGRATION_OBJS)
 else
