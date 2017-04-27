@@ -4,6 +4,7 @@ language: cpp
 sudo: required
 script:
   - sudo unlink /usr/bin/gcc && sudo ln -s /usr/bin/gcc-6 /usr/bin/gcc
+  - sudo unlink /usr/bin/g++ && sudo ln -s /usr/bin/g++-6 /usr/bin/g++
   - gcc --version
   - ./configure && make && make test
 addons:
