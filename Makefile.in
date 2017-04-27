@@ -37,9 +37,9 @@ distclean: clean
 
 .depend: $(SRCS)
 	rm -f ./.depend
-	$(CXX) $(CXXFLAGS) -MM $^ > ./.depend;
+	$(CXX) -MM $^ > ./.depend;
 
-include .depend
+-include .depend
 
 $(TESTS): %: %.o $(OBJS)
 	@$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)  -o $@ $^
