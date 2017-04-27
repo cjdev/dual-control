@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <vector>
-#include <iostream>
 
 #include "user.h"
 #include "sys_unistd.h"
@@ -50,12 +49,9 @@ public:
                                       buffer.data(), buffer.size(), &found_passwd);
         std::vector<user> return_value;
 
-        std::cout << __FILE__ << " " << __LINE__ << std::endl;
         if (!result && found_passwd) {
-        std::cout << __FILE__ << " " << __LINE__ << std::endl;
             return_value.push_back (user::delegate (new user_impl (sys_passwd)));
         }
-        std::cout << __FILE__ << " " << __LINE__ << std::endl;
 
         return return_value;
     }

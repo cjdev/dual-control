@@ -9,7 +9,6 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-#include <iostream>
 
 #include "user.h"
 #include "test_util.h"
@@ -94,22 +93,16 @@ int find_user_happy()
 {
     //given
     std::string user_name ("user");
-    std::cout << "here " << __LINE__ << std::endl;
     pwd test_pwd (pwd::delegate (new fake_pwd (user_name)));
-    std::cout << "here " << __LINE__ << std::endl;
     unistd test_unistd (unistd::delegate (new fake_unistd (
             _SC_GETPW_R_SIZE_MAX)));
-    std::cout << "here " << __LINE__ << std::endl;
     directory directory (directory::create (test_unistd, test_pwd));
 
     //when
-    std::cout << "here " << __LINE__ << std::endl;
     std::vector<user> results = directory.find_user (user_name);
 
     //then
-    std::cout << "here " << __LINE__ << std::endl;
     check (!results.empty(), "user should have been found");
-    std::cout << "here " << __LINE__ << std::endl;
     succeed();
 }
 
