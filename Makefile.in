@@ -1,4 +1,4 @@
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++11
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11 -lpam
 CFLAGS += -fPIC -fno-stack-protector
 LDFLAGS += -lpam
 
