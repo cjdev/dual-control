@@ -18,13 +18,16 @@ class fake_pwd : public pwd_ifc
 {
 private:
     std::string expected_user_name_;
+    std::string home_directory_;
 public:
     fake_pwd (const std::string expected_user_name) : expected_user_name_
-        (expected_user_name) {}
+        (expected_user_name), home_directory_ ("/somehome") {}
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
                     size_t buffer_sz, passwd **result)
     {
         if (expected_user_name_ == user_name)  {
+            out->pw_dir = const_cast<char *> (home_directory_.c_str());
+            out->pw_name = const_cast<char *> (expected_user_name_.c_str());
             *result = out;
         } else {
             *result = 0;
@@ -38,6 +41,7 @@ class match_buffer_pwd : public pwd_ifc
 {
 private:
     long int expected_buffer_sz_;
+    std::string charbuf_;
 public:
     match_buffer_pwd (long int buffer_sz) : expected_buffer_sz_ (buffer_sz) {}
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
@@ -45,6 +49,8 @@ public:
     {
 
         if (expected_buffer_sz_ == buffer_sz && buffer != 0) {
+            out->pw_name = const_cast<char *> (charbuf_.c_str());
+            out->pw_dir = const_cast<char *> (charbuf_.c_str());
             *result = out;
         } else {
             *result = 0;

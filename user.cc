@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <vector>
-#include <iostream>
 
 #include "user.h"
 #include "sys_unistd.h"

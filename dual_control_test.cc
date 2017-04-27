@@ -128,7 +128,7 @@ int authenticate_validates_with_received_token()
     use_conversation (configuration, new fake_conversation (user, token));
     dual_control dc (dual_control::create (configuration));
     pam_handle_t *handle (0);
-    std::vector<const std::string> arguments;
+    std::vector<std::string> arguments;
 
     // when
     int actual = dc.authenticate (req());
