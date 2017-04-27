@@ -26,9 +26,9 @@
 #include "logger.h"
 
 struct dual_control_configuration {
-    validator validator;
-    conversation conversation;
-    logger logger;
+    class validator validator;
+    class conversation conversation;
+    class logger logger;
 };
 
 class dual_control_ifc
