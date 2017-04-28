@@ -16,7 +16,7 @@
 #include <memory>
 
 #include "request.h"
-#include "pam.h"
+#include "sys_pam.h"
 
 struct conversation_result {
     std::string user_name;

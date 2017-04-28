@@ -22,7 +22,7 @@
 #include "request.h"
 #include "conversation.h"
 #include "test_util.h"
-#include "pam.h"
+#include "sys_pam.h"
 
 struct conversation_data {
     std::vector<pam_message> expected_prompts;

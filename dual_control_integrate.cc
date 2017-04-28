@@ -27,7 +27,7 @@
 #include "sys_pwd.h"
 #include "sys_unistd.h"
 #include "sys_fstream.h"
-#include "pam.h"
+#include "sys_pam.h"
 #include "sys_syslog.h"
 
 namespace
