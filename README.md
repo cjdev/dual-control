@@ -5,7 +5,7 @@ Dual Control is a PAM module that requires a user to input a generated token fro
 
 At **CJ Engineering**, we will be implementing Dual Control on our production boxes to ensure that a single engineer cannot use sudo to gain application-role access without meeting the above-stated requirements.
 
-Dual Control is an open source project licensed under the [GNU General Public License](https://github.com/cjdev/dual-control/blob/master/COPYING). As it stands, Dual Control is written only for machines running Linux. However, we graciously welcome contributions, particularly those related to portability to other operating systems.
+Dual Control is an open source project licensed under the [GNU General Public License](https://github.com/cjdev/dual-control/blob/master/LICENSE). As it stands, Dual Control is written only for machines running Linux. However, we graciously welcome contributions, particularly those related to portability to other operating systems.
 
 ## Status
 This is in active development. The current version uses a permanent token and so is not meant for production use. The final version will
