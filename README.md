@@ -19,7 +19,8 @@ use a time-based OTP.
   - replace the existing auth lines with
 ```
 auth        required      pam_env.so
-auth        sufficient    pam_unix.so nullok try_first_pass
+auth        required      pam_unix.so
+auth        sufficient    pam_dual_control.so
 auth        requisite     pam_succeed_if.so uid >= 1000 quiet_success
 auth        required      pam_deny.so
 ```
