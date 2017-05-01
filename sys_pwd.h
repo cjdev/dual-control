@@ -18,6 +18,7 @@
 class pwd_ifc
 {
 public:
+    virtual ~pwd_ifc() {}
     virtual int getpwnam_r (const char *user_name, passwd *out, char *buffer,
                             size_t buffer_sz, passwd **result)
     {

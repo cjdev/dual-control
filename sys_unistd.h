@@ -19,6 +19,7 @@
 class unistd_ifc
 {
 public:
+    virtual ~unistd_ifc() {}
     virtual long int sysconf (int name)
     {
         return -1;

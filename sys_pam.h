@@ -18,6 +18,7 @@
 class pam_ifc
 {
 public:
+    virtual ~pam_ifc() {}
     virtual int get_conv (pam_handle *handle, const pam_conv **out)
     {
         return PAM_SERVICE_ERR;

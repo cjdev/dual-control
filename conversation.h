@@ -26,6 +26,7 @@ struct conversation_result {
 class conversation_ifc
 {
 public:
+    virtual ~conversation_ifc() {}
     virtual conversation_result initiate (const pam_request &request)
     {
         return { "", "" };

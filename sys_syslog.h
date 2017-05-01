@@ -19,6 +19,7 @@
 class sys_syslog_ifc
 {
 public:
+    virtual ~sys_syslog_ifc() {}
     virtual void openlog (const char *ident, int logopt, int facility) {}
     virtual void vsyslog (int priority, const char *message, va_list args) {}
     virtual void closelog() {}

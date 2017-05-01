@@ -19,6 +19,7 @@ class fstreams_ifc
 {
 public:
     typedef std::shared_ptr<std::istream> pstream;
+    virtual ~fstreams_ifc() {}
     virtual pstream open_fstream (const std::string &file_path)
     {
         return pstream (new std::istringstream (""));
