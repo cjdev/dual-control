@@ -27,7 +27,7 @@ public:
     };
 };
 
-class pwd : public pwd_ifc
+class pwd
 {
 public:
     typedef std::shared_ptr<pwd_ifc> delegate;

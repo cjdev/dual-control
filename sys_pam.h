@@ -25,7 +25,7 @@ public:
     }
 };
 
-class pam : public pam_ifc
+class pam
 {
     typedef std::shared_ptr<pam_ifc> delegate;
 private:

@@ -26,13 +26,14 @@ public:
     }
 };
 
-class fstreams : public fstreams_ifc
+class fstreams
 {
 public:
     typedef std::shared_ptr<fstreams_ifc> delegate;
 private:
     delegate delegate_;
 public:
+    typedef fstreams_ifc::pstream pstream;
     fstreams (const delegate &delegate) : delegate_ (delegate) {}
     fstreams() : fstreams (delegate (new fstreams_ifc)) {}
     pstream open_fstream (const std::string &file_path)

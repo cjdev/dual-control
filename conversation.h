@@ -33,7 +33,7 @@ public:
     }
 };
 
-class conversation: public conversation_ifc
+class conversation
 {
 private:
     std::shared_ptr<conversation_ifc> delegate_;

@@ -39,7 +39,7 @@ public:
     }
 };
 
-class fake_user_token_supplier : public user_token_supplier
+class fake_user_token_supplier : public user_token_supplier_ifc
 {
 private:
     std::string token_;

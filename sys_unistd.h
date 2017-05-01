@@ -26,7 +26,7 @@ public:
     }
 };
 
-class unistd : public unistd_ifc
+class unistd
 {
 public:
     typedef std::shared_ptr<unistd_ifc> delegate;

@@ -28,7 +28,7 @@ public:
     }
 };
 
-class user : public user_ifc
+class user
 {
 public:
     typedef std::shared_ptr<user_ifc> delegate;

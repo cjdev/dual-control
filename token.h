@@ -28,7 +28,7 @@ public:
     }
 };
 
-class user_token_supplier : public user_token_supplier_ifc
+class user_token_supplier
 {
 public:
     typedef std::shared_ptr<user_token_supplier_ifc> delegate;

@@ -29,7 +29,7 @@ public:
     }
 };
 
-class validator : public validator_ifc
+class validator
 {
 private:
     std::shared_ptr<validator_ifc> delegate_;

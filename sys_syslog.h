@@ -25,7 +25,7 @@ public:
     virtual void closelog() {}
 };
 
-class sys_syslog : public sys_syslog_ifc
+class sys_syslog
 {
 public:
     typedef std::shared_ptr<sys_syslog_ifc> delegate;

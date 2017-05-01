@@ -39,7 +39,7 @@ public:
     virtual int setcred (const pam_request &request);
 };
 
-class dual_control : public dual_control_ifc
+class dual_control
 {
 private:
     std::shared_ptr<dual_control_ifc> delegate_;

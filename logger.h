@@ -25,7 +25,7 @@ public:
                       const std::string &token) {};
 };
 
-class logger : public logger_ifc
+class logger
 {
 public:
     typedef std::shared_ptr<logger_ifc> delegate;
