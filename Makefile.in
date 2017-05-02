@@ -5,7 +5,7 @@ LDFLAGS = -lpam
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o pam.o dual_control_integrate.o
 OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o
 TESTS = dual_control_test validator_test conversation_test request_test user_test token_test \
-		logger_test
+		logger_test session_test
 TESTOBJS = $(patsubst %,%.o,$(TESTS))
 SRCS := $(OBJS:.o=.cc) $(TESTOBJS:.o=.cc)
 
