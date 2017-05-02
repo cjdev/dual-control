@@ -13,11 +13,9 @@
  * be tested.
  */
 #include <security/pam_modules.h>
-#include <security/pam_appl.h>
 #include <string>
 #include <memory>
 #include <vector>
-#include <iostream>
 
 #include "request.h"
 #include "dual_control.h"
@@ -59,10 +57,6 @@ dual_control dc = initialize();
 PAM_EXTERN int pam_sm_authenticate (pam_handle_t *pamh, int flags, int argc,
                                     const char **argv)
 {
-    const char *uname;
-    int getr = pam_get_item(pamh, PAM_USER, reinterpret_cast<const void **>(&uname));
-    std::cout << "getr: " << getr << " uname: " << uname << std::endl;
-
     return dc.authenticate (pam_request (pamh, flags, argc, argv));
 }
 
