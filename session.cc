@@ -7,7 +7,7 @@
 
 namespace
 {
-class impl : public session_ifc {
+class impl : public sessions_ifc {
     private:
         pam pam_;
     public:
@@ -21,6 +21,6 @@ class impl : public session_ifc {
 
 }
 
-session session::create(const pam &pam) {
-    return session(std::make_shared<impl>(pam));
+sessions sessions::create(const pam &pam) {
+    return sessions(std::make_shared<impl>(pam));
 }

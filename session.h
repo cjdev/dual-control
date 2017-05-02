@@ -6,23 +6,23 @@
 #include "request.h"
 #include "sys_pam.h"
 
-class session_ifc {
+class sessions_ifc {
     public:
-        virtual ~session_ifc () {}
+        virtual ~sessions_ifc () {}
         virtual std::string user_name (const pam_request &request)  const {
             return "";
         }
 };
 
-class session {
+class sessions {
     private:
-        std::shared_ptr<session_ifc> delegate_;
+        std::shared_ptr<sessions_ifc> delegate_;
     public:
-        session(std::shared_ptr<session_ifc> delegate = std::make_shared<session_ifc>()) : delegate_(delegate) {}
+        sessions(std::shared_ptr<sessions_ifc> delegate = std::make_shared<sessions_ifc>()) : delegate_(delegate) {}
         std::string user_name (const pam_request &request) const {
             return delegate_->user_name(request);
         }
-        static session create(const pam &pam);
+        static sessions create(const pam &pam);
 };
 
 #endif

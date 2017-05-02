@@ -21,11 +21,11 @@ int gets_user_from_pam() {
     //given
     std::string user_name("user");
     pam fake_sys_pam(std::make_shared<fake_sys_pam>(user_name));
-    session session(session::create(fake_sys_pam));
+    sessions sessions(sessions::create(fake_sys_pam));
     pam_request request(0, 0, 0, 0);
 
     //when
-    std::string actual = session.user_name(request);
+    std::string actual = sessions.user_name(request);
 
     //
     //then
