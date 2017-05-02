@@ -48,7 +48,8 @@ public:
 impl::impl (const dual_control_configuration &configuration) :
     conversation_ (configuration.conversation),
     validator_ (configuration.validator),
-    logger_ (configuration.logger) {}
+    logger_ (configuration.logger),
+    sessions_(configuration.sessions) {}
 
 int impl::setcred (const pam_request &request)
 {

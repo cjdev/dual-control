@@ -24,11 +24,13 @@
 #include "validator.h"
 #include "conversation.h"
 #include "logger.h"
+#include "session.h"
 
 struct dual_control_configuration {
     class validator validator;
     class conversation conversation;
     class logger logger;
+    class sessions sessions;
 };
 
 class dual_control_ifc

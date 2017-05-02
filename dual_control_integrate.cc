@@ -29,6 +29,7 @@
 #include "sys_fstream.h"
 #include "sys_pam.h"
 #include "sys_syslog.h"
+#include "session.h"
 
 namespace
 {
@@ -46,9 +47,11 @@ dual_control initialize()
     conversation conversation (conversation::create (pam));
     sys_syslog sys_syslog (sys_syslog::create());
     logger logger (logger::create (sys_syslog));
+    sessions sessions (sessions::create(pam));
     configuration.validator = validator;
     configuration.logger = logger;
     configuration.conversation = conversation;
+    configuration.sessions = sessions;
     return dual_control::create (configuration);
 }
 dual_control dc = initialize();
