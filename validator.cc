@@ -32,6 +32,10 @@ public:
     {
         std::vector<user> found_user = directory_.find_user (authorizer_user_name);
 
+        if (requester_user_name.empty()) {
+            return false;
+        }
+
         if (requester_user_name == authorizer_user_name) {
             return false;
         }
