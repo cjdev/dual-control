@@ -26,10 +26,19 @@ public:
           const user_token_supplier user_token_supplier) :
         directory_ (directory),
         user_token_supplier_ (user_token_supplier) {}
-    bool validate (const std::string &user_name,
+    bool validate (const std::string &requester_user_name,
+                   const std::string &authorizer_user_name,
                    const std::string &token)
     {
-        std::vector<user> found_user = directory_.find_user (user_name);
+        std::vector<user> found_user = directory_.find_user (authorizer_user_name);
+
+        if (requester_user_name.empty()) {
+            return false;
+        }
+
+        if (requester_user_name == authorizer_user_name) {
+            return false;
+        }
 
         if (found_user.empty()) {
             return false;

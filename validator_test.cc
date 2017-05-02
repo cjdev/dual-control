@@ -70,7 +70,7 @@ bool validator_validates()
     validator validator = validator::create (directory, user_token_supplier);
 
     // when
-    bool actual = validator.validate (user_name, token);
+    bool actual = validator.validate ("requester", user_name, token);
 
     // then
     check (actual, "should be valid");
@@ -88,7 +88,7 @@ bool validator_fails_unknown_user()
     validator validator = validator::create (directory, user_token_supplier);
 
     // when
-    bool actual = validator.validate ("notuser", token);
+    bool actual = validator.validate ("requester", "notuser", token);
 
     // then
     check (!actual, "should not be valid");
@@ -106,11 +106,53 @@ bool validator_fails_incorrect_token()
     validator validator = validator::create (directory, user_token_supplier);
 
     // when
-    bool actual = validator.validate (user_name, "token");
+    bool actual = validator.validate ("requester", user_name, "token");
 
     // then
     check (!actual, "should not be valid");
     succeed();
+}
+
+bool validator_fails_with_own_token()
+{
+    // given
+    std::string requester_user_name ("requester");
+    std::string authorizer_user_name (requester_user_name);
+    std::string authorizer_token ("token");
+    directory directory (share (new fake_directory (authorizer_user_name)));
+    user_token_supplier user_token_supplier (share (new
+            fake_user_token_supplier (authorizer_token)));
+    validator validator = validator::create (directory, user_token_supplier);
+
+    // when
+    bool actual = validator.validate (requester_user_name, authorizer_user_name,
+                                      authorizer_token);
+
+    // then
+    check (!actual, "should not be valid");
+    succeed();
+
+}
+
+bool validator_fails_with_unknown_requester()
+{
+    // given
+    std::string requester_user_name ("");
+    std::string authorizer_user_name ("authorizer");
+    std::string authorizer_token ("token");
+    directory directory (share (new fake_directory (authorizer_user_name)));
+    user_token_supplier user_token_supplier (share (new
+            fake_user_token_supplier (authorizer_token)));
+    validator validator = validator::create (directory, user_token_supplier);
+
+    // when
+    bool actual = validator.validate (requester_user_name, authorizer_user_name,
+                                      authorizer_token);
+
+    // then
+    check (!actual, "should not be valid");
+    succeed();
+
 }
 
 RESET_VARS_START
@@ -121,6 +163,8 @@ bool run_tests()
     test (validator_validates);
     test (validator_fails_unknown_user);
     test (validator_fails_incorrect_token);
+    test (validator_fails_with_own_token);
+    test (validator_fails_with_unknown_requester);
     succeed();
 }
 

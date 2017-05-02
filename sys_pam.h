@@ -19,7 +19,11 @@ class pam_ifc
 {
 public:
     virtual ~pam_ifc() {}
-    virtual int get_conv (pam_handle *handle, const pam_conv **out)
+    virtual int get_user (pam_handle *handle, const char **out) const
+    {
+        return PAM_SERVICE_ERR;
+    }
+    virtual int get_conv (pam_handle *handle, const pam_conv **out) const
     {
         return PAM_SERVICE_ERR;
     }
@@ -33,7 +37,11 @@ private:
 public:
     pam (const delegate &delegate) : delegate_ (delegate) {}
     pam() : pam (delegate (new pam_ifc)) {}
-    int get_conv (pam_handle *handle, const pam_conv **out)
+    int get_user (pam_handle *handle, const char **out) const
+    {
+        return delegate_->get_user (handle, out);
+    }
+    int get_conv (pam_handle *handle, const pam_conv **out) const
     {
         return delegate_->get_conv (handle, out);
     }

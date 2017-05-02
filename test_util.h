@@ -32,7 +32,6 @@
 
 #define test(NAME) \
     { \
-      __reset_vars(); \
       int result = NAME (); \
       if (!result) { \
           fprintf(stderr, "test failed: %s\n", #NAME); \

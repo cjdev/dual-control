@@ -21,9 +21,13 @@ namespace
 class impl : public pam_ifc
 {
 public:
-    int get_conv (pam_handle *handle, const pam_conv **out)
+    int get_conv (pam_handle *handle, const pam_conv **out) const
     {
         return ::pam_get_item (handle, PAM_CONV, (const void **)out);
+    }
+    int get_user (pam_handle *handle, const char **out) const
+    {
+        return ::pam_get_item (handle, PAM_USER, (const void **)out);
     }
 };
 }

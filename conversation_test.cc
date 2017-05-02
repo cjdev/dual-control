@@ -82,7 +82,7 @@ private:
     pam_handle *expected_handle_;
     conversation_data conversation_data_;
     int get_response_;
-    pam_conv conv_;
+    mutable pam_conv conv_;
 public:
     fake_pam (pam_handle *expected_handle,
               const conversation_data &conversation_data)
@@ -91,7 +91,7 @@ public:
           get_response_ (PAM_SUCCESS)
     {}
     fake_pam (int get_response) : get_response_ (get_response) {}
-    int get_conv (pam_handle *handle, const pam_conv **out)
+    int get_conv (pam_handle *handle, const pam_conv **out) const
     {
         if (get_response_ != PAM_SUCCESS) {
             return get_response_;
@@ -101,7 +101,7 @@ public:
             throw std::string ("unexpected handle");
         }
 
-        conv_.appdata_ptr = reinterpret_cast<void *> (&conversation_data_);
+        conv_.appdata_ptr = (void *) (&conversation_data_);
         conv_.conv = fake_conv;
         *out = &conv_;
         return PAM_SUCCESS;
