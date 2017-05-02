@@ -39,9 +39,12 @@ public:
         (delegate) {}
     validator() : validator (std::shared_ptr<validator_ifc>
                                  (new validator_ifc)) {}
-    bool validate (const std::string &requester_user_name, const std::string &authorizer_user_name, const std::string &authorizer_token)
+    bool validate (const std::string &requester_user_name,
+                   const std::string &authorizer_user_name,
+                   const std::string &authorizer_token)
     {
-        return delegate_->validate (requester_user_name, authorizer_user_name, authorizer_token);
+        return delegate_->validate (requester_user_name, authorizer_user_name,
+                                    authorizer_token);
     }
     static validator create (const directory &directory,
                              const user_token_supplier &token_supplier);

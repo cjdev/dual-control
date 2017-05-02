@@ -113,40 +113,44 @@ bool validator_fails_incorrect_token()
     succeed();
 }
 
-bool validator_fails_with_own_token() {
+bool validator_fails_with_own_token()
+{
     // given
-    std::string requester_user_name("requester");
-    std::string authorizer_user_name(requester_user_name);
-    std::string authorizer_token("token");
+    std::string requester_user_name ("requester");
+    std::string authorizer_user_name (requester_user_name);
+    std::string authorizer_token ("token");
     directory directory (share (new fake_directory (authorizer_user_name)));
     user_token_supplier user_token_supplier (share (new
-            fake_user_token_supplier(authorizer_token)));
+            fake_user_token_supplier (authorizer_token)));
     validator validator = validator::create (directory, user_token_supplier);
 
     // when
-    bool actual = validator.validate (requester_user_name, authorizer_user_name, authorizer_token);
+    bool actual = validator.validate (requester_user_name, authorizer_user_name,
+                                      authorizer_token);
 
     // then
-    check(!actual, "should not be valid");
+    check (!actual, "should not be valid");
     succeed();
 
 }
 
-bool validator_fails_with_unknown_requester() {
+bool validator_fails_with_unknown_requester()
+{
     // given
-    std::string requester_user_name("");
-    std::string authorizer_user_name("authorizer");
-    std::string authorizer_token("token");
+    std::string requester_user_name ("");
+    std::string authorizer_user_name ("authorizer");
+    std::string authorizer_token ("token");
     directory directory (share (new fake_directory (authorizer_user_name)));
     user_token_supplier user_token_supplier (share (new
-            fake_user_token_supplier(authorizer_token)));
+            fake_user_token_supplier (authorizer_token)));
     validator validator = validator::create (directory, user_token_supplier);
 
     // when
-    bool actual = validator.validate (requester_user_name, authorizer_user_name, authorizer_token);
+    bool actual = validator.validate (requester_user_name, authorizer_user_name,
+                                      authorizer_token);
 
     // then
-    check(!actual, "should not be valid");
+    check (!actual, "should not be valid");
     succeed();
 
 }

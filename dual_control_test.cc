@@ -92,7 +92,8 @@ private:
 public:
     fake_validator (const std::string &user,
                     const std::string &token): user_ (user), token_ (token) {}
-    bool validate (const std::string &requester, const std::string &user, const std::string &token)
+    bool validate (const std::string &requester, const std::string &user,
+                   const std::string &token)
     {
         return user_ == user && token_ == token;
     }

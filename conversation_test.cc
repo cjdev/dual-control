@@ -101,7 +101,7 @@ public:
             throw std::string ("unexpected handle");
         }
 
-        conv_.appdata_ptr = (void*) (&conversation_data_);
+        conv_.appdata_ptr = (void *) (&conversation_data_);
         conv_.conv = fake_conv;
         *out = &conv_;
         return PAM_SUCCESS;
