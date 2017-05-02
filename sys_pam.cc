@@ -25,6 +25,10 @@ public:
     {
         return ::pam_get_item (handle, PAM_CONV, (const void **)out);
     }
+    int get_user (pam_handle *handle, const char **out)
+    {
+        return ::pam_get_item (handle, PAM_USER, (const void **)out);
+    }
 };
 }
 
