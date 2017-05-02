@@ -57,7 +57,7 @@ int impl::authenticate (const pam_request &request)
 {
     conversation_result input (conversation_.initiate (request));
 
-    int auth_result = validator_.validate (input.user_name,
+    int auth_result = validator_.validate ("", input.user_name,
                                            input.token) ? PAM_SUCCESS : PAM_AUTH_ERR;
 
     logger_.log (auth_result, input.user_name, input.token);
