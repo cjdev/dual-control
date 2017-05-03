@@ -1,7 +1,13 @@
+#ifndef INSTALLER_H_
+#define INSTALLER_H_
 
-class dual_control_tool {
+#include <string>
+
+class installer {
     public:
         std::string install_token() {
             return "123456";
         }
 };
+
+#endif
