@@ -46,7 +46,7 @@ public:
         stream->getline (line.data(), line.size());
         return std::string (line.data());
     }
-    void create (const user &user) const override
+    void save (const user &user, const std::string &token) const override
     {
         std::string generated_token (generate_token_());
         std::string file_path (user.home_directory() + "/.dual_control");

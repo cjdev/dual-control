@@ -28,7 +28,7 @@ public:
     {
         return "";
     }
-    virtual void create (const user &user) const {}
+    virtual void save (const user &user, const std::string &token) const {}
 };
 
 class tokens
@@ -46,9 +46,9 @@ public:
     {
         return delegate_->token (user);
     }
-    void create (const user &user) const
+    void save (const user &user, const std::string &token) const
     {
-        return delegate_->create (user);
+        return delegate_->save (user, token);
     }
     static tokens create (const fstreams &fstreams,
                           const tokens_ifc::token_generator &generate_token);

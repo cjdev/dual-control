@@ -136,7 +136,7 @@ int writes_the_token ()
     tokens tokens (tokens::create (test_streams, [&] {return token;}));
 
     //when
-    tokens.create (test_user);
+    tokens.save (test_user, token);
 
     // then
     std::ostringstream temp;
