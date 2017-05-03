@@ -51,7 +51,6 @@ class fake_directory : public directory_ifc {
 
 int installs_token() {
     //given
-    user user;
     std::string user_name("user");
     std::string token("token");
     auto  test_tokens = std::make_shared<mock_tokens>();
@@ -91,9 +90,29 @@ int unistd_does_not_find_user_name() {
     succeed();
 }
 
+int directory_finds_no_user_info() {
+    std::string user_name("user");
+    std::string token("token");
+    auto  test_tokens = std::make_shared<mock_tokens>();
+    tokens tokens{test_tokens};
+    unistd unistd(std::make_shared<fake_unistd>(user_name));
+    directory directory(std::make_shared<fake_directory>("not the user"));
+    installer_ifc::generator generator = [&] { return token; };
+
+    installer installer = installer::create (tokens, unistd, directory, generator);
+
+    //when
+    installer.install_token();
+
+    //then
+    check(test_tokens->captured_token == "", "installed wrong token");
+    succeed();
+}
+
 int run_tests() {
     test(installs_token);
     test(unistd_does_not_find_user_name);
+    test(directory_finds_no_user_info);
     succeed();
 }
 

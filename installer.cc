@@ -27,6 +27,10 @@ class impl : public installer_ifc {
             std::string user_name = c_user_name;
 
             auto found_user = directory_.find_user(user_name);
+            if (found_user.empty()) {
+                return "";
+            }
+
             user user(found_user[0]);
             std::string token(generator_());
             tokens_.save(user, token);
