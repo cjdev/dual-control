@@ -133,7 +133,7 @@ int writes_the_token ()
     mock_write_fstreams *mockfs (new mock_write_fstreams);
     fstreams test_streams{fstreams::delegate (mockfs)};
     std::string token ("token");
-    tokens tokens (tokens::create (test_streams, [&] {return token;}));
+    tokens tokens (tokens::create (test_streams, [&] {return "wrong token";}));
 
     //when
     tokens.save (test_user, token);

@@ -48,11 +48,10 @@ public:
     }
     void save (const user &user, const std::string &token) const override
     {
-        std::string generated_token (generate_token_());
         std::string file_path (user.home_directory() + "/.dual_control");
         fstreams::postream stream (fstreams_.open_ofstream (file_path,
                                    std::ios_base::trunc));
-        *stream << generated_token << std::endl;
+        *stream << token << std::endl;
     }
 };
 }
