@@ -48,8 +48,8 @@ private:
 public:
     dual_control (std::shared_ptr<dual_control_ifc> delegate) : delegate_
         (delegate) {}
-    dual_control() : dual_control (std::shared_ptr<dual_control_ifc>
-                                       (new dual_control_ifc)) {}
+    dual_control() : dual_control (std::make_shared<dual_control_ifc>
+                                       ()) {}
     int authenticate (const pam_request &request)
     {
         return delegate_->authenticate (request);
