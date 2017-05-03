@@ -71,7 +71,7 @@ int reads_from_the_right_file ()
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
-    user_token_supplier supplier (user_token_supplier::create (
+    tokens supplier (tokens::create (
                                       test_streams));
 
     //when
@@ -91,7 +91,7 @@ int returns_empty_string_if_file_open_fail()
     fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
                            "654321")));
     user test_user (user::delegate (new fake_user (home_directory)));
-    user_token_supplier supplier (user_token_supplier::create (
+    tokens supplier (tokens::create (
                                       test_streams));
 
     //when

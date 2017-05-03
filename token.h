@@ -18,32 +18,32 @@
 #include "user.h"
 #include "sys_fstream.h"
 
-class user_token_supplier_ifc
+class tokens_ifc
 {
 public:
-    virtual ~user_token_supplier_ifc() {}
+    virtual ~tokens_ifc() {}
     virtual std::string token (user &user)
     {
         return "";
     }
 };
 
-class user_token_supplier
+class tokens
 {
 public:
-    typedef std::shared_ptr<user_token_supplier_ifc> delegate;
+    typedef std::shared_ptr<tokens_ifc> delegate;
 private:
     delegate delegate_;
 public:
-    user_token_supplier (delegate delegate) :
+    tokens (delegate delegate) :
         delegate_ (delegate) {}
-    user_token_supplier() : user_token_supplier (
-            delegate (new user_token_supplier_ifc)) {}
+    tokens() : tokens (
+            delegate (new tokens_ifc)) {}
     std::string token (user &user)
     {
         return delegate_->token (user);
     }
-    static user_token_supplier create (fstreams &fstreams);
+    static tokens create (fstreams &fstreams);
 };
 
 #endif

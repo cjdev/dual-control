@@ -20,12 +20,12 @@
 
 namespace
 {
-class user_token_supplier_impl : public user_token_supplier_ifc
+class tokens_impl : public tokens_ifc
 {
 private:
     fstreams fstreams_;
 public:
-    user_token_supplier_impl (fstreams &fstreams) :
+    tokens_impl (fstreams &fstreams) :
         fstreams_ (fstreams) {}
     std::string token (user &user)
     {
@@ -43,9 +43,9 @@ public:
     }
 };
 }
-user_token_supplier user_token_supplier::create (fstreams &fstreams)
+tokens tokens::create (fstreams &fstreams)
 {
-    return user_token_supplier (user_token_supplier::delegate
-                                (new user_token_supplier_impl (fstreams)));
+    return tokens (tokens::delegate
+                                (new tokens_impl (fstreams)));
 }
 
