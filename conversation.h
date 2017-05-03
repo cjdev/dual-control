@@ -41,7 +41,7 @@ public:
     conversation (const std::shared_ptr<conversation_ifc> &delegate) :
         delegate_ (delegate) {}
     conversation() : conversation (std::make_shared<conversation_ifc>()
-                                       ) {}
+                                      ) {}
     conversation_result initiate (const pam_request &request)
     {
         return delegate_->initiate (request);

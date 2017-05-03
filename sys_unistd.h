@@ -24,7 +24,8 @@ public:
     {
         return -1;
     }
-    virtual const char *getlogin() const {
+    virtual const char *getlogin() const
+    {
         return "";
     }
 };
@@ -44,7 +45,8 @@ public:
     {
         return delegate_->sysconf (name);
     }
-    const char *getlogin() const {
+    const char *getlogin() const
+    {
         return delegate_->getlogin();
     }
     static unistd create();
