@@ -84,10 +84,11 @@ int unistd_does_not_find_user_name() {
 
 
     //when
-    installer.install_token();
+    auto returned = installer.install_token();
 
     //then
     check(test_tokens->captured_token == "", "should not have installed a token");
+    check(returned == "", "did not return empty token");
     succeed();
 }
 
@@ -103,10 +104,11 @@ int directory_finds_no_user_info() {
     installer installer = installer::create (tokens, unistd, directory, generator);
 
     //when
-    installer.install_token();
+    auto returned = installer.install_token();
 
     //then
     check(test_tokens->captured_token == "", "installed wrong token");
+    check(returned == "", "did not return empty token");
     succeed();
 }
 
