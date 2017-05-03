@@ -27,7 +27,7 @@ public:
     }
     fake_directory() : user_name_ ("_NOT_A_USER") {}
 
-    std::vector<user> find_user (const std::string &user_name) override
+    std::vector<user> find_user (const std::string &user_name) const override
     {
         std::vector<user> result;
 

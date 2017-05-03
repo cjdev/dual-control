@@ -23,7 +23,7 @@ public:
     fake_pwd (const std::string expected_user_name) : expected_user_name_
         (expected_user_name), home_directory_ ("/somehome") {}
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
-                    size_t buffer_sz, passwd **result)
+                    size_t buffer_sz, passwd **result) const override
     {
         if (expected_user_name_ == user_name)  {
             out->pw_dir = const_cast<char *> (home_directory_.c_str());
@@ -45,7 +45,7 @@ private:
 public:
     match_buffer_pwd (long int buffer_sz) : expected_buffer_sz_ (buffer_sz) {}
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
-                    size_t buffer_sz, passwd **result)
+                    size_t buffer_sz, passwd **result) const override
     {
 
         if (expected_buffer_sz_ == buffer_sz && buffer != 0) {
@@ -64,7 +64,7 @@ class stub_pwnam_err_pwd : public pwd_ifc
 {
 public:
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
-                    size_t buffer_sz, passwd **result)
+                    size_t buffer_sz, passwd **result) const override
     {
         *result = out;
         return 3;
@@ -81,7 +81,7 @@ public:
     fake_unistd (int expected_name, long int return_value = 0)
         : expected_name_ (expected_name),
           return_value_ (return_value) {}
-    long int sysconf (int name)
+    long int sysconf (int name) const override
     {
         if (name == expected_name_) {
             return return_value_;

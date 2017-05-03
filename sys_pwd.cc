@@ -19,7 +19,7 @@ class impl : public pwd_ifc
 {
 public:
     int getpwnam_r (const char *user_name, passwd *out, char *buffer,
-                    size_t buffer_sz, passwd **result)
+                    size_t buffer_sz, passwd **result) const override
     {
         return ::getpwnam_r (user_name, out, buffer, buffer_sz, result);
     }

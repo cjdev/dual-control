@@ -40,7 +40,7 @@ private:
     pwd pwd_;
 public:
     directory_impl (unistd &unistd, pwd &pwd) : unistd_ (unistd), pwd_ (pwd) {}
-    std::vector<user> find_user (const std::string &user_name) override
+    std::vector<user> find_user (const std::string &user_name) const override
     {
         std::vector<char> buffer (unistd_.sysconf (_SC_GETPW_R_SIZE_MAX));
         passwd sys_passwd;

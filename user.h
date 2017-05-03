@@ -50,7 +50,7 @@ class directory_ifc
 {
 public:
     virtual ~directory_ifc() {}
-    virtual std::vector<user> find_user (const std::string &user_name)
+    virtual std::vector<user> find_user (const std::string &user_name) const
     {
         return std::vector<user>();
     }
@@ -66,7 +66,7 @@ public:
     directory (delegate delegate) : delegate_
         (delegate) {}
     directory() : directory (delegate (new directory_ifc)) {}
-    std::vector<user> find_user (const std::string &user_name)
+    std::vector<user> find_user (const std::string &user_name) const
     {
         return delegate_->find_user (user_name);
     }

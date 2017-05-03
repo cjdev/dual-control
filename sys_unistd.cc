@@ -17,7 +17,7 @@ namespace
 class impl : public unistd_ifc
 {
 public:
-    long int sysconf (int name)
+    long int sysconf (int name) const override
     {
         return ::sysconf (name);
     }
