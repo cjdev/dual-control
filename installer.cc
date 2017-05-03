@@ -34,7 +34,7 @@ class impl : public installer_ifc {
             user user(found_user[0]);
             std::string token(generator_());
             tokens_.save(user, token);
-            return "123456";
+            return token;
         }
 };
 

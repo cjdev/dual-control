@@ -62,10 +62,11 @@ int installs_token() {
     installer installer = installer::create (tokens, unistd, directory, generator);
 
     //when
-    installer.install_token();
+    std::string result = installer.install_token();
 
     //then
     check(test_tokens->captured_token == token, "installed wrong token");
+    check(result == token, "installer returned wrong token");
     succeed();
 }
 
