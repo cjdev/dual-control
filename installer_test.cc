@@ -26,6 +26,13 @@ class fake_unistd : public unistd_ifc {
         }
 };
 
+class fail_unistd : public unistd_ifc {
+    public:
+        const char *getlogin() const override {
+            return nullptr;
+        }
+};
+
 class fake_directory : public directory_ifc {
     private:
         std::string expected_user_name_;
@@ -63,10 +70,30 @@ int installs_token() {
     succeed();
 }
 
+int unistd_does_not_find_user_name() {
+    //given
+    std::string user_name("user");
+    std::string token("token");
+    auto  test_tokens = std::make_shared<mock_tokens>();
+    tokens tokens{test_tokens};
+    unistd unistd(std::make_shared<fail_unistd>());
+    directory directory(std::make_shared<fake_directory>(user_name));
+    installer_ifc::generator generator = [&] { return token; };
 
+    installer installer = installer::create (tokens, unistd, directory, generator);
+
+
+    //when
+    installer.install_token();
+
+    //then
+    check(test_tokens->captured_token == "", "should not have installed a token");
+    succeed();
+}
 
 int run_tests() {
     test(installs_token);
+    test(unistd_does_not_find_user_name);
     succeed();
 }
 

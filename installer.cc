@@ -19,7 +19,13 @@ class impl : public installer_ifc {
             const directory &directory, const installer_ifc::generator &generator) :
             tokens_(tokens), unistd_(unistd), directory_(directory), generator_(generator) {}
         std::string install_token() const override {
-            std::string user_name = unistd_.getlogin();
+            const char *c_user_name = unistd_.getlogin();
+            if (c_user_name == nullptr) {
+                return "";
+            }
+
+            std::string user_name = c_user_name;
+
             auto found_user = directory_.find_user(user_name);
             user user(found_user[0]);
             std::string token(generator_());
