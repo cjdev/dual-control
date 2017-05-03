@@ -29,8 +29,8 @@ public:
 
 class sessions
 {
-    public:
-        typedef std::shared_ptr<sessions_ifc> delegate;
+public:
+    typedef std::shared_ptr<sessions_ifc> delegate;
 private:
     delegate delegate_;
 public:

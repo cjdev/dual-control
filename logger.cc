@@ -23,7 +23,8 @@ private:
     sys_syslog syslog_;
 public:
     impl (const sys_syslog &sys_syslog) : syslog_ (sys_syslog) {}
-    void log (int result, const std::string &requester_user_name, const std::string &authorizer_user_name,
+    void log (int result, const std::string &requester_user_name,
+              const std::string &authorizer_user_name,
               const std::string &token)
     {
         std::string message;
@@ -34,19 +35,22 @@ public:
         case PAM_SUCCESS:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
-            message = requester_user_name + " " + authorizer_user_name + " " + token + " " + "success";
+            message = requester_user_name + " " + authorizer_user_name + " " + token +
+                      " " + "success";
             break;
 
         case PAM_AUTH_ERR:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
-            message = requester_user_name + " " + authorizer_user_name + " " + token + " " + "fail";
+            message = requester_user_name + " " + authorizer_user_name + " " + token +
+                      " " + "fail";
             break;
 
         default:
             facility = LOG_AUTH;
             priority = LOG_ERR;
-            message = requester_user_name + " " + authorizer_user_name + " pam returned error";
+            message = requester_user_name + " " + authorizer_user_name +
+                      " pam returned error";
             break;
         }
 

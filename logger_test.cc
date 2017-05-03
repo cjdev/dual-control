@@ -60,7 +60,8 @@ int logs_success()
 
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check (capture->message == requester_user + " " + authorizer_user + " " + token + " " + "success",
+    check (capture->message == requester_user + " " + authorizer_user + " " +
+           token + " " + "success",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");
     check (capture->closed, "syslog not closed");
@@ -84,7 +85,8 @@ int logs_failure()
 
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check (capture->message == requester + " " + authorizer + " " + token + " " + "fail",
+    check (capture->message == requester + " " + authorizer + " " + token + " "
+           + "fail",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");
     check (capture->closed, "syslog not closed");
@@ -108,7 +110,8 @@ int logs_pam_service_error()
 
     //then
     check (capture->facility == LOG_AUTH, "facility does not match");
-    check (capture->message == requester + " " + authorizer + " pam returned error",
+    check (capture->message == requester + " " + authorizer +
+           " pam returned error",
            "message does not match");
     check (capture->priority == LOG_ERR, "priority does not match");
     check (capture->closed, "syslog not closed");
