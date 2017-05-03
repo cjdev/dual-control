@@ -29,10 +29,12 @@ public:
 
 class sessions
 {
+    public:
+        typedef std::shared_ptr<sessions_ifc> delegate;
 private:
-    std::shared_ptr<sessions_ifc> delegate_;
+    delegate delegate_;
 public:
-    sessions (std::shared_ptr<sessions_ifc> delegate =
+    sessions (delegate delegate =
                   std::make_shared<sessions_ifc>()) : delegate_ (delegate) {}
     std::string user_name (const pam_request &request) const
     {

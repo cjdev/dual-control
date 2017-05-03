@@ -51,15 +51,16 @@ int logs_success()
     sys_syslog::delegate test_delegate (capture);
     sys_syslog test_syslog (test_delegate);
     logger logger = logger::create (test_syslog);
-    std::string user ("user");
+    std::string requester_user ("requester_user");
+    std::string authorizer_user ("authorizer_user");
     std::string token ("token");
 
     //when
-    logger.log (PAM_SUCCESS, user, token);
+    logger.log (PAM_SUCCESS, requester_user, authorizer_user, token);
 
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check (capture->message == user + " " + token + " " + "success",
+    check (capture->message == requester_user + " " + authorizer_user + " " + token + " " + "success",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");
     check (capture->closed, "syslog not closed");
@@ -74,15 +75,16 @@ int logs_failure()
     sys_syslog::delegate test_delegate (capture);
     sys_syslog test_syslog (test_delegate);
     logger logger = logger::create (test_syslog);
-    std::string user ("user");
+    std::string requester ("requestuser");
+    std::string authorizer ("authuser");
     std::string token ("token");
 
     //when
-    logger.log (PAM_AUTH_ERR, user, token);
+    logger.log (PAM_AUTH_ERR, requester, authorizer, token);
 
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check (capture->message == user + " " + token + " " + "fail",
+    check (capture->message == authorizer + " " + token + " " + "fail",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");
     check (capture->closed, "syslog not closed");
@@ -97,15 +99,16 @@ int logs_pam_service_error()
     sys_syslog::delegate test_delegate (capture);
     sys_syslog test_syslog (test_delegate);
     logger logger = logger::create (test_syslog);
-    std::string user ("user");
+    std::string requester ("user");
+    std::string authorizer ("user");
     std::string token ("token");
 
     //when
-    logger.log (PAM_SERVICE_ERR, user, token);
+    logger.log (PAM_SERVICE_ERR, requester, authorizer, token);
 
     //then
     check (capture->facility == LOG_AUTH, "facility does not match");
-    check (capture->message == user + " pam returned error",
+    check (capture->message == authorizer + " pam returned error",
            "message does not match");
     check (capture->priority == LOG_ERR, "priority does not match");
     check (capture->closed, "syslog not closed");
