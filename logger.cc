@@ -40,13 +40,13 @@ public:
         case PAM_AUTH_ERR:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
-            message = authorizer_user_name + " " + token + " " + "fail";
+            message = requester_user_name + " " + authorizer_user_name + " " + token + " " + "fail";
             break;
 
         default:
             facility = LOG_AUTH;
             priority = LOG_ERR;
-            message = authorizer_user_name + " pam returned error";
+            message = requester_user_name + " " + authorizer_user_name + " pam returned error";
             break;
         }
 

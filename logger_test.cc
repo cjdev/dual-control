@@ -84,7 +84,7 @@ int logs_failure()
 
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check (capture->message == authorizer + " " + token + " " + "fail",
+    check (capture->message == requester + " " + authorizer + " " + token + " " + "fail",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");
     check (capture->closed, "syslog not closed");
@@ -108,7 +108,7 @@ int logs_pam_service_error()
 
     //then
     check (capture->facility == LOG_AUTH, "facility does not match");
-    check (capture->message == authorizer + " pam returned error",
+    check (capture->message == requester + " " + authorizer + " pam returned error",
            "message does not match");
     check (capture->priority == LOG_ERR, "priority does not match");
     check (capture->closed, "syslog not closed");
@@ -131,84 +131,4 @@ int main (int numargs, char **args)
 {
     return !run_tests();
 }
-
-/*
-int logged_priority = -1000;
-const char *logged_message = "";
-void fake_syslog (int priority, const char *message, ...)
-{
-    logged_priority = priority;
-    logged_message = message;
-}
-
-int close_log_invoked = 0;
-void fake_closelog (void)
-{
-    close_log_invoked = 1;
-}
-
-int opened_facility = -1000;
-const char *opened_program_name = "";
-int opened_logopt = -1000;
-void fake_openlog (const char *ident, int logopt, int facility)
-{
-    opened_facility = facility;
-    opened_program_name = ident;
-    opened_logopt = logopt;
-}
-
-RESET_VARS_START
-logged_priority = -1000;
-close_log_invoked = 0;
-opened_facility = -1000;
-const char *opened_program_name = "";
-int opened_logopt = -1000;
-RESET_VARS_END
-
-int test_log_success()
-{
-    // given
-
-    // when
-    log_success();
-
-    // then
-    checkint (LOG_AUTHPRIV, opened_facility, "facility");
-    checkint (LOG_NOTICE, logged_priority, "priority");
-    checkint (0, opened_logopt, "logopt");
-    check (close_log_invoked, "log closed");
-    checkstr ("pam_dual_control", opened_program_name, "program name");
-    checkstr ("dual control succeeded", logged_message, "logged message");
-    succeed();
-}
-
-int test_log_failure()
-{
-    //given
-
-    //when
-    log_failure();
-
-    //then
-    checkint (LOG_AUTHPRIV, opened_facility, "facility");
-    checkint (LOG_NOTICE, logged_priority, "priority");
-    checkint (0, opened_logopt, "logopt");
-    check (close_log_invoked, "log closed");
-    checkstr ("pam_dual_control", opened_program_name, "program name");
-    checkstr ("dual control failed", logged_message, "logged message");
-    succeed();
-}
-
-int test_runner()
-{
-    test (test_log_success);
-    test (test_log_failure);
-    succeed();
-}
-
-int main (int numargs, char **args)
-{
-    return !test_runner();
-}
-*/
 
