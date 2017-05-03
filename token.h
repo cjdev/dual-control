@@ -50,8 +50,7 @@ public:
     {
         return delegate_->save (user, token);
     }
-    static tokens create (const fstreams &fstreams,
-                          const tokens_ifc::token_generator &generate_token);
+    static tokens create (const fstreams &fstreams);
 };
 
 #endif

@@ -95,7 +95,7 @@ int reads_from_the_right_file ()
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
     tokens supplier (tokens::create (
-                         test_streams,[] {return"";}));
+                         test_streams));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -115,7 +115,7 @@ int returns_empty_string_if_file_open_fail()
                            "654321")));
     user test_user (user::delegate (new fake_user (home_directory)));
     tokens supplier (tokens::create (
-                         test_streams, [] {return "";}));
+                         test_streams));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -133,7 +133,7 @@ int writes_the_token ()
     mock_write_fstreams *mockfs (new mock_write_fstreams);
     fstreams test_streams{fstreams::delegate (mockfs)};
     std::string token ("token");
-    tokens tokens (tokens::create (test_streams, [&] {return "wrong token";}));
+    tokens tokens (tokens::create (test_streams));
 
     //when
     tokens.save (test_user, token);

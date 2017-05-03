@@ -26,11 +26,8 @@ class tokens_impl : public tokens_ifc
 {
 private:
     fstreams fstreams_;
-    token_generator generate_token_;
 public:
-    tokens_impl (const fstreams &fstreams,
-                 const token_generator &generate_token) :
-        generate_token_ (generate_token),
+    tokens_impl (const fstreams &fstreams) :
         fstreams_ (fstreams) {}
     std::string token (const user &user) const override
     {
@@ -55,10 +52,9 @@ public:
     }
 };
 }
-tokens tokens::create (const fstreams &fstreams,
-                       const tokens_impl::token_generator &generate_token)
+tokens tokens::create (const fstreams &fstreams)
 {
     return tokens (tokens::delegate
-                   (new tokens_impl (fstreams, generate_token)));
+                   (new tokens_impl (fstreams)));
 }
 
