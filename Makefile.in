@@ -9,17 +9,13 @@ TESTS = dual_control_test validator_test conversation_test request_test user_tes
 TEST_SOURCES := $(wildcard *_test.cc)
 TESTS := $(patsubst %.cc,%.out,$(TEST_SOURCES))
 TESTRUNS := $(patsubst %.out,RUN_%,$(TESTS))
-FILES := $(SOURCES:.c=.x)
-
-all: $(FILES)
-SRCS := $(OBJS:.o=.cc) $(TEST_SOURCES)
 
 MODULELIB = pam_dual_control.so
 
 UNAME_S := $(shell uname -s)
 
 .PHONY: all
-all: dual_control.a .depend
+all: .depend dual_control.a dual_control
 
 .PHONY: version
 version:
@@ -29,6 +25,10 @@ version:
 dual_control.a: $(OBJS) $(INTEGRATION_OBJS)
 	ar rvs $@ $^
 	ranlib $@
+
+dual_control: dual_control_tool.cc
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+
 
 .PHONY: clean
 clean:
@@ -40,7 +40,7 @@ clean:
 distclean: clean
 	@git clean -xdf
 
-.depend: $(SRCS)
+.depend: $(OBJS:.o=.cc) $(TEST_SOURCES)
 	rm -f ./.depend
 	$(CXX) -MM $^ > ./.depend;
 

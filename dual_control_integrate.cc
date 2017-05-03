@@ -40,8 +40,9 @@ dual_control initialize()
     unistd unistd (unistd::create());
     directory directory (directory::create (unistd, pwd));
     fstreams fstreams (fstreams::create());
+    tokens_ifc::token_generator token_generator = []{return "";};
     tokens tokens (tokens::create (
-                       fstreams));
+                       fstreams, token_generator));
     validator validator (validator::create (directory, tokens));
     pam pam (pam::create());
     conversation conversation (conversation::create (pam));
