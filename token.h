@@ -14,6 +14,7 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 #include "user.h"
 #include "sys_fstream.h"
@@ -21,11 +22,13 @@
 class tokens_ifc
 {
 public:
+    using token_generator = std::function<std::string()>;
     virtual ~tokens_ifc() {}
-    virtual std::string token (user &user)
+    virtual std::string token (const user &user) const
     {
         return "";
     }
+    virtual void create(const user &user) const {}
 };
 
 class tokens
@@ -39,11 +42,14 @@ public:
         delegate_ (delegate) {}
     tokens() : tokens (
             delegate (new tokens_ifc)) {}
-    std::string token (user &user)
+    std::string token (const user &user) const
     {
         return delegate_->token (user);
     }
-    static tokens create (fstreams &fstreams);
+    void create(const user &user) const {
+        return delegate_->create(user);
+    }
+    static tokens create (const fstreams &fstreams, const tokens_ifc::token_generator &generate_token);
 };
 
 #endif

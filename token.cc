@@ -13,6 +13,8 @@
 #include <vector>
 #include <memory>
 #include <fstream>
+#include <iostream>
+#include <functional>
 
 #include "token.h"
 #include "user.h"
@@ -24,10 +26,12 @@ class tokens_impl : public tokens_ifc
 {
 private:
     fstreams fstreams_;
+    token_generator generate_token_;
 public:
-    tokens_impl (fstreams &fstreams) :
+    tokens_impl (const fstreams &fstreams, const token_generator &generate_token) :
+        generate_token_(generate_token),
         fstreams_ (fstreams) {}
-    std::string token (user &user)
+    std::string token (const user &user) const override
     {
         const std::string file_path (user.home_directory() + "/.dual_control");
         std::vector<char> line (7);
@@ -41,11 +45,17 @@ public:
         stream->getline (line.data(), line.size());
         return std::string (line.data());
     }
+    void create(const user &user) const override {
+        std::string generated_token(generate_token_());
+        std::string file_path(user.home_directory() + "/.dual_control");
+        fstreams::postream stream(fstreams_.open_ofstream(file_path, std::ios_base::trunc));
+        *stream << generated_token << std::endl;
+    }
 };
 }
-tokens tokens::create (fstreams &fstreams)
+tokens tokens::create (const fstreams &fstreams, const tokens_impl::token_generator &generate_token)
 {
     return tokens (tokens::delegate
-                                (new tokens_impl (fstreams)));
+                                (new tokens_impl (fstreams, generate_token)));
 }
 

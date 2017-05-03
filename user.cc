@@ -27,7 +27,7 @@ public:
     user_impl (const passwd user_info) :
         home_directory_ (std::string (user_info.pw_dir)),
         user_name_ (std::string (user_info.pw_name)) {}
-    std::string home_directory()
+    std::string home_directory() const override
     {
         return home_directory_;
     }
@@ -40,7 +40,7 @@ private:
     pwd pwd_;
 public:
     directory_impl (unistd &unistd, pwd &pwd) : unistd_ (unistd), pwd_ (pwd) {}
-    std::vector<user> find_user (const std::string &user_name)
+    std::vector<user> find_user (const std::string &user_name) override
     {
         std::vector<char> buffer (unistd_.sysconf (_SC_GETPW_R_SIZE_MAX));
         passwd sys_passwd;

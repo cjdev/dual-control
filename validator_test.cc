@@ -27,7 +27,7 @@ public:
     }
     fake_directory() : user_name_ ("_NOT_A_USER") {}
 
-    std::vector<user> find_user (const std::string &user_name)
+    std::vector<user> find_user (const std::string &user_name) override
     {
         std::vector<user> result;
 
@@ -46,7 +46,7 @@ private:
 public:
     fake_tokens (const std::string &token) : token_ (token) {}
     fake_tokens() : token_ ("_NOT_A_TOKEN") {}
-    std::string token (user &user)
+    std::string token (const user &user) const override
     {
         return token_;
     }
