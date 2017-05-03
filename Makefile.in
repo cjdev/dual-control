@@ -49,7 +49,8 @@ distclean: clean
 %_test.out: %_test.o $(OBJS)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
 
-$(TESTRUNS): $(TESTS)
+RUN_%: %.out
+	@echo running $<
 	@./$<
 
 .PHONY: test
