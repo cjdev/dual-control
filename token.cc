@@ -28,8 +28,9 @@ private:
     fstreams fstreams_;
     token_generator generate_token_;
 public:
-    tokens_impl (const fstreams &fstreams, const token_generator &generate_token) :
-        generate_token_(generate_token),
+    tokens_impl (const fstreams &fstreams,
+                 const token_generator &generate_token) :
+        generate_token_ (generate_token),
         fstreams_ (fstreams) {}
     std::string token (const user &user) const override
     {
@@ -45,17 +46,20 @@ public:
         stream->getline (line.data(), line.size());
         return std::string (line.data());
     }
-    void create(const user &user) const override {
-        std::string generated_token(generate_token_());
-        std::string file_path(user.home_directory() + "/.dual_control");
-        fstreams::postream stream(fstreams_.open_ofstream(file_path, std::ios_base::trunc));
+    void create (const user &user) const override
+    {
+        std::string generated_token (generate_token_());
+        std::string file_path (user.home_directory() + "/.dual_control");
+        fstreams::postream stream (fstreams_.open_ofstream (file_path,
+                                   std::ios_base::trunc));
         *stream << generated_token << std::endl;
     }
 };
 }
-tokens tokens::create (const fstreams &fstreams, const tokens_impl::token_generator &generate_token)
+tokens tokens::create (const fstreams &fstreams,
+                       const tokens_impl::token_generator &generate_token)
 {
     return tokens (tokens::delegate
-                                (new tokens_impl (fstreams, generate_token)));
+                   (new tokens_impl (fstreams, generate_token)));
 }
 

@@ -38,22 +38,27 @@ public:
     }
 };
 
-class mock_write_fstreams: public fstreams_ifc {
-    private:
-        mutable std::string captured_filename_;
-        mutable std::shared_ptr<std::ostringstream> capture_stream_;
-    public:
-        postream open_ofstream (const std::string &file_path, std::ios_base::open_mode mode) const override {
-            captured_filename_ = file_path;
-            capture_stream_ = std::make_shared<std::ostringstream>();
-            return capture_stream_;
-        }
-        std::string captured_filename() {
-            return captured_filename_;
-        }
-        std::string captured_written() {
-            return capture_stream_->str();
-        }
+class mock_write_fstreams: public fstreams_ifc
+{
+private:
+    mutable std::string captured_filename_;
+    mutable std::shared_ptr<std::ostringstream> capture_stream_;
+public:
+    postream open_ofstream (const std::string &file_path,
+                            std::ios_base::open_mode mode) const override
+    {
+        captured_filename_ = file_path;
+        capture_stream_ = std::make_shared<std::ostringstream>();
+        return capture_stream_;
+    }
+    std::string captured_filename()
+    {
+        return captured_filename_;
+    }
+    std::string captured_written()
+    {
+        return capture_stream_->str();
+    }
 };
 
 class fake_fstreams : public fstreams_ifc
@@ -90,7 +95,7 @@ int reads_from_the_right_file ()
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
     tokens supplier (tokens::create (
-                                      test_streams,[]{return"";}));
+                         test_streams,[] {return"";}));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -110,7 +115,7 @@ int returns_empty_string_if_file_open_fail()
                            "654321")));
     user test_user (user::delegate (new fake_user (home_directory)));
     tokens supplier (tokens::create (
-                                      test_streams, []{return "";}));
+                         test_streams, [] {return "";}));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -120,28 +125,30 @@ int returns_empty_string_if_file_open_fail()
     succeed();
 }
 
-int writes_the_token () {
+int writes_the_token ()
+{
     // given
-    std::string home_directory("/somedir");
-    user test_user(user::delegate(new fake_user(home_directory)));
-    mock_write_fstreams *mockfs(new mock_write_fstreams);
-    fstreams test_streams{fstreams::delegate(mockfs)};
-    std::string token("token");
-    tokens tokens(tokens::create(test_streams, [&]{return token;}));
+    std::string home_directory ("/somedir");
+    user test_user (user::delegate (new fake_user (home_directory)));
+    mock_write_fstreams *mockfs (new mock_write_fstreams);
+    fstreams test_streams{fstreams::delegate (mockfs)};
+    std::string token ("token");
+    tokens tokens (tokens::create (test_streams, [&] {return token;}));
 
     //when
-    tokens.create(test_user);
+    tokens.create (test_user);
 
-   // then
+    // then
     std::ostringstream temp;
     temp << token << std::endl;
     std::string expected_written = temp.str();
-    std::string expected_filename(home_directory + "/.dual_control");
-    check(mockfs->captured_filename() == expected_filename, "filename does not match");
-    check(mockfs->captured_written() == expected_written, "token does not match");
-   succeed();
+    std::string expected_filename (home_directory + "/.dual_control");
+    check (mockfs->captured_filename() == expected_filename,
+           "filename does not match");
+    check (mockfs->captured_written() == expected_written,
+           "token does not match");
+    succeed();
 }
-
 
 int run_tests()
 {

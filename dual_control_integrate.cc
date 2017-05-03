@@ -41,7 +41,7 @@ dual_control initialize()
     directory directory (directory::create (unistd, pwd));
     fstreams fstreams (fstreams::create());
     tokens tokens (tokens::create (
-                fstreams));
+                       fstreams));
     validator validator (validator::create (directory, tokens));
     pam pam (pam::create());
     conversation conversation (conversation::create (pam));

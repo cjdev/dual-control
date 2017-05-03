@@ -26,8 +26,10 @@ public:
     {
         return pstream (new std::istringstream (""));
     }
-    virtual postream open_ofstream(const std::string &file_path, std::ios_base::openmode mode) const {
-        return postream(new std::ostringstream(""));
+    virtual postream open_ofstream (const std::string &file_path,
+                                    std::ios_base::openmode mode) const
+    {
+        return postream (new std::ostringstream (""));
     }
 };
 
@@ -46,7 +48,8 @@ public:
     {
         return delegate_->open_fstream (file_path);
     }
-    postream open_ofstream (const std::string &file_path, std::ios_base::openmode mode) const
+    postream open_ofstream (const std::string &file_path,
+                            std::ios_base::openmode mode) const
     {
         return delegate_->open_ofstream (file_path, mode);
     }

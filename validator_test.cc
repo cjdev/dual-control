@@ -64,7 +64,7 @@ bool validator_validates()
     // given
     std::string token = "token";
     tokens tokens (share (new
-            fake_tokens (token)));
+                          fake_tokens (token)));
     std::string user_name = "msmith";
     directory directory (share (new fake_directory (user_name)));
     validator validator = validator::create (directory, tokens);
@@ -83,7 +83,7 @@ bool validator_fails_unknown_user()
     // given
     std::string token = "token";
     tokens tokens (share (new
-            fake_tokens));
+                          fake_tokens));
     directory directory (share (new fake_directory));
     validator validator = validator::create (directory, tokens);
 
@@ -100,7 +100,7 @@ bool validator_fails_incorrect_token()
 
     // given
     tokens tokens (share (new
-            fake_tokens));
+                          fake_tokens));
     std::string user_name = "msmith";
     directory directory (share (new fake_directory (user_name)));
     validator validator = validator::create (directory, tokens);
@@ -121,7 +121,7 @@ bool validator_fails_with_own_token()
     std::string authorizer_token ("token");
     directory directory (share (new fake_directory (authorizer_user_name)));
     tokens tokens (share (new
-            fake_tokens (authorizer_token)));
+                          fake_tokens (authorizer_token)));
     validator validator = validator::create (directory, tokens);
 
     // when
@@ -142,7 +142,7 @@ bool validator_fails_with_unknown_requester()
     std::string authorizer_token ("token");
     directory directory (share (new fake_directory (authorizer_user_name)));
     tokens tokens (share (new
-            fake_tokens (authorizer_token)));
+                          fake_tokens (authorizer_token)));
     validator validator = validator::create (directory, tokens);
 
     // when
