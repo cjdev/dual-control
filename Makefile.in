@@ -63,9 +63,9 @@ ifeq ($(UNAME_S), Linux)
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
-	mkdir -p @bindir@
-	cp dual_control @bindir@/
-	chmod a+x @bindir@/dual_control
+	mkdir -p $(DESTDIR)/@bindir@
+	cp dual_control $(DESTDIR)/@bindir@/
+	chmod a+x $(DESTDIR)/@bindir@/dual_control
 
 .PHONY: format
 format:
