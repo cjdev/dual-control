@@ -16,4 +16,5 @@ autom4te.cache/
 .depend
 format
 *.out
+dual_control
 
