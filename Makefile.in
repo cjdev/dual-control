@@ -3,8 +3,8 @@ CFLAGS += -fPIC -fno-stack-protector
 LDFLAGS = -lpam
 
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
-                   sys_stdlib.o
-OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o session.o installer.o
+                   sys_stdlib.o sys_time.o
+OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o session.o installer.o system.o
 TEST_SOURCES := $(wildcard *_test.cc)
 TESTS := $(patsubst %.cc,%.out,$(TEST_SOURCES))
 TESTRUNS := $(patsubst %.out,RUN_%,$(TESTS))
