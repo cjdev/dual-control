@@ -167,10 +167,10 @@ int directory_finds_no_user_info()
 
 int run_tests()
 {
-//    test (installs_token);
+    test (installs_token);
     test (unistd_does_not_find_user_name_nullptr_case);
-//    test (unistd_does_not_find_user_name_empty_string_case);
-//    test (directory_finds_no_user_info);
+    test (unistd_does_not_find_user_name_empty_string_case);
+    test (directory_finds_no_user_info);
     succeed();
 }
 
