@@ -19,10 +19,17 @@
 #include "sys_unistd.h"
 #include "sys_pwd.h"
 #include "token.h"
+#include "system.h"
 #include "sys_fstream.h"
 
 namespace {
-    installer init() {
+    class system init_system() {
+        stdlib stdlib(stdlib::get());
+        sys_time time(sys_time::get());
+        class system system(stdlib, time);
+        return system;
+    }
+    installer init_installer() {
         fstreams fstreams(fstreams::create());
         tokens tokens(tokens::create(fstreams));
         pwd pwd(pwd::create());
@@ -39,7 +46,8 @@ namespace {
 
 int main (int argc, char *argv[])
 {
-    installer tool(init());
+    class system system(init_system());
+    installer tool(init_installer());
     std::string generated_token = tool.install_token();
     std::cout << generated_token << std::endl;
     return 0;

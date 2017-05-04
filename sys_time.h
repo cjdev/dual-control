@@ -21,7 +21,7 @@ class sys_time {
         time_t time(time_t *timer) const {
             return delegate_->time(timer);
         }
-   static const time_t &get();
+   static const sys_time &get();
 
 };
 
