@@ -59,7 +59,7 @@ test: $(TESTRUNS)
 .PHONY: install
 install: $(OBJS) $(INTEGRATION_OBJS)
 ifeq ($(UNAME_S), Linux)
-	$(CXX) -lpam -shared -Wl,-x -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(OBJS) $(INTEGRATION_OBJS)
+	$(CXX) -lpam -shared -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) $(OBJS) $(INTEGRATION_OBJS)
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
