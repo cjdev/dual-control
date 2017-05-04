@@ -19,11 +19,11 @@
 #include "token.h"
 #include "sys_unistd.h"
 #include "user.h"
+#include "generator.h"
 
 class installer_ifc
 {
 public:
-    using generator = std::function<std::string()>;
     virtual std::string install_token() const
     {
         return "123456";
@@ -44,7 +44,7 @@ public:
         return delegate_->install_token();
     }
     static installer create (const tokens &tokens, const unistd &unistd,
-                             const directory &directory, const installer_ifc::generator &generator);
+                             const directory &directory, const generator &generator);
 };
 
 #endif

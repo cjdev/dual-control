@@ -2,7 +2,8 @@ CXXFLAGS += -fPIC -fno-stack-protector -std=c++11
 CFLAGS += -fPIC -fno-stack-protector
 LDFLAGS = -lpam
 
-INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o dual_control_integrate.o
+INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
+                   sys_stdlib.o
 OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o session.o installer.o
 TEST_SOURCES := $(wildcard *_test.cc)
 TESTS := $(patsubst %.cc,%.out,$(TEST_SOURCES))
@@ -20,12 +21,12 @@ version:
 	@echo COMPILER VERSION --------------------------------
 	$(CXX) --version
 
-dual_control.a: $(OBJS) $(INTEGRATION_OBJS)
+dual_control.a: dual_control.o $(OBJS) $(INTEGRATION_OBJS)
 	ar rvs $@ $^
 	ranlib $@
 
-dual_control: dual_control_tool.cc
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+dual_control: dual_control_tool.o $(OBJS) $(INTEGRATION_OBJS)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)  -o $@ $^
 
 
 .PHONY: clean

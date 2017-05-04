@@ -16,6 +16,7 @@
 #include "token.h"
 #include "sys_unistd.h"
 #include "user.h"
+#include "generator.h"
 
 namespace
 {
@@ -29,7 +30,7 @@ private:
     generator generator_;
 public:
     impl (const tokens &tokens, const unistd &unistd,
-          const directory &directory, const installer_ifc::generator &generator) :
+          const directory &directory, const generator &generator) :
         tokens_ (tokens), unistd_ (unistd), directory_ (directory),
         generator_ (generator) {}
     std::string install_token() const override
@@ -58,7 +59,7 @@ public:
 }
 
 installer installer::create (const tokens &tokens, const unistd &unistd,
-                             const directory &directory, const installer_ifc::generator &generator)
+                             const directory &directory, const generator &generator)
 {
     return installer (std::make_shared<impl> (tokens, unistd, directory,
                       generator));

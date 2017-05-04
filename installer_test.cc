@@ -81,7 +81,7 @@ int installs_token()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> (user_name));
-    installer_ifc::generator generator = [&] { return token; };
+    generator generator = [&] { return token; };
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
@@ -104,7 +104,7 @@ int unistd_does_not_find_user_name()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fail_unistd>());
     directory directory (std::make_shared<fake_directory> (user_name));
-    installer_ifc::generator generator = [&] { return token; };
+    generator generator = [&] { return token; };
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
@@ -127,7 +127,7 @@ int directory_finds_no_user_info()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> ("not the user"));
-    installer_ifc::generator generator = [&] { return token; };
+    generator generator = [&] { return token; };
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
