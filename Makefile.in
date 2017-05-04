@@ -63,7 +63,7 @@ ifeq ($(UNAME_S), Linux)
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
-	mkdir -f @bindir@
+	mkdir -p @bindir@
 	cp dual_control @bindir@/
 	chmod a+x @bindir@/dual_control
 
