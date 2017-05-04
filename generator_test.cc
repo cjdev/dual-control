@@ -8,16 +8,40 @@
  * file. If not, you will find a copy in the "LICENSE" file
  * at https://github.com/cjdev/dual-control.
  */
-
+#include <memory>
 #include <algorithm>
-
+#include <initializer_list>
+#include <vector>
 #include "generator.h"
+#include "sys_stdlib.h"
 #include "test_util.h"
+
+class fake_stdlib : public stdlib_ifc {
+
+    private:
+        std::vector<int> samples_;
+        mutable std::vector<int>::iterator current_;
+    public:
+    fake_stdlib( const std::initializer_list<int> &samples)
+        : samples_(samples.begin(), samples.end()),
+          current_(samples_.begin()) {}
+    int rand() const override {
+       if (current_ != samples_.end()) {
+         auto rval = *current_;
+         current_ += 1;
+         return rval;
+       }
+       return 0;
+    }
+};
 
 int six_digits()
 {
     // given
-    generator generator = make_generator();
+    std::initializer_list<int> samples { 1, 2, 3 };
+    auto test_stdlib = std::make_shared<fake_stdlib>(samples);
+    stdlib stdlib(test_stdlib);
+    generator generator = make_generator(stdlib);
 
     // when
     auto actual = generator();
@@ -30,9 +54,26 @@ int six_digits()
     succeed();
 }
 
+int modulated_source_modulates_tokens() {
+    // given
+    std::initializer_list<int> samples { 1, 2, 3 };
+    auto test_stdlib = std::make_shared<fake_stdlib>(samples);
+    stdlib stdlib(test_stdlib);
+    generator generator = make_generator(stdlib);
+
+    // when
+    auto actual1 = generator();
+    auto actual2 = generator();
+
+    // then
+    check (actual1 != actual2, "samples should be different");
+    succeed();
+}
+
 int run_tests()
 {
     test (six_digits);
+    test (modulated_source_modulates_tokens);
     succeed();
 }
 

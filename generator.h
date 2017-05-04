@@ -14,12 +14,25 @@
 
 #include <string>
 #include <functional>
+#include <sstream>
+#include <iomanip>
+
+#include "sys_stdlib.h"
 
 using generator = std::function<std::string()>;
 
-inline generator make_generator()
+inline    std::string token_from_int(int x) {
+        int v = x % 1000000;
+        std::ostringstream is;
+        is << std::setfill('0') << std::setw(6)<< v;
+        return is.str();
+    }
+
+inline generator make_generator(const stdlib &stdlib)
 {
-    return [] {return std::string ("234567");};
+    return [stdlib] {
+        return token_from_int(stdlib.rand());
+    };
 }
 
 #endif
