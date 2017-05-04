@@ -95,7 +95,7 @@ int installs_token()
     succeed();
 }
 
-int unistd_does_not_find_user_name()
+int unistd_does_not_find_user_name_nullptr_case()
 {
     //given
     std::string user_name ("user");
@@ -103,6 +103,30 @@ int unistd_does_not_find_user_name()
     auto  test_tokens = std::make_shared<mock_tokens>();
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fail_unistd>());
+    directory directory (std::make_shared<fake_directory> (user_name));
+    generator generator = [&] { return token; };
+
+    installer installer = installer::create (tokens, unistd, directory,
+                          generator);
+
+    //when
+    auto returned = installer.install_token();
+
+    //then
+    check (test_tokens->captured_token == "",
+           "should not have installed a token");
+    check (returned == "", "did not return empty token");
+    succeed();
+}
+
+int unistd_does_not_find_user_name_empty_string_case()
+{
+    //given
+    std::string user_name ("user");
+    std::string token ("token");
+    auto  test_tokens = std::make_shared<mock_tokens>();
+    tokens tokens{test_tokens};
+    unistd unistd (std::make_shared<fake_unistd> (""));
     directory directory (std::make_shared<fake_directory> (user_name));
     generator generator = [&] { return token; };
 
@@ -143,9 +167,10 @@ int directory_finds_no_user_info()
 
 int run_tests()
 {
-    test (installs_token);
-    test (unistd_does_not_find_user_name);
-    test (directory_finds_no_user_info);
+//    test (installs_token);
+    test (unistd_does_not_find_user_name_nullptr_case);
+//    test (unistd_does_not_find_user_name_empty_string_case);
+//    test (directory_finds_no_user_info);
     succeed();
 }
 
