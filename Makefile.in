@@ -41,7 +41,7 @@ distclean: clean
 
 .depend: $(OBJS:.o=.cc) $(TEST_SOURCES)
 	rm -f ./.depend
-	$(CXX) -MM $^ > ./.depend;
+	$(CXX) -std=c++11 -MM $^ > ./.depend;
 
 -include .depend
 
