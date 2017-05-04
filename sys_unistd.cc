@@ -21,6 +21,9 @@ public:
     {
         return ::sysconf (name);
     }
+    const char *getlogin() const override {
+         return ::getlogin();
+    }
 };
 static unistd sys_unistd (unistd::delegate (new impl));
 }
