@@ -19,6 +19,9 @@ namespace
 class impl : public stdlib_ifc
 {
 public:
+    void srand(unsigned int seed) const override {
+        ::srand(seed);
+    }
     int rand() const override
     {
         return ::rand();

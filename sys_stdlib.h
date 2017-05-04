@@ -17,6 +17,8 @@
 class stdlib_ifc
 {
 public:
+    virtual void srand(unsigned int seed) const {
+    }
     virtual int rand() const
     {
         return 0;
@@ -32,6 +34,9 @@ private:
 public:
     stdlib (delegate delegate = std::make_shared<stdlib_ifc>()) : delegate_
         (delegate) {}
+    void srand(unsigned int seed) const {
+        return delegate_->srand(seed);
+    }
     int rand() const
     {
         return delegate_->rand();
