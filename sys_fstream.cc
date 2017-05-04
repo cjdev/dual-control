@@ -25,7 +25,7 @@ public:
         return pstream (new std::ifstream (file_path));
     }
     postream open_ofstream (const std::string &file_path,
-                            std::ios_base::open_mode mode) const override
+                            std::ios_base::openmode mode) const override
     {
         return postream (new std::ofstream (file_path, mode));
     }
