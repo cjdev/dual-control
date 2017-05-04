@@ -47,7 +47,7 @@ public:
                                     authorizer_token);
     }
     static validator create (const directory &directory,
-                             const user_token_supplier &token_supplier);
+                             const tokens &token_supplier);
 };
 
 #endif

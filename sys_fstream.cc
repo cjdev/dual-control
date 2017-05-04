@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <fstream>
+#include <iostream>
 
 #include "sys_fstream.h"
 
@@ -19,10 +20,16 @@ namespace
 class impl : public fstreams_ifc
 {
 public:
-    pstream open_fstream (const std::string &file_path)
+    pstream open_fstream (const std::string &file_path) const override
     {
         return pstream (new std::ifstream (file_path));
     }
+    postream open_ofstream (const std::string &file_path,
+                            std::ios_base::open_mode mode) const override
+    {
+        return postream (new std::ofstream (file_path, mode));
+    }
+
 };
 
 }

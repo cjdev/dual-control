@@ -14,36 +14,43 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 #include "user.h"
 #include "sys_fstream.h"
 
-class user_token_supplier_ifc
+class tokens_ifc
 {
 public:
-    virtual ~user_token_supplier_ifc() {}
-    virtual std::string token (user &user)
+    using token_generator = std::function<std::string()>;
+    virtual ~tokens_ifc() {}
+    virtual std::string token (const user &user) const
     {
         return "";
     }
+    virtual void save (const user &user, const std::string &token) const {}
 };
 
-class user_token_supplier
+class tokens
 {
 public:
-    typedef std::shared_ptr<user_token_supplier_ifc> delegate;
+    typedef std::shared_ptr<tokens_ifc> delegate;
 private:
     delegate delegate_;
 public:
-    user_token_supplier (delegate delegate) :
+    tokens (delegate delegate) :
         delegate_ (delegate) {}
-    user_token_supplier() : user_token_supplier (
-            delegate (new user_token_supplier_ifc)) {}
-    std::string token (user &user)
+    tokens() : tokens (
+            delegate (new tokens_ifc)) {}
+    std::string token (const user &user) const
     {
         return delegate_->token (user);
     }
-    static user_token_supplier create (fstreams &fstreams);
+    void save (const user &user, const std::string &token) const
+    {
+        return delegate_->save (user, token);
+    }
+    static tokens create (const fstreams &fstreams);
 };
 
 #endif

@@ -2,51 +2,58 @@ CXXFLAGS += -fPIC -fno-stack-protector -std=c++11
 CFLAGS += -fPIC -fno-stack-protector
 LDFLAGS = -lpam
 
-INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o dual_control_integrate.o
-OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o session.o
-TESTS = dual_control_test validator_test conversation_test request_test user_test token_test \
-		logger_test session_test
-TESTOBJS = $(patsubst %,%.o,$(TESTS))
-SRCS := $(OBJS:.o=.cc) $(TESTOBJS:.o=.cc)
+INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
+                   sys_stdlib.o sys_time.o
+OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o session.o installer.o system.o
+TEST_SOURCES := $(wildcard *_test.cc)
+TESTS := $(patsubst %.cc,%.out,$(TEST_SOURCES))
+TESTRUNS := $(patsubst %.out,RUN_%,$(TESTS))
 
 MODULELIB = pam_dual_control.so
 
 UNAME_S := $(shell uname -s)
 
 .PHONY: all
-all: dual_control.a .depend
+all: .depend dual_control.a dual_control
 
 .PHONY: version
 version:
 	@echo COMPILER VERSION --------------------------------
 	$(CXX) --version
 
-dual_control.a: $(OBJS)
+dual_control.a: dual_control.o $(OBJS) $(INTEGRATION_OBJS)
 	ar rvs $@ $^
 	ranlib $@
+
+dual_control: dual_control_tool.o $(OBJS) $(INTEGRATION_OBJS)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)  -o $@ $^
+
 
 .PHONY: clean
 clean:
 	@rm -f *.o *.a
-	@rm -f *_test
+	@rm -f *.out
 	@rm ./.depend
 
 .PHONY: distclean
 distclean: clean
 	@git clean -xdf
 
-.depend: $(SRCS)
+.depend: $(OBJS:.o=.cc) $(TEST_SOURCES)
 	rm -f ./.depend
 	$(CXX) -MM $^ > ./.depend;
 
 -include .depend
 
-$(TESTS): %: %.o $(OBJS)
-	@$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
-	@./$@
+%_test.out: %_test.o $(OBJS)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+
+RUN_%: %.out
+	@echo running $<
+	@./$<
 
 .PHONY: test
-test: $(TESTS)
+test: $(TESTRUNS)
 	@echo Tests Passing
 
 .PHONY: install

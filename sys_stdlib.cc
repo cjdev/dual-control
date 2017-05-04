@@ -9,27 +9,31 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-#include "sys_pwd.h"
+#include <cstdlib>
+#include <memory>
 
-#include <pwd.h>
+#include "sys_stdlib.h"
 
 namespace
 {
-class impl : public pwd_ifc
+class impl : public stdlib_ifc
 {
 public:
-    int getpwnam_r (const char *user_name, passwd *out, char *buffer,
-                    size_t buffer_sz, passwd **result) const override
+    void srand (unsigned int seed) const override
     {
-        return ::getpwnam_r (user_name, out, buffer, buffer_sz, result);
+        ::srand (seed);
+    }
+    int rand() const override
+    {
+        return ::rand();
     }
 
 };
-static pwd system_pwd (pwd::delegate (new impl));
 }
 
-pwd pwd::create()
+stdlib const &stdlib::get()
 {
-    return system_pwd;
+    static stdlib singleton {std::make_shared<impl>()};
+    return singleton;
 }
 

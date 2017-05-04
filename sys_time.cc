@@ -9,27 +9,26 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-#include "sys_pwd.h"
+#include <memory>
+#include <ctime>
 
-#include <pwd.h>
+#include "sys_time.h"
 
 namespace
 {
-class impl : public pwd_ifc
+class impl : public sys_time_ifc
 {
 public:
-    int getpwnam_r (const char *user_name, passwd *out, char *buffer,
-                    size_t buffer_sz, passwd **result) const override
+    time_t time (time_t *timer) const override
     {
-        return ::getpwnam_r (user_name, out, buffer, buffer_sz, result);
+        return ::time (timer);
     }
-
 };
-static pwd system_pwd (pwd::delegate (new impl));
 }
 
-pwd pwd::create()
+const sys_time &sys_time::get()
 {
-    return system_pwd;
+    static sys_time singleton (std::make_shared<impl>());
+    return singleton;
 }
 

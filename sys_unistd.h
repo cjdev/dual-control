@@ -20,9 +20,13 @@ class unistd_ifc
 {
 public:
     virtual ~unistd_ifc() {}
-    virtual long int sysconf (int name)
+    virtual long int sysconf (int name) const
     {
         return -1;
+    }
+    virtual const char *getlogin() const
+    {
+        return "";
     }
 };
 
@@ -37,9 +41,13 @@ private:
 public:
     unistd (delegate delegate): delegate_ (delegate) {}
     unistd() : delegate_ (delegate (new unistd_ifc)) {}
-    long int sysconf (int name)
+    long int sysconf (int name) const
     {
         return delegate_->sysconf (name);
+    }
+    const char *getlogin() const
+    {
+        return delegate_->getlogin();
     }
     static unistd create();
 };

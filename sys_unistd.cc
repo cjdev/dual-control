@@ -17,9 +17,13 @@ namespace
 class impl : public unistd_ifc
 {
 public:
-    long int sysconf (int name)
+    long int sysconf (int name) const override
     {
         return ::sysconf (name);
+    }
+    const char *getlogin() const override
+    {
+        return ::getlogin();
     }
 };
 static unistd sys_unistd (unistd::delegate (new impl));
