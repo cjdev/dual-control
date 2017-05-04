@@ -18,22 +18,25 @@
 #include "sys_stdlib.h"
 #include "test_util.h"
 
-class fake_stdlib : public stdlib_ifc {
+class fake_stdlib : public stdlib_ifc
+{
 
-    private:
-        std::vector<int> samples_;
-        mutable std::vector<int>::iterator current_;
-    public:
-    fake_stdlib( const std::initializer_list<int> &samples)
-        : samples_(samples.begin(), samples.end()),
-          current_(samples_.begin()) {}
-    int rand() const override {
-       if (current_ != samples_.end()) {
-         auto rval = *current_;
-         current_ += 1;
-         return rval;
-       }
-       return 0;
+private:
+    std::vector<int> samples_;
+    mutable std::vector<int>::iterator current_;
+public:
+    fake_stdlib ( const std::initializer_list<int> &samples)
+        : samples_ (samples.begin(), samples.end()),
+          current_ (samples_.begin()) {}
+    int rand() const override
+    {
+        if (current_ != samples_.end()) {
+            auto rval = *current_;
+            current_ += 1;
+            return rval;
+        }
+
+        return 0;
     }
 };
 
@@ -41,9 +44,9 @@ int six_digits()
 {
     // given
     std::initializer_list<int> samples { 1 };
-    auto test_stdlib = std::make_shared<fake_stdlib>(samples);
-    stdlib stdlib(test_stdlib);
-    generator generator = make_generator(stdlib);
+    auto test_stdlib = std::make_shared<fake_stdlib> (samples);
+    stdlib stdlib (test_stdlib);
+    generator generator = make_generator (stdlib);
 
     // when
     auto actual = generator();
@@ -56,12 +59,13 @@ int six_digits()
     succeed();
 }
 
-int modulated_source_modulates_tokens() {
+int modulated_source_modulates_tokens()
+{
     // given
     std::initializer_list<int> samples { 1, 2, 3 };
-    auto test_stdlib = std::make_shared<fake_stdlib>(samples);
-    stdlib stdlib(test_stdlib);
-    generator generator = make_generator(stdlib);
+    auto test_stdlib = std::make_shared<fake_stdlib> (samples);
+    stdlib stdlib (test_stdlib);
+    generator generator = make_generator (stdlib);
 
     // when
     auto actual1 = generator();
@@ -76,9 +80,9 @@ int int_max()
 {
     // given
     std::initializer_list<int> samples { INT_MAX };
-    auto test_stdlib = std::make_shared<fake_stdlib>(samples);
-    stdlib stdlib(test_stdlib);
-    generator generator = make_generator(stdlib);
+    auto test_stdlib = std::make_shared<fake_stdlib> (samples);
+    stdlib stdlib (test_stdlib);
+    generator generator = make_generator (stdlib);
 
     // when
     auto actual = generator();
@@ -95,9 +99,9 @@ int int_min()
 {
     // given
     std::initializer_list<int> samples { INT_MIN };
-    auto test_stdlib = std::make_shared<fake_stdlib>(samples);
-    stdlib stdlib(test_stdlib);
-    generator generator = make_generator(stdlib);
+    auto test_stdlib = std::make_shared<fake_stdlib> (samples);
+    stdlib stdlib (test_stdlib);
+    generator generator = make_generator (stdlib);
 
     // when
     auto actual = generator();
@@ -109,8 +113,6 @@ int int_min()
     }), "not just digits");
     succeed();
 }
-
-
 
 int run_tests()
 {

@@ -22,32 +22,35 @@
 #include "system.h"
 #include "sys_fstream.h"
 
-namespace {
-    class system init_system() {
-        stdlib stdlib(stdlib::get());
-        sys_time time(sys_time::get());
-        class system system(stdlib, time);
-        return system;
-    }
-    installer init_installer() {
-        fstreams fstreams(fstreams::create());
-        tokens tokens(tokens::create(fstreams));
-        pwd pwd(pwd::create());
-        unistd unistd(unistd::create());
-        directory directory(directory::create(unistd, pwd));
-        stdlib stdlib(stdlib::get());
-        generator generator{make_generator(stdlib)};
-        installer installer(installer::create(tokens, unistd,
-                            directory, generator));
+namespace
+{
+class system init_system()
+{
+    stdlib stdlib (stdlib::get());
+    sys_time time (sys_time::get());
+    class system system (stdlib, time);
+    return system;
+}
+installer init_installer()
+{
+    fstreams fstreams (fstreams::create());
+    tokens tokens (tokens::create (fstreams));
+    pwd pwd (pwd::create());
+    unistd unistd (unistd::create());
+    directory directory (directory::create (unistd, pwd));
+    stdlib stdlib (stdlib::get());
+    generator generator{make_generator (stdlib)};
+    installer installer (installer::create (tokens, unistd,
+                                            directory, generator));
 
-        return installer;
-    }
+    return installer;
+}
 }
 
 int main (int argc, char *argv[])
 {
-    class system system(init_system());
-    installer tool(init_installer());
+    class system system (init_system());
+    installer tool (init_installer());
     std::string generated_token = tool.install_token();
     std::cout << generated_token << std::endl;
     return 0;
