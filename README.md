@@ -32,7 +32,9 @@ session    required     pam_limits.so
 ```
 
 ## Add a dual control token
-- in the authorizer's account home, put the token characters in `.dual_control`
+
+From the authorizer's account home, run `dual_control`. The resulting token can
+be used to authorize another user.
 
 ## Use
 - log in with a test user that has `sudo` ability (not the vagrant account it is too
