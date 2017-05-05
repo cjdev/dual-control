@@ -15,14 +15,20 @@ use a time-based OTP.
 - Obtain and install the RPM
   - build yourself using the code in /cjdev/dual-control-rpm
   - get it from a developer
-- Edit the `/etc/pam.d/sudo`  (CentOS 7)
+- Edit the `/etc/pam.d/sudo`  (this is for CentOS 7, others may be different)
   - replace the existing auth lines with
 ```
+#%PAM-1.0
+# auth       include      system-auth
 auth        required      pam_env.so
 auth        required      pam_unix.so
 auth        sufficient    pam_dual_control.so
 auth        requisite     pam_succeed_if.so uid >= 1000 quiet_success
 auth        required      pam_deny.so
+account    include      system-auth
+password   include      system-auth
+session    optional     pam_keyinit.so revoke
+session    required     pam_limits.so
 ```
 
 ## Add a dual control token
