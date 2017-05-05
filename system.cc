@@ -9,7 +9,6 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-
 #include "system.h"
 #include "sys_stdlib.h"
 #include "sys_time.h"
