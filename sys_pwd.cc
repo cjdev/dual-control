@@ -25,11 +25,11 @@ public:
     }
 
 };
-static pwd system_pwd (pwd::delegate (new impl));
 }
 
 pwd pwd::create()
 {
+    static pwd system_pwd (pwd::delegate (new impl));
     return system_pwd;
 }
 

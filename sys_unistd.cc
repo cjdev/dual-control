@@ -26,11 +26,11 @@ public:
         return ::getlogin();
     }
 };
-static unistd sys_unistd (unistd::delegate (new impl));
 }
 
 unistd unistd::create()
 {
+    static unistd sys_unistd (unistd::delegate (new impl));
     return sys_unistd;
 }
 
