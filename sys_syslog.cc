@@ -18,17 +18,17 @@ namespace
 class impl : public sys_syslog_ifc
 {
 public:
-    void openlog (const char *ident, int logopt, int facility)
+    void openlog (const char *ident, int logopt, int facility) override
     {
         ::openlog (ident, logopt, facility);
     }
 
-    void vsyslog (int priority, const char *message, va_list args)
+    void vsyslog (int priority, const char *message, va_list args) override
     {
         ::vsyslog (priority, message, args);
     }
 
-    void closelog()
+    void closelog() override
     {
         ::closelog();
     }
