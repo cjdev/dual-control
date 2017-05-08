@@ -50,7 +50,7 @@ int initializes_random ()
     sys_time time (test_time);
 
     // when
-    system system (stdlib, time);
+    system sys (stdlib, time);
 
     // then
     check (test_stdlib->captured_seed == seed, "seed not cpatured");
