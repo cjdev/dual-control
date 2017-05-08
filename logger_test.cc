@@ -61,7 +61,7 @@ int logs_success()
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
     check (capture->message == requester_user + " " + authorizer_user + " " +
-           token + " " + "success",
+           "success",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");
     check (capture->closed, "syslog not closed");
@@ -85,7 +85,7 @@ int logs_failure()
 
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check (capture->message == requester + " " + authorizer + " " + token + " "
+    check (capture->message == requester + " " + authorizer + " "
            + "fail",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");

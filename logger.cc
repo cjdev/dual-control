@@ -35,14 +35,14 @@ public:
         case PAM_SUCCESS:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
-            message = requester_user_name + " " + authorizer_user_name + " " + token +
+            message = requester_user_name + " " + authorizer_user_name +
                       " " + "success";
             break;
 
         case PAM_AUTH_ERR:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
-            message = requester_user_name + " " + authorizer_user_name + " " + token +
+            message = requester_user_name + " " + authorizer_user_name +
                       " " + "fail";
             break;
 
