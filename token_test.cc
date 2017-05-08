@@ -45,7 +45,7 @@ private:
     mutable std::shared_ptr<std::ostringstream> capture_stream_;
 public:
     postream open_ofstream (const std::string &file_path,
-                            std::ios_base::open_mode mode) const override
+                            std::ios_base::openmode mode) const override
     {
         captured_filename_ = file_path;
         capture_stream_ = std::make_shared<std::ostringstream>();
