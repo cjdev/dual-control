@@ -270,9 +270,6 @@ int logs_authentication_failure()
     succeed();
 }
 
-RESET_VARS_START
-RESET_VARS_END
-
 int runtests()
 {
     test (setcred_returns_success);

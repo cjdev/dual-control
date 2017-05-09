@@ -155,9 +155,6 @@ bool validator_fails_with_unknown_requester()
 
 }
 
-RESET_VARS_START
-RESET_VARS_END
-
 bool run_tests()
 {
     test (validator_validates);

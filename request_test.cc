@@ -67,9 +67,6 @@ bool zero_arguments()
     succeed();
 }
 
-RESET_VARS_START
-RESET_VARS_END
-
 int run_tests()
 {
     test (construction_happy);

@@ -158,9 +158,6 @@ int find_user_fails_on_pwnam_r_error_and_result_ok()
     succeed();
 }
 
-RESET_VARS_START
-RESET_VARS_END
-
 int run_tests()
 {
     test (find_user_happy);

@@ -251,9 +251,6 @@ int returns_empty_user_and_token_when_conversation_answer_fails()
     succeed();
 }
 
-RESET_VARS_START
-RESET_VARS_END
-
 int run_tests()
 {
     test (returns_user_and_token);
