@@ -17,4 +17,5 @@ autom4te.cache/
 format
 *.out
 dual_control
+.idea
 
