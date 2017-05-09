@@ -43,3 +43,7 @@ powerful)
 - enter your password
 - enter dual control token, authorizer's username + ':' + authorizer's token
 
+## Build and test
+- ./configure
+- make
+- make test
