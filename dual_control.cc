@@ -60,10 +60,9 @@ int impl::authenticate (const pam_request &request)
 {
     conversation_result input (conversation_.initiate (request));
 
-    std::string requester = sessions_.user_name (request);
-
     auto requester_user_name = sessions_.user_name (request);
-    int auth_result = validator_.validate (requester, input.user_name,
+
+    int auth_result = validator_.validate (requester_user_name, input.user_name,
                                            input.token) ? PAM_SUCCESS : PAM_AUTH_ERR;
 
     logger_.log (auth_result, requester_user_name, input.user_name,
