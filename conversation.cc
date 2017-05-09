@@ -29,18 +29,21 @@ public:
     {
         const pam_conv *conv;
         int get_conv_result = pam_.get_conv (request.handle(), &conv);
-
         if (get_conv_result != PAM_SUCCESS) {
             return err;
         }
 
-        pam_message msg;
-        msg.msg = const_cast<char *> ("Dual control token: ");
-        msg.msg_style = PAM_PROMPT_ECHO_OFF;
+        pam_message tokenMessage;
+        tokenMessage.msg = const_cast<char *> ("Dual control token: ");
+        tokenMessage.msg_style = PAM_PROMPT_ECHO_OFF;
+        pam_message reasonMessage;
+        reasonMessage.msg = const_cast<char *> ("Reason: ");
+        reasonMessage.msg_style = PAM_PROMPT_ECHO_OFF;
         std::vector<const pam_message *> messages;
-        messages.push_back (&msg);
-        std::vector<pam_response *> responses (1);
-        int conv_result = conv->conv (1, messages.data(), responses.data(),
+        messages.push_back (&tokenMessage);
+        messages.push_back (&reasonMessage);
+        std::vector<pam_response *> responses (2);
+        int conv_result = conv->conv (2, messages.data(), responses.data(),
                                       conv->appdata_ptr);
 
         if (conv_result != PAM_SUCCESS) {
@@ -60,7 +63,8 @@ public:
 
         return {
             std::string (answer.begin(), delim),
-            std::string (delim + 1, answer.end())
+            std::string (delim + 1, answer.end()),
+            std::string (responses[1]->resp)
         };
 
     }
@@ -71,4 +75,3 @@ conversation conversation::create (pam &pam)
 {
     return conversation (std::shared_ptr<conversation_ifc> (new impl (pam)));
 }
-

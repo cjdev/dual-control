@@ -21,6 +21,7 @@
 struct conversation_result {
     std::string user_name;
     std::string token;
+    std::string reason;
 };
 
 class conversation_ifc

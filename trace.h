@@ -9,7 +9,7 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-#ifndef TRACE_H__
+#ifndef TRACE_H_
 #define TRACE_H_
 #include <iostream>
 
