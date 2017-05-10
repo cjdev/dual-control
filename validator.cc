@@ -28,9 +28,13 @@ public:
         tokens_ (tokens) {}
     bool validate (const std::string &requester_user_name,
                    const std::string &authorizer_user_name,
-                   const std::string &token) override
+                   const std::string &token, const std::string &reason) override
     {
         std::vector<user> found_user = directory_.find_user (authorizer_user_name);
+
+        if (reason.empty()) {
+            return false;
+        }
 
         if (requester_user_name.empty()) {
             return false;
