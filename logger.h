@@ -23,7 +23,8 @@ public:
     virtual ~logger_ifc() {}
     virtual void log (int result, const std::string &requester_user_name,
                       const std::string &authorizer_user_name,
-                      const std::string &token) {};
+                      const std::string &token,
+                      const std::string &reason) {};
 };
 
 class logger
@@ -38,9 +39,10 @@ public:
     logger() : logger (delegate (new logger_ifc)) {}
     void log (int result, const std::string &requester_user_name,
               const std::string &authorizer_user_name,
-              const std::string &token)
+              const std::string &token,
+              const std::string &reason)
     {
-        delegate_->log (result, requester_user_name, authorizer_user_name, token);
+        delegate_->log (result, requester_user_name, authorizer_user_name, token, reason);
     }
     static logger create (const sys_syslog &sys_syslog);
 };

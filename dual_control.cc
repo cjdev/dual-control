@@ -66,7 +66,7 @@ int impl::authenticate (const pam_request &request)
                                            input.token, input.reason) ? PAM_SUCCESS : PAM_AUTH_ERR;
 
     logger_.log (auth_result, requester_user_name, input.user_name,
-                 input.token);
+                 input.token, input.reason);
     return auth_result;
 }
 }

@@ -25,7 +25,7 @@ public:
     impl (const sys_syslog &sys_syslog) : syslog_ (sys_syslog) {}
     void log (int result, const std::string &requester_user_name,
               const std::string &authorizer_user_name,
-              const std::string &token)
+              const std::string &token, const std::string &reason) override
     {
         std::string message;
         int facility;
@@ -36,21 +36,21 @@ public:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
             message = requester_user_name + " " + authorizer_user_name +
-                      " " + "success";
+                      " " + "reason" + " " + "success";
             break;
 
         case PAM_AUTH_ERR:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
             message = requester_user_name + " " + authorizer_user_name +
-                      " " + "fail";
+                      " " + reason + " " + "fail";
             break;
 
         default:
             facility = LOG_AUTH;
             priority = LOG_ERR;
             message = requester_user_name + " " + authorizer_user_name +
-                      " pam returned error";
+                      " " + reason + " " + "pam returned error";
             break;
         }
 
