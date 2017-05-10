@@ -115,7 +115,8 @@ std::shared_ptr<T> share (T *t)
     return std::shared_ptr<T> (t);
 }
 
-std::vector<pam_message> pam_messages() {
+std::vector<pam_message> pam_messages()
+{
     pam_message token_prompt;
     token_prompt.msg_style = PAM_PROMPT_ECHO_OFF;
     token_prompt.msg = const_cast<char *> ("Dual control token: ");
@@ -125,13 +126,16 @@ std::vector<pam_message> pam_messages() {
     reason_prompt.msg = const_cast<char *> ("Reason: ");
 
     std::vector<pam_message> messages;
-    messages.push_back(token_prompt);
-    messages.push_back(reason_prompt);
+    messages.push_back (token_prompt);
+    messages.push_back (reason_prompt);
 
     return messages;
 }
 
-std::vector<pam_response> pam_responses(const std::string &token, const std::string &reason, int token_retcode, int reason_retcode) {
+std::vector<pam_response> pam_responses (const std::string &token,
+        const std::string &reason,
+        int token_retcode, int reason_retcode)
+{
     pam_response token_response;
     token_response.resp_retcode = token_retcode;
     token_response.resp = const_cast<char *> (token.c_str());
@@ -141,17 +145,19 @@ std::vector<pam_response> pam_responses(const std::string &token, const std::str
     reason_response.resp = const_cast<char *> (reason.c_str());
 
     std::vector<pam_response> responses;
-    responses.push_back(token_response);
-    responses.push_back(reason_response);
+    responses.push_back (token_response);
+    responses.push_back (reason_response);
 
     return responses;
 }
 
-conversation make_conversation (pam_handle *expected_handle, const std::string &token,
-    const std::string &reason)
+conversation make_conversation (pam_handle *expected_handle,
+                                const std::string &token,
+                                const std::string &reason)
 {
-    std::vector<pam_message> messages(pam_messages());
-    std::vector<pam_response> responses(pam_responses(token, reason, PAM_SUCCESS, PAM_SUCCESS));
+    std::vector<pam_message> messages (pam_messages());
+    std::vector<pam_response> responses (pam_responses (token, reason,
+                                         PAM_SUCCESS, PAM_SUCCESS));
 
     conversation_data conversation_data = {
         messages,
@@ -162,12 +168,14 @@ conversation make_conversation (pam_handle *expected_handle, const std::string &
     return conversation::create (pam);
 }
 
-bool check_conversation_response (const std::string &token_answer, const std::string &expected_reason,
+bool check_conversation_response (const std::string &token_answer,
+                                  const std::string &expected_reason,
                                   const std::string &expected_user, const std::string &expected_token)
 {
     // given
     pam_handle *handle = reinterpret_cast<pam_handle *> (29039);
-    conversation conversation (make_conversation (handle, token_answer, expected_reason));
+    conversation conversation (make_conversation (handle, token_answer,
+                               expected_reason));
     pam_request request (handle, 0, 0, 0);
 
     // when
@@ -186,7 +194,8 @@ bool returns_user_token_and_reason()
     std::string user ("user");
     std::string token ("token");
     std::string reason ("reason");
-    return check_conversation_response (user + ":" + token, reason, user, token);
+    return check_conversation_response (user + ":" + token, reason, user,
+                                        token);
 }
 
 int returns_empty_user_and_token_when_no_colon()
@@ -202,14 +211,14 @@ int returns_empty_user_and_token_when_empty_answer()
 int returns_empty_token_when_colon_end()
 {
     std::string user ("user");
-    std::string reason("reason");
+    std::string reason ("reason");
     return check_conversation_response (user + ":", reason, user, "");
 }
 
 int returns_empty_user_when_colon_start()
 {
     std::string token ("token");
-    std::string reason("reason");
+    std::string reason ("reason");
     return check_conversation_response (":" + token, reason, "", token);
 }
 
@@ -232,7 +241,7 @@ int returns_empty_conversation_result_when_pam_cant_create_conversation()
 
 int returns_empty_conversation_result_when_conversation_fails()
 {
-    std::vector<pam_message> messages(pam_messages());
+    std::vector<pam_message> messages (pam_messages());
     conversation_data conversation_data = {
         messages,
         std::vector<pam_response> (),
@@ -255,14 +264,15 @@ int returns_empty_conversation_result_when_conversation_fails()
 int returns_empty_user_and_token_when_token_answer_fails()
 {
     //given
-    std::string user("user");
-    std::string token("token");
-    std::string reason("reason");
+    std::string user ("user");
+    std::string token ("token");
+    std::string reason ("reason");
     int token_retcode = PAM_CONV_ERR;
     int reason_retcode = PAM_SUCCESS;
-    std::vector<pam_message> messages(pam_messages());
-    std::vector<pam_response> responses(pam_responses(user + ":" + token, reason,
-        token_retcode, reason_retcode));
+    std::vector<pam_message> messages (pam_messages());
+    std::vector<pam_response> responses (pam_responses (user + ":" + token,
+                                         reason,
+                                         token_retcode, reason_retcode));
     conversation_data conversation_data = {
         messages,
         responses,
@@ -276,24 +286,24 @@ int returns_empty_user_and_token_when_token_answer_fails()
     conversation_result actual = conversation.initiate (request);
 
     // then
-    check(actual.user_name == "", "user name should be empty");
-    check(actual.token == "", "token should be empty");
-    check(actual.reason == "reason", "reason does not match");
+    check (actual.user_name == "", "user name should be empty");
+    check (actual.token == "", "token should be empty");
+    check (actual.reason == "reason", "reason does not match");
     succeed();
 }
-
 
 int returns_empty_reason_when_reason_answer_fails()
 {
     //given
-    std::string user("user");
-    std::string token("token");
-    std::string reason("reason");
+    std::string user ("user");
+    std::string token ("token");
+    std::string reason ("reason");
     int token_retcode = PAM_SUCCESS;
     int reason_retcode = PAM_CONV_ERR;
-    std::vector<pam_message> messages(pam_messages());
-    std::vector<pam_response> responses(pam_responses(user + ":" + token, reason,
-        token_retcode, reason_retcode));
+    std::vector<pam_message> messages (pam_messages());
+    std::vector<pam_response> responses (pam_responses (user + ":" + token,
+                                         reason,
+                                         token_retcode, reason_retcode));
     conversation_data conversation_data = {
         messages,
         responses,
@@ -307,12 +317,11 @@ int returns_empty_reason_when_reason_answer_fails()
     conversation_result actual = conversation.initiate (request);
 
     // then
-    check(actual.user_name == user, "user name does not match");
-    check(actual.token == token, "token does not match");
-    check(actual.reason == "", "reason should be empty");
+    check (actual.user_name == user, "user name does not match");
+    check (actual.token == token, "token does not match");
+    check (actual.reason == "", "reason should be empty");
     succeed();
 }
-
 
 int run_tests()
 {

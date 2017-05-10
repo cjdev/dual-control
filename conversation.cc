@@ -31,6 +31,7 @@ public:
         conversation_result result;
         const pam_conv *conv;
         int get_conv_result = pam_.get_conv (request.handle(), &conv);
+
         if (get_conv_result != PAM_SUCCESS) {
             return result;
         }
@@ -66,6 +67,7 @@ public:
         if (delim == answer.end()) {
             return result;
         }
+
         result.user_name = std::string (answer.begin(), delim);
         result.token = std::string (delim + 1, answer.end());
         return result;
@@ -77,3 +79,4 @@ conversation conversation::create (pam &pam)
 {
     return conversation (std::shared_ptr<conversation_ifc> (new impl (pam)));
 }
+
