@@ -42,7 +42,8 @@ public:
               const std::string &token,
               const std::string &reason)
     {
-        delegate_->log (result, requester_user_name, authorizer_user_name, token, reason);
+        delegate_->log (result, requester_user_name, authorizer_user_name, token,
+                        reason);
     }
     static logger create (const sys_syslog &sys_syslog);
 };

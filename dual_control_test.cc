@@ -98,7 +98,8 @@ public:
     {
         return token_;
     }
-    std::string logged_reason() {
+    std::string logged_reason()
+    {
         return reason_;
     }
 };
@@ -112,7 +113,7 @@ private:
 public:
     fake_conversation (const std::string &user_name,
                        const std::string &token, const std::string &reason) :
-        user_name_ (user_name), token_ (token), reason_(reason) {}
+        user_name_ (user_name), token_ (token), reason_ (reason) {}
     conversation_result initiate (const pam_request &request)
     {
         return {user_name_, token_, reason_};
@@ -128,8 +129,10 @@ private:
     std::string reason_;
 public:
     fake_validator (const std::string &requester, const std::string &authorizer,
-                    const std::string &token, const std::string &reason): requester_ (requester), authorizer_ (authorizer),
-        token_ (token), reason_(reason) {}
+                    const std::string &token,
+                    const std::string &reason): requester_ (requester),
+        authorizer_ (authorizer),
+        token_ (token), reason_ (reason) {}
     bool validate (const std::string &requester, const std::string &authorizer,
                    const std::string &token, const std::string &reason) override
     {
@@ -165,10 +168,11 @@ int authenticate_validates_with_received_token()
     std::string requester ("requester");
     std::string authorizer ("authorizer");
     std::string token ("token");
-    std::string reason("reason");
+    std::string reason ("reason");
     use_validator (configuration, new fake_validator (requester, authorizer,
                    token, reason));
-    use_conversation (configuration, new fake_conversation (authorizer, token, reason));
+    use_conversation (configuration, new fake_conversation (authorizer, token,
+                      reason));
     use_sessions (configuration, new fake_sessions (requester));
     dual_control dc (dual_control::create (configuration));
     pam_handle_t *handle (0);
@@ -187,7 +191,7 @@ int authenticate_fails_with_wrong_user()
     // given
     dual_control_configuration configuration;
     std::string token ("token");
-    std::string reason("reason");
+    std::string reason ("reason");
     use_validator (configuration, new fake_validator ("requester", "user",
                    token, reason));
     use_conversation (configuration, new fake_conversation ("wrong user",
@@ -229,10 +233,11 @@ int logs_authentication()
     std::string requester ("requester");
     std::string authorizer ("authorizer");
     std::string token ("token");
-    std::string reason("reason");
+    std::string reason ("reason");
     use_validator (configuration, new fake_validator (requester, authorizer,
                    token, reason));
-    use_conversation (configuration, new fake_conversation (authorizer, token, reason));
+    use_conversation (configuration, new fake_conversation (authorizer, token,
+                      reason));
     use_sessions (configuration, new fake_sessions (requester));
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);
@@ -252,7 +257,7 @@ int logs_authentication()
            "logged token should be token");
     std::cout <<test_logger->logged_reason() << std::endl;
     check (test_logger->logged_reason() == reason,
-            "logged reason should be reason");
+           "logged reason should be reason");
     succeed();
 }
 
@@ -266,7 +271,8 @@ int logs_authentication_failure()
     std::string reason ("reason");
     use_validator (configuration, new fake_validator (requester, authorizer,
                    "not the received token", reason));
-    use_conversation (configuration, new fake_conversation (authorizer, token, reason));
+    use_conversation (configuration, new fake_conversation (authorizer, token,
+                      reason));
     use_sessions (configuration, new fake_sessions (requester));
     mock_logger *test_logger;
     use_logger (configuration, test_logger = new mock_logger);

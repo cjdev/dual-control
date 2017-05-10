@@ -54,14 +54,15 @@ int logs_success()
     std::string requester_user ("requester_user");
     std::string authorizer_user ("authorizer_user");
     std::string token ("token");
-    std::string reason("reason");
+    std::string reason ("reason");
 
     //when
     logger.log (PAM_SUCCESS, requester_user, authorizer_user, token, reason);
 
     //then
     check (capture->facility == LOG_AUTHPRIV, "facility does not match");
-    check (capture->message == requester_user + " " + authorizer_user + " " + reason + " " +
+    check (capture->message == requester_user + " " + authorizer_user + " " +
+           reason + " " +
            "success",
            "message does not match");
     check (capture->priority == LOG_NOTICE, "priority does not match");
@@ -80,7 +81,7 @@ int logs_failure()
     std::string requester ("requestuser");
     std::string authorizer ("authuser");
     std::string token ("token");
-    std::string reason("reason");
+    std::string reason ("reason");
 
     //when
     logger.log (PAM_AUTH_ERR, requester, authorizer, token, reason);
@@ -106,7 +107,7 @@ int logs_pam_service_error()
     std::string requester ("user");
     std::string authorizer ("user");
     std::string token ("token");
-    std::string reason("reason");
+    std::string reason ("reason");
 
     //when
     logger.log (PAM_SERVICE_ERR, requester, authorizer, token, reason);

@@ -106,7 +106,8 @@ bool validator_fails_incorrect_token()
     validator validator = validator::create (directory, tokens);
 
     // when
-    bool actual = validator.validate ("requester", user_name, "token", "reason");
+    bool actual = validator.validate ("requester", user_name, "token",
+                                      "reason");
 
     // then
     check (!actual, "should not be valid");
@@ -154,7 +155,8 @@ bool validator_fails_with_unknown_requester()
     succeed();
 }
 
-bool validator_fails_on_empty_reason() {
+bool validator_fails_on_empty_reason()
+{
     //given
     std::string requester_user_name ("");
     std::string authorizer_user_name ("authorizer");
@@ -170,7 +172,7 @@ bool validator_fails_on_empty_reason() {
                                       authorizer_token, reason);
 
     //then
-    check(!actual, "should not be valid");
+    check (!actual, "should not be valid");
     succeed();
 }
 
