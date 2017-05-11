@@ -36,7 +36,7 @@ public:
             facility = LOG_AUTHPRIV;
             priority = LOG_NOTICE;
             message = requester_user_name + " " + authorizer_user_name +
-                      " " + "reason" + " " + "success";
+                      " " + reason + " " + "success";
             break;
 
         case PAM_AUTH_ERR:
