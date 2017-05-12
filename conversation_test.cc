@@ -106,7 +106,7 @@ public:
         }
 
         pam_conv *conv_p;
-        count_ == 0 ? conv_p = &token_conv_ : conv_p = &reason_conv_;
+        conv_p = count_ == 0 ? &token_conv_ : &reason_conv_;
         conv_p->appdata_ptr = (void *) (&conversations_[count_]);
         conv_p->conv = fake_conv;
         *out = conv_p;
@@ -125,7 +125,8 @@ std::shared_ptr<T> share (T *t)
 std::vector<pam_message> create_messages (const std::string &prompt)
 {
     pam_message message;
-    message.msg_style = prompt == token_prompt ? PAM_PROMPT_ECHO_OFF : PAM_PROMPT_ECHO_ON;
+    message.msg_style = prompt == token_prompt ? PAM_PROMPT_ECHO_OFF :
+                        PAM_PROMPT_ECHO_ON;
     message.msg = const_cast<char *> (prompt.c_str());
 
     std::vector<pam_message> messages;
@@ -148,8 +149,8 @@ std::vector<pam_response> create_responses (const std::string &answer,
 }
 
 conversation successful_conversation (pam_handle *expected_handle,
-                                const std::string &token_answer,
-                                const std::string &reason_answer)
+                                      const std::string &token_answer,
+                                      const std::string &reason_answer)
 {
     std::vector<pam_message> token_messages (create_messages (
                 token_prompt));
@@ -258,7 +259,7 @@ int returns_empty_user_and_token_when_token_answer_fails()
     //given
     const std::string user ("user");
     const std::string token ("token");
-    const std::string token_answer(user + ":" + token);
+    const std::string token_answer (user + ":" + token);
     const std::string reason ("test reason");
     int token_retcode = PAM_CONV_ERR;
     int reason_retcode = PAM_SUCCESS;
@@ -304,7 +305,7 @@ int returns_empty_reason_when_reason_answer_fails()
 {
     const std::string user ("user");
     const std::string token ("token");
-    const std::string token_answer(user + ":" + token);
+    const std::string token_answer (user + ":" + token);
     const std::string reason ("test reason");
     int token_retcode = PAM_SUCCESS;
     int reason_retcode = PAM_CONV_ERR;
