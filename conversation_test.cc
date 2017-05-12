@@ -125,7 +125,7 @@ std::shared_ptr<T> share (T *t)
 std::vector<pam_message> create_messages (const std::string &prompt)
 {
     pam_message message;
-    message.msg_style = PAM_PROMPT_ECHO_OFF;
+    message.msg_style = prompt == token_prompt ? PAM_PROMPT_ECHO_OFF : PAM_PROMPT_ECHO_ON;
     message.msg = const_cast<char *> (prompt.c_str());
 
     std::vector<pam_message> messages;
