@@ -32,7 +32,7 @@ public:
         int get_token_conv = pam_.get_conv (request.handle(), &token_conv);
         int get_reason_conv = pam_.get_conv (request.handle(), &reason_conv);
 
-        if (get_token_conv != 0 || get_reason_conv != 0) {
+        if (get_token_conv != PAM_SUCCESS || get_reason_conv != PAM_SUCCESS) {
             return result;
         }
 
