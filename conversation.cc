@@ -41,7 +41,7 @@ public:
         token_message.msg_style = PAM_PROMPT_ECHO_OFF;
         pam_message reason_message;
         reason_message.msg = const_cast<char *> ("Reason: ");
-        reason_message.msg_style = PAM_PROMPT_ECHO_OFF;
+        reason_message.msg_style = PAM_PROMPT_ECHO_ON;
 
         std::vector<const pam_message *> token_messages;
         token_messages.push_back (&token_message);
