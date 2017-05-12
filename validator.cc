@@ -12,8 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "trace.h"
-
 #include "validator.h"
 
 namespace

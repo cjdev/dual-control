@@ -46,27 +46,30 @@ public:
         std::vector<const pam_message *> token_messages;
         token_messages.push_back (&token_message);
         std::vector<const pam_message *> reason_messages;
-        reason_messages.push_back(&reason_message);
+        reason_messages.push_back (&reason_message);
 
         std::vector<pam_response *> token_responses (1);
         std::vector<pam_response *> reason_responses (1);
 
-        int token_result = token_conv->conv (1, token_messages.data(), token_responses.data(),
-                                      token_conv->appdata_ptr);
-        int reason_result = reason_conv->conv (1, reason_messages.data(), reason_responses.data(),
-                                      reason_conv->appdata_ptr);
+        int token_result = token_conv->conv (1, token_messages.data(),
+                                             token_responses.data(),
+                                             token_conv->appdata_ptr);
+        int reason_result = reason_conv->conv (1, reason_messages.data(),
+                                               reason_responses.data(),
+                                               reason_conv->appdata_ptr);
 
         if (reason_result == PAM_SUCCESS) {
-            std::string reason(reason_responses[0]->resp);
+            std::string reason (reason_responses[0]->resp);
             result.reason = reason;
         }
 
         if (token_result != PAM_SUCCESS) {
-           return result;
+            return result;
         }
 
         std::string token_answer (token_responses[0]->resp);
-        std::string::iterator delim = std::find (token_answer.begin(), token_answer.end(), ':');
+        std::string::iterator delim = std::find (token_answer.begin(),
+                                      token_answer.end(), ':');
 
         if (delim == token_answer.end()) {
             return result;

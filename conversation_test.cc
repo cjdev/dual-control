@@ -17,9 +17,6 @@
 #include <cstring>
 #include <security/pam_modules.h>
 
-#include <iostream>
-
-#include "trace.h"
 #include "request.h"
 #include "conversation.h"
 #include "test_util.h"
@@ -31,9 +28,8 @@ struct conversation_data {
     int return_value;
 };
 
-const std::string token_prompt("Dual control token: ");
-const std::string reason_prompt("Reason: ");
-
+const std::string token_prompt ("Dual control token: ");
+const std::string reason_prompt ("Reason: ");
 
 bool same_prompts (const std::vector<pam_message> &expected,
                    int num_prompts, const pam_message **actual)
@@ -66,6 +62,7 @@ int fake_conv (int num_msg, const struct pam_message **msg,
 {
     conversation_data *data = reinterpret_cast<conversation_data *>
                               (appdata_ptr);
+
     if (data->return_value != PAM_SUCCESS) {
         return data->return_value;
     }
@@ -95,7 +92,7 @@ public:
         : expected_handle_ (expected_handle),
           conversations_ (conversations),
           get_response_ (PAM_SUCCESS),
-          count_(0)
+          count_ (0)
     {}
     fake_pam (int get_response) : get_response_ (get_response) {}
     int get_conv (pam_handle *handle, const pam_conv **out) const
@@ -117,6 +114,7 @@ public:
             reason_conv_.conv = fake_conv;
             *out = &reason_conv_;
         }
+
         count_ += 1;
 
         return PAM_SUCCESS;
@@ -130,7 +128,7 @@ std::shared_ptr<T> share (T *t)
     return std::shared_ptr<T> (t);
 }
 
-std::vector<pam_message> create_pam_messages(const std::string &prompt)
+std::vector<pam_message> create_pam_messages (const std::string &prompt)
 {
     pam_message message;
     message.msg_style = PAM_PROMPT_ECHO_OFF;
@@ -142,7 +140,7 @@ std::vector<pam_message> create_pam_messages(const std::string &prompt)
     return messages;
 }
 
-std::vector<pam_response> create_pam_responses(const std::string &answer,
+std::vector<pam_response> create_pam_responses (const std::string &answer,
         int retcode)
 {
     pam_response response;
@@ -159,11 +157,15 @@ conversation make_conversation (pam_handle *expected_handle,
                                 const std::string &token_answer,
                                 const std::string &reason_answer)
 {
-    std::vector<pam_message> token_messages (create_pam_messages(token_prompt));
-    std::vector<pam_response> token_responses (create_pam_responses (token_answer,
+    std::vector<pam_message> token_messages (create_pam_messages (
+                token_prompt));
+    std::vector<pam_response> token_responses (create_pam_responses (
+                token_answer,
                 PAM_SUCCESS));
-    std::vector<pam_message> reason_messages (create_pam_messages(reason_prompt));
-    std::vector<pam_response> reason_responses (create_pam_responses (reason_answer,
+    std::vector<pam_message> reason_messages (create_pam_messages (
+                reason_prompt));
+    std::vector<pam_response> reason_responses (create_pam_responses (
+                reason_answer,
                 PAM_SUCCESS));
 
     conversation_data token_conv_data = {
@@ -178,8 +180,8 @@ conversation make_conversation (pam_handle *expected_handle,
     };
 
     std::vector<conversation_data> conversations;
-    conversations.push_back(token_conv_data);
-    conversations.push_back(reason_conv_data);
+    conversations.push_back (token_conv_data);
+    conversations.push_back (reason_conv_data);
 
     pam pam (share (new fake_pam (expected_handle, conversations)));
     return conversation::create (pam);
@@ -281,11 +283,15 @@ int returns_empty_user_and_token_when_token_answer_fails()
     std::string reason ("reason");
     int token_retcode = PAM_CONV_ERR;
     int reason_retcode = PAM_SUCCESS;
-    std::vector<pam_message> token_messages (create_pam_messages(token_prompt));
-    std::vector<pam_response> token_responses (create_pam_responses(user + ":" + token,
-                    token_retcode));
-    std::vector<pam_message> reason_messages (create_pam_messages(reason_prompt));
-    std::vector<pam_response> reason_responses (create_pam_responses(reason, reason_retcode));
+    std::vector<pam_message> token_messages (create_pam_messages (
+                token_prompt));
+    std::vector<pam_response> token_responses (create_pam_responses (
+                user + ":" + token,
+                token_retcode));
+    std::vector<pam_message> reason_messages (create_pam_messages (
+                reason_prompt));
+    std::vector<pam_response> reason_responses (create_pam_responses (reason,
+            reason_retcode));
 
     conversation_data token_conversation_data = {
         token_messages,
@@ -299,10 +305,10 @@ int returns_empty_user_and_token_when_token_answer_fails()
     };
 
     std::vector<conversation_data> conversations;
-    conversations.push_back(token_conversation_data);
-    conversations.push_back(reason_conversation_data);
+    conversations.push_back (token_conversation_data);
+    conversations.push_back (reason_conversation_data);
 
-    pam pam (share (new fake_pam(0, conversations)));
+    pam pam (share (new fake_pam (0, conversations)));
     conversation conversation = conversation::create (pam);
     pam_request request (0, 0, 0, 0);
 
@@ -323,11 +329,15 @@ int returns_empty_reason_when_reason_answer_fails()
     std::string reason ("reason");
     int token_retcode = PAM_SUCCESS;
     int reason_retcode = PAM_CONV_ERR;
-    std::vector<pam_message> token_messages (create_pam_messages(token_prompt));
-    std::vector<pam_response> token_responses (create_pam_responses(user + ":" + token,
-                    token_retcode));
-    std::vector<pam_message> reason_messages (create_pam_messages(reason_prompt));
-    std::vector<pam_response> reason_responses (create_pam_responses(reason, reason_retcode));
+    std::vector<pam_message> token_messages (create_pam_messages (
+                token_prompt));
+    std::vector<pam_response> token_responses (create_pam_responses (
+                user + ":" + token,
+                token_retcode));
+    std::vector<pam_message> reason_messages (create_pam_messages (
+                reason_prompt));
+    std::vector<pam_response> reason_responses (create_pam_responses (reason,
+            reason_retcode));
 
     conversation_data token_conversation_data = {
         token_messages,
@@ -341,10 +351,10 @@ int returns_empty_reason_when_reason_answer_fails()
     };
 
     std::vector<conversation_data> conversations;
-    conversations.push_back(token_conversation_data);
-    conversations.push_back(reason_conversation_data);
+    conversations.push_back (token_conversation_data);
+    conversations.push_back (reason_conversation_data);
 
-    pam pam (share (new fake_pam(0, conversations)));
+    pam pam (share (new fake_pam (0, conversations)));
     conversation conversation = conversation::create (pam);
     pam_request request (0, 0, 0, 0);
 

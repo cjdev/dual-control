@@ -12,8 +12,6 @@
 #include <security/pam_modules.h>
 #include <string>
 
-#include "trace.h"
-
 #include "request.h"
 #include "dual_control.h"
 #include "validator.h"
