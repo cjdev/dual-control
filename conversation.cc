@@ -14,8 +14,6 @@
 #include <vector>
 #include <string>
 
-#include "trace.h"
-
 #include "conversation.h"
 
 namespace

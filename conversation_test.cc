@@ -66,21 +66,17 @@ int fake_conv (int num_msg, const struct pam_message **msg,
 {
     conversation_data *data = reinterpret_cast<conversation_data *>
                               (appdata_ptr);
-    TRACE
     if (data->return_value != PAM_SUCCESS) {
         return data->return_value;
     }
-    TRACE
 
     if (!same_prompts (data->expected_prompts, num_msg, msg)) {
         throw std::string ("unexpected prompts");
     }
-    TRACE
 
     std::vector<pam_response> &responses = data->responses;
     std::transform (responses.begin(), responses.end(), resp,
                     address_of<pam_response>);
-    TRACE
     return data->return_value;
 }
 

@@ -51,7 +51,6 @@ public:
         }
 
         std::string user_token = tokens_.token (found_user[0]);
-	TRACE
         return user_token == token;
     }
 };
