@@ -16,58 +16,61 @@
 
 #include "conversation.h"
 
+
 namespace
 {
 class impl : public conversation_ifc
 {
 private:
     pam pam_;
+    pam_conv_result conversation(const std::string &msg, int msg_style, const pam_request &request) {
+        const pam_conv *conv;
+        int get_conv_result = pam_.get_conv (request.handle(), &conv);
+        if (get_conv_result != PAM_SUCCESS) {
+            return pam_conv_result {get_conv_result, PAM_CONV_ERR, std::vector<pam_response *>()};
+        }
+        
+        pam_message message;
+        message.msg = const_cast<char *> (msg.c_str());
+        message.msg_style = msg_style;
+
+        std::vector<const pam_message *> messages;
+        messages.push_back (&message);
+        std::vector<pam_response *> responses (1);
+
+        int conv_result = conv->conv (1, messages.data(),
+                                             responses.data(),
+                                             conv->appdata_ptr);
+
+        return pam_conv_result {get_conv_result, conv_result, responses};
+    }
+
 public:
     impl (pam &pam) : pam_ (pam) {}
     conversation_result initiate (const pam_request &request)
     {
         conversation_result result;
-        const pam_conv *token_conv;
-        const pam_conv *reason_conv;
-        int get_token_conv = pam_.get_conv (request.handle(), &token_conv);
-        int get_reason_conv = pam_.get_conv (request.handle(), &reason_conv);
 
-        if (get_token_conv != PAM_SUCCESS || get_reason_conv != PAM_SUCCESS) {
+        pam_conv_result token_result (conversation("Dual control token: ", PAM_PROMPT_ECHO_OFF, request));
+        if (token_result.get_conv_result != PAM_SUCCESS) {
             return result;
         }
 
-        pam_message token_message;
-        token_message.msg = const_cast<char *> ("Dual control token: ");
-        token_message.msg_style = PAM_PROMPT_ECHO_OFF;
-        pam_message reason_message;
-        reason_message.msg = const_cast<char *> ("Reason: ");
-        reason_message.msg_style = PAM_PROMPT_ECHO_ON;
+        pam_conv_result reason_result (conversation("Reason: ", PAM_PROMPT_ECHO_ON, request));
+        if (reason_result.get_conv_result != PAM_SUCCESS) {
+            return result;
+        }
 
-        std::vector<const pam_message *> token_messages;
-        token_messages.push_back (&token_message);
-        std::vector<const pam_message *> reason_messages;
-        reason_messages.push_back (&reason_message);
-
-        std::vector<pam_response *> token_responses (1);
-        std::vector<pam_response *> reason_responses (1);
-
-        int token_result = token_conv->conv (1, token_messages.data(),
-                                             token_responses.data(),
-                                             token_conv->appdata_ptr);
-        int reason_result = reason_conv->conv (1, reason_messages.data(),
-                                               reason_responses.data(),
-                                               reason_conv->appdata_ptr);
-
-        if (reason_result == PAM_SUCCESS) {
-            std::string reason (reason_responses[0]->resp);
+        if (reason_result.conv_result == PAM_SUCCESS) {
+            std::string reason (reason_result.responses[0]->resp);
             result.reason = reason;
         }
 
-        if (token_result != PAM_SUCCESS) {
+        if (token_result.conv_result != PAM_SUCCESS) {
             return result;
         }
 
-        std::string token_answer (token_responses[0]->resp);
+        std::string token_answer (token_result.responses[0]->resp);
         std::string::iterator delim = std::find (token_answer.begin(),
                                       token_answer.end(), ':');
 

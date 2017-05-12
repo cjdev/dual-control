@@ -24,6 +24,12 @@ struct conversation_result {
     std::string reason;
 };
 
+struct pam_conv_result {
+    int get_conv_result;
+    int conv_result;
+    std::vector<pam_response *> responses;
+};
+
 class conversation_ifc
 {
 public:
