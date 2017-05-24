@@ -18,4 +18,5 @@ format
 *.out
 dual_control
 .idea
+Vagrantfile
 
