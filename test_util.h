@@ -16,7 +16,7 @@
 #include <cstdio>
 #define check(assertion, msg) \
     if (!(assertion)) { \
-      fprintf(stderr, "assertion failed: %s\n", msg); \
+      fprintf(stderr, "> assertion failed: %s\n", msg); \
       return 0; \
     }
 
@@ -32,11 +32,13 @@
 
 #define test(NAME) \
     { \
-      int result = NAME (); \
-      if (!result) { \
-          fprintf(stderr, "test failed: %s\n", #NAME); \
-          return 0; \
-      } \
+        int result = NAME (); \
+        if (!result) { \
+            fprintf(stderr, "> test failed: %s\n", #NAME); \
+            return 0; \
+        } else { \
+            fprintf (stderr, "> test passed: %s\n", #NAME); \
+        } \
     }
 
 #define succeed() return 1

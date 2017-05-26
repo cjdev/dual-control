@@ -9,6 +9,7 @@
  * at https://github.com/cjdev/dual-control.
  */
 
+#pragma once
 #ifndef GENERATOR_H_
 #define GENERATOR_H_
 
@@ -17,25 +18,39 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <ctime>
+
+#include <cryptopp/base32.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/hmac.h>
+#include <cryptopp/osrng.h>
 
 #include "sys_stdlib.h"
+#include "sys_time.h"
 
 using generator = std::function<std::string()>;
+int ipow (int base, int exp);
+time_t time_step (const time_t time, const int step);
 
-inline    std::string token_from_int (int x)
+class token_generator_ifc
 {
-    int v = std::abs (x % 1000000);
-    std::ostringstream is;
-    is << std::setfill ('0') << std::setw (6)<< v;
-    return is.str();
-}
+public:
+    virtual std::string generate_token () const;
+};
 
-inline generator make_generator (const stdlib &stdlib)
+class totp_generator : public token_generator
 {
-    return [stdlib] {
-        return token_from_int (stdlib.rand());
-    };
-}
+public:
+    totp_generator (const class sys_time &sys_time,
+                    const std::string &key_c,
+                    const int code_digits) :
+        sys_time (sys_time), code_digits (code_digits),
+        key (std::make_shared<CryptoPP::SecByteBlock> (CryptoPP::SecByteBlock (
+                    reinterpret_cast<const unsigned char *> (key_c.c_str()), key_c.size())))
+    {};
+
+    std::string generate_token () const;
+};
 
 #endif
 
