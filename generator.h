@@ -35,21 +35,28 @@ time_t time_step (const time_t time, const int step);
 class token_generator_ifc
 {
 public:
-    virtual std::string generate_token () const;
+    virtual std::string generate_token () const
+    {
+        return "<dummy string>";
+    }
 };
 
-class totp_generator : public token_generator
+class totp_generator
 {
 public:
+    using delegate = std::shared_ptr<token_generator_ifc>;
+private:
+    delegate delegate_;
+
+public:
+    std::string generate_token () const
+    {
+        return delegate_->generate_token();
+    };
+
     totp_generator (const class sys_time &sys_time,
                     const std::string &key_c,
-                    const int code_digits) :
-        sys_time (sys_time), code_digits (code_digits),
-        key (std::make_shared<CryptoPP::SecByteBlock> (CryptoPP::SecByteBlock (
-                    reinterpret_cast<const unsigned char *> (key_c.c_str()), key_c.size())))
-    {};
-
-    std::string generate_token () const;
+                    const int code_digits);
 };
 
 #endif

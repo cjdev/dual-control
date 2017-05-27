@@ -42,10 +42,10 @@ installer init_installer()
     stdlib stdlib (stdlib::get());
     sys_time timer (sys_time::get());
     int code_digits = 6;
-    std::shared_ptr<totp_generator> totp_generator =
+    auto the_generator =
         std::make_shared<totp_generator> (timer, "\x00", code_digits);
-    generator generator = std::bind (&TOTPGenerator::generate_token,
-                                     totp_generator);
+    generator generator = std::bind (&totp_generator::generate_token,
+                                     the_generator);
     installer installer (installer::create (tokens, unistd, directory,
                                             generator));
 

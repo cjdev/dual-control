@@ -50,19 +50,7 @@ time_t time_step (const time_t time, const int step)
 class impl : public token_generator_ifc
 {
 private:
-    const sys_time &sys_time;
-    unsigned int code_digits;
-    const std::shared_ptr<CryptoPP::SecByteBlock> key;
-
-    unsigned long truncate (const std::string &mac) const;
-
-    unsigned long hotp (const CryptoPP::SecByteBlock &key,
-                        const CryptoPP::Integer &counter) const;
-
-    // TODO: move elsewhere
-    CryptoPP::SecByteBlock generate_key (unsigned int size) const;
-
-    unsigned long totp_generator::truncate (const std::string &mac) const
+    unsigned long truncate (const std::string &mac) const
     {
         uint8_t offset = static_cast<uint8_t > (mac[19]) & static_cast<uint8_t>
                          (0x0f);
@@ -70,8 +58,8 @@ private:
         return bytesToInt (offsetBytes) & 0x7fffffff;
     }
 
-    unsigned long totp_generator::hotp (const CryptoPP::SecByteBlock &key,
-                                        const CryptoPP::Integer &counter) const
+    unsigned long hotp (const CryptoPP::SecByteBlock &key,
+                        const CryptoPP::Integer &counter) const
     {
         std::string mac;
 
@@ -93,7 +81,7 @@ private:
         return result;
     }
 
-    CryptoPP::SecByteBlock totp_generator::generate_key (unsigned int size)
+    CryptoPP::SecByteBlock generate_key (unsigned int size)
     const
     {
         CryptoPP::AutoSeededRandomPool prng;
@@ -103,7 +91,18 @@ private:
         return key;
     }
 
+    const sys_time &sys_time;
+    unsigned int code_digits;
+    const std::shared_ptr<CryptoPP::SecByteBlock> key;
 public:
+    impl (const class sys_time &sys_time,
+          const std::string &key_c,
+          const int code_digits) :
+        sys_time (sys_time), code_digits (code_digits),
+        key (std::make_shared<CryptoPP::SecByteBlock> (CryptoPP::SecByteBlock (
+                    reinterpret_cast<const unsigned char *> (key_c.c_str()), key_c.size())))
+    {}
+
     std::string generate_token () const override
     {
         time_t foo = 111;
@@ -121,6 +120,14 @@ public:
 };
 
 // Generator goes here....
-std::string totp_generator::generate_token () const
-;
+
+totp_generator::totp_generator (
+    const class sys_time
+    &sys_time,
+    const std::string &key_c,
+    const int code_digits) :
+    delegate_ (std::make_shared<impl> (sys_time,
+                                       key_c,
+                                       code_digits))
+{}
 
