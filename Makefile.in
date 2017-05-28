@@ -1,6 +1,7 @@
 CXXFLAGS += -fPIC -fno-stack-protector -std=c++14  -g
 CFLAGS += -fPIC -fno-stack-protector -g
-LDFLAGS = -lcryptopp -lpam
+LDFLAGS = -Wl,-Bstatic -lcrypto++ -Wl,-Bdynamic -lpam -Wl,--as-needed
+#LDFLAGS = -lcrypto++ -lpam -Wl,--as-needed
 
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
                    sys_stdlib.o sys_time.o

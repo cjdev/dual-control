@@ -12,6 +12,7 @@
 #include "generator.h"
 #include <iostream>
 
+namespace {
 int ipow (int base, int exp)
 {
     int result = 1;
@@ -47,7 +48,7 @@ time_t time_step (const time_t time, const int step)
     return time / step;
 }
 
-class impl : public token_generator_ifc
+class token_generator_impl : public token_generator_ifc
 {
 private:
     unsigned long truncate (const std::string &mac) const
@@ -91,24 +92,23 @@ private:
         return key;
     }
 
-    const sys_time &sys_time;
+    const sys_time &clock;
     unsigned int code_digits;
     const std::shared_ptr<CryptoPP::SecByteBlock> key;
 public:
-    impl (const class sys_time &sys_time,
+    token_generator_impl (const sys_time &clock,
           const std::string &key_c,
           const int code_digits) :
-        sys_time (sys_time), code_digits (code_digits),
+        clock (clock), code_digits (code_digits),
         key (std::make_shared<CryptoPP::SecByteBlock> (CryptoPP::SecByteBlock (
                     reinterpret_cast<const unsigned char *> (key_c.c_str()), key_c.size())))
     {}
 
     std::string generate_token () const override
     {
+        clock.time(nullptr);
         time_t foo = 111;
-        const CryptoPP::Integer &time = sys_time.time (&foo);
-        std::cout << "At the tone, the time is: " << foo << " or " << time << "\a"
-                  << std::endl;
+        const CryptoPP::Integer &time = clock.time (&foo);
         int time_step_size = 30;
         CryptoPP::Integer current_step = time_step (time.ConvertToLong(),
                                          time_step_size);
@@ -118,16 +118,13 @@ public:
         return is.str();
     }
 };
+}
 
 // Generator goes here....
 
 totp_generator::totp_generator (
-    const class sys_time
-    &sys_time,
+    const sys_time &clock,
     const std::string &key_c,
     const int code_digits) :
-    delegate_ (std::make_shared<impl> (sys_time,
-                                       key_c,
-                                       code_digits))
+    delegate_ (std::make_shared<token_generator_impl> (clock, key_c, code_digits))
 {}
-

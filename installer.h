@@ -44,7 +44,7 @@ public:
         return delegate_->install_token();
     }
     static installer create (const tokens &tokens, const unistd &unistd,
-                             const directory &directory, const generator &generator);
+                             const directory &directory, const std::shared_ptr<totp_generator> generator);
 };
 
 #endif

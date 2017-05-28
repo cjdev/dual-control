@@ -27,10 +27,11 @@ private:
     tokens tokens_;
     unistd unistd_;
     directory directory_;
-    generator generator_;
+    std::shared_ptr<totp_generator> generator_;
 public:
     impl (const tokens &tokens, const unistd &unistd,
-          const directory &directory, const generator &generator) :
+          const directory &directory,
+          const std::shared_ptr<totp_generator> generator) :
         tokens_ (tokens), unistd_ (unistd), directory_ (directory),
         generator_ (generator) {}
     std::string install_token() const override
@@ -50,7 +51,7 @@ public:
         }
 
         user user (found_user[0]);
-        std::string token (generator_());
+        std::string token (generator_->generate_token());
         tokens_.save (user, token);
         return token;
     }
@@ -59,7 +60,7 @@ public:
 }
 
 installer installer::create (const tokens &tokens, const unistd &unistd,
-                             const directory &directory, const generator &generator)
+                             const directory &directory, const std::shared_ptr<totp_generator> generator)
 {
     return installer (std::make_shared<impl> (tokens, unistd, directory,
                       generator));

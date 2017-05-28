@@ -54,7 +54,7 @@ public:
         return delegate_->generate_token();
     };
 
-    totp_generator (const class sys_time &sys_time,
+    totp_generator (const sys_time &clock,
                     const std::string &key_c,
                     const int code_digits);
 };

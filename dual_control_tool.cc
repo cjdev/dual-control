@@ -40,14 +40,10 @@ installer init_installer()
     unistd unistd (unistd::create());
     directory directory (directory::create (unistd, pwd));
     stdlib stdlib (stdlib::get());
-    sys_time timer (sys_time::get());
+    sys_time time (sys_time::get());
     int code_digits = 6;
-    auto the_generator =
-        std::make_shared<totp_generator> (timer, "\x00", code_digits);
-    generator generator = std::bind (&totp_generator::generate_token,
-                                     the_generator);
-    installer installer (installer::create (tokens, unistd, directory,
-                                            generator));
+    auto the_generator = std::make_shared<totp_generator> (time, "\x00", code_digits);
+    installer installer (installer::create (tokens, unistd, directory, the_generator));
 
     return installer;
 }
