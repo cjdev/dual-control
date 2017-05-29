@@ -26,6 +26,36 @@ AC_ARG_WITH(pam-module-directory,
     PAM_MODULE_DIRECTORY="$DEFAULT_PAM_MODULE_DIRECTORY")
 AC_SUBST(PAM_MODULE_DIRECTORY)
 
+#check whether to build with crypto++
+AC_ARG_WITH([cryptopp],
+	AC_HELP_STRING([--with-cryptopp],[Build algorithms that need Crypto++ support]),
+	[WITH_CRYPTOPP=$withval],
+	[WITH_CRYPTOPP=yes])
+
+#and check crypto++
+if test "$WITH_CRYPTOPP" = "yes"; then
+	#crypto++ headers are either in include/crypto++ or include/cryptopp,
+	#the information is otherwise unavailable from standard configuration
+	#means. Please report/add more tests if you encounter distros that
+	#place them elsewhere.
+	AC_LANG_PUSH([C++])
+	AC_CHECK_HEADERS([crypto++/hex.h cryptopp/base32.h], [dualcontrol_found_cryptopp_headers=yes;break;], [echo ...])
+	AS_IF([test "x$dualcontrol_found_cryptopp_headers" != "xyes"], [AC_MSG_ERROR([Unable to find Crypto++])])
+	AC_DEFINE([HAVE_CRYPTOPP], [1])
+
+	CRYPTOPP_NAME=cryptopp
+	AC_CHECK_HEADER([crypto++/config.h],
+		CRYPTOPP_NAME=crypto++
+	)
+	AC_LANG_POP([C++])
+
+
+	AC_SUBST(CRYPTOPP_NAME)
+else
+	AC_DEFINE([HAVE_CRYPTOPP], [0])
+fi
+
+
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
@@ -45,5 +75,3 @@ if test "$PAM_MODULE_DIRECTORY" = "$DEFAULT_PAM_MODULE_DIRECTORY"; then
 else
     AC_MSG_NOTICE([PAM module installation directory: $PAM_MODULE_DIRECTORY])
 fi
-
-

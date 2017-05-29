@@ -106,9 +106,7 @@ public:
 
     std::string generate_token () const override
     {
-        clock.time(nullptr);
-        time_t foo = 111;
-        const CryptoPP::Integer &time = clock.time (&foo);
+        const CryptoPP::Integer &time = clock.time (nullptr);
         int time_step_size = 30;
         CryptoPP::Integer current_step = time_step (time.ConvertToLong(),
                                          time_step_size);
