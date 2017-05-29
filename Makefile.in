@@ -1,4 +1,4 @@
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++14  -g
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g
 CFLAGS += -fPIC -fno-stack-protector -g
 LDFLAGS = -Wl,-Bstatic -lcrypto++ -Wl,-Bdynamic -lpam -Wl,--as-needed
 #LDFLAGS = -lcrypto++ -lpam -Wl,--as-needed
