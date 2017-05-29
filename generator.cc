@@ -12,6 +12,18 @@
 #include "generator.h"
 #include <iostream>
 
+#ifdef CRYPTOPP_NAME
+/// Prefixed with __ to avoid symbol conflicts with Cryptopp
+#define __CRYPTOPP_BASE32_H <CRYPTOPP_NAME/base32.h>
+#define __CRYPTOPP_HEX_H <cryptopp/hex.h>
+#define __CRYPTOPP_HMAC_H <cryptopp/hmac.h>
+#include __CRYPTOPP_BASE32_H
+#include __CRYPTOPP_HEX_H
+#include __CRYPTOPP_HMAC_H
+#else
+#error "CRYPTOPP_NAME not defined"
+#endif
+
 namespace {
 int ipow (int base, int exp)
 {

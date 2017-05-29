@@ -1,7 +1,9 @@
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g
+CRYPTOPP_NAME=@CRYPTOPP_NAME@
+
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g -DCRYPTOPP_NAME=$(CRYPTOPP_NAME)
 CFLAGS += -fPIC -fno-stack-protector -g
-LDFLAGS = -Wl,-Bstatic -lcrypto++ -Wl,-Bdynamic -lpam -Wl,--as-needed
-#LDFLAGS = -lcrypto++ -lpam -Wl,--as-needed
+#LDFLAGS = -Wl,-Bstatic -l$(CRYPTOPP_NAME) -Wl,-Bdynamic -lpam -Wl,--as-needed
+LDFLAGS = -lpam -l$(CRYPTOPP_NAME)
 
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
                    sys_stdlib.o sys_time.o
@@ -13,10 +15,6 @@ TESTRUNS := $(patsubst %.out,RUN_%,$(TESTS))
 MODULELIB = pam_dual_control.so
 
 UNAME_S := $(shell uname -s)
-
-CRYPTOPP_NAME=@CRYPTOPP_NAME@
-
-MYDEFS = @DEFS@
 
 .PHONY: all
 all: .depend dual_control.a dual_control
@@ -46,12 +44,12 @@ distclean: clean
 
 .depend: $(OBJS:.o=.cc) $(TEST_SOURCES)
 	rm -f ./.depend
-	$(CXX) -std=c++11 -MM $^ > ./.depend;
+	$(CXX) -std=c++11 -MM -DCRYPTOPP_NAME=$(CRYPTOPP_NAME) $^ > ./.depend;
 
 -include .depend
 
 %_test.out: %_test.o $(OBJS)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ -lcryptopp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ -l$(CRYPTOPP_NAME)
 
 RUN_%: %.out
 	@echo running $<
