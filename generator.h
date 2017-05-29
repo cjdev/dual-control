@@ -28,7 +28,6 @@
 #include "sys_stdlib.h"
 #include "sys_time.h"
 
-using generator = std::function<std::string()>;
 int ipow (int base, int exp);
 time_t time_step (const time_t time, const int step);
 
@@ -54,6 +53,9 @@ public:
         return delegate_->generate_token();
     };
 
+    totp_generator (delegate delegate_) :
+        delegate_(delegate_)
+    {}
     totp_generator (const sys_time &clock,
                     const std::string &key_c,
                     const int code_digits);

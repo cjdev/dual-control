@@ -18,6 +18,7 @@
 #include "user.h"
 #include "token.h"
 #include "test_util.h"
+#include "generator.h"
 
 class mock_tokens : public tokens_ifc
 {
@@ -48,6 +49,14 @@ public:
     {
         return nullptr;
     }
+};
+
+class fake_totp_generator : public token_generator_ifc
+{
+    public:
+        std::string generate_token() {
+            return "000000";
+        }
 };
 
 class fake_directory : public directory_ifc
@@ -81,10 +90,9 @@ int installs_token()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> (user_name));
-    generator generator = [&] { return token; };
+    totp_generator *generator = new totp_generator(std::make_shared<fake_totp_generator>());
 
-    installer installer = installer::create (tokens, unistd, directory,
-                          generator);
+    installer installer = installer::create (tokens, unistd, directory, std::shared_ptr<totp_generator> (generator));
 
     //when
     std::string result = installer.install_token();
@@ -104,10 +112,9 @@ int unistd_does_not_find_user_name_nullptr_case()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fail_unistd>());
     directory directory (std::make_shared<fake_directory> (user_name));
-    generator generator = [&] { return token; };
+    auto generator = std::shared_ptr<totp_generator>(new totp_generator(std::make_shared<fake_totp_generator>()));
 
-    installer installer = installer::create (tokens, unistd, directory,
-                          generator);
+    installer installer = installer::create (tokens, unistd, directory, generator);
 
     //when
     auto returned = installer.install_token();
@@ -128,10 +135,9 @@ int unistd_does_not_find_user_name_empty_string_case()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (""));
     directory directory (std::make_shared<fake_directory> (user_name));
-    generator generator = [&] { return token; };
+    auto generator = std::shared_ptr<totp_generator>(new totp_generator(std::make_shared<fake_totp_generator>()));
 
-    installer installer = installer::create (tokens, unistd, directory,
-                          generator);
+    installer installer = installer::create (tokens, unistd, directory, generator);
 
     //when
     auto returned = installer.install_token();
@@ -151,10 +157,9 @@ int directory_finds_no_user_info()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> ("not the user"));
-    generator generator = [&] { return token; };
+    auto generator = std::shared_ptr<totp_generator>(new totp_generator(std::make_shared<fake_totp_generator>()));
 
-    installer installer = installer::create (tokens, unistd, directory,
-                          generator);
+    installer installer = installer::create (tokens, unistd, directory, generator);
 
     //when
     auto returned = installer.install_token();
