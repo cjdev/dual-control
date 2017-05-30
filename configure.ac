@@ -32,6 +32,7 @@ AC_ARG_WITH([cryptopp],
 	[WITH_CRYPTOPP=$withval],
 	[WITH_CRYPTOPP=yes])
 
+AC_CHECK_HEADERS([openssl/hmac.h openssl/evp.h],,[AC_MSG_ERROR("Can't find Openssl")])
 AC_CHECK_LIB([ssl], [SSL_library_init],,[AC_MSG_ERROR("Can't find -lssl")])
 AC_CHECK_LIB([crypto], [EVP_EncryptInit],,[AC_MSG_ERROR("Can't find -lcrypto")])
 
