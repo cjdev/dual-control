@@ -1,10 +1,10 @@
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++11
-CFLAGS += -fPIC -fno-stack-protector
-LDFLAGS = -lpam
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g
+CFLAGS += -fPIC -fno-stack-protector -g
+LDFLAGS = -lpam @LIBS@
 
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
                    sys_stdlib.o sys_time.o
-OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o session.o installer.o system.o
+OBJS = dual_control.o request.o validator.o conversation.o user.o token.o logger.o session.o installer.o system.o generator.o
 TEST_SOURCES := $(wildcard *_test.cc)
 TESTS := $(patsubst %.cc,%.out,$(TEST_SOURCES))
 TESTRUNS := $(patsubst %.out,RUN_%,$(TESTS))
@@ -26,7 +26,7 @@ dual_control.a: dual_control.o dual_control_integrate.o $(OBJS) $(INTEGRATION_OB
 	ranlib $@
 
 dual_control: dual_control_tool.o $(OBJS) $(INTEGRATION_OBJS)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)  -o $@ $^
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^ $(LDFLAGS)
 
 
 .PHONY: clean
@@ -46,7 +46,7 @@ distclean: clean
 -include .depend
 
 %_test.out: %_test.o $(OBJS)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS)  -o $@ $^
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ $(LDFLAGS)
 
 RUN_%: %.out
 	@echo running $<
@@ -70,5 +70,3 @@ endif
 .PHONY: format
 format:
 	@./format.sh *.cc *.h
-
-

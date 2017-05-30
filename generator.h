@@ -17,25 +17,41 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <ctime>
 
 #include "sys_stdlib.h"
+#include "sys_time.h"
 
-using generator = std::function<std::string()>;
+int ipow (int base, int exp);
+time_t time_step (const time_t time, const int step);
 
-inline    std::string token_from_int (int x)
+class token_generator_ifc
 {
-    int v = std::abs (x % 1000000);
-    std::ostringstream is;
-    is << std::setfill ('0') << std::setw (6)<< v;
-    return is.str();
-}
+public:
+    virtual std::string generate_token () const = 0;
 
-inline generator make_generator (const stdlib &stdlib)
+};
+
+class totp_generator
 {
-    return [stdlib] {
-        return token_from_int (stdlib.rand());
+public:
+    using delegate = std::shared_ptr<token_generator_ifc>;
+
+private:
+    delegate delegate_;
+
+public:
+    std::string generate_token () const
+    {
+        return delegate_->generate_token();
     };
-}
+
+    totp_generator (delegate delegate_) :
+        delegate_ (delegate_)
+    {}
+    totp_generator (const sys_time &clock,
+                    const std::string &key_c,
+                    const int code_digits);
+};
 
 #endif
-

@@ -26,9 +26,15 @@ AC_ARG_WITH(pam-module-directory,
     PAM_MODULE_DIRECTORY="$DEFAULT_PAM_MODULE_DIRECTORY")
 AC_SUBST(PAM_MODULE_DIRECTORY)
 
+AC_CHECK_HEADERS([openssl/hmac.h openssl/evp.h],,[AC_MSG_ERROR("Can't find Openssl")])
+AC_CHECK_LIB([ssl], [SSL_library_init],,[AC_MSG_ERROR("Can't find -lssl")])
+AC_CHECK_LIB([crypto], [EVP_EncryptInit],,[AC_MSG_ERROR("Can't find -lcrypto")])
+
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+
+
 
 if test "$PAM_MODULE_DIRECTORY" = "$DEFAULT_PAM_MODULE_DIRECTORY"; then
     AC_MSG_WARN([
@@ -45,5 +51,3 @@ if test "$PAM_MODULE_DIRECTORY" = "$DEFAULT_PAM_MODULE_DIRECTORY"; then
 else
     AC_MSG_NOTICE([PAM module installation directory: $PAM_MODULE_DIRECTORY])
 fi
-
-

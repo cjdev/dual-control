@@ -18,6 +18,7 @@
 #include "user.h"
 #include "sys_unistd.h"
 #include "sys_pwd.h"
+#include "sys_time.h"
 #include "token.h"
 #include "system.h"
 #include "sys_fstream.h"
@@ -39,9 +40,12 @@ installer init_installer()
     unistd unistd (unistd::create());
     directory directory (directory::create (unistd, pwd));
     stdlib stdlib (stdlib::get());
-    generator generator{make_generator (stdlib)};
-    installer installer (installer::create (tokens, unistd,
-                                            directory, generator));
+    sys_time time (sys_time::get());
+    int code_digits = 6;
+    auto the_generator = std::make_shared<totp_generator> (time, "\x00",
+                         code_digits);
+    installer installer (installer::create (tokens, unistd, directory,
+                                            the_generator));
 
     return installer;
 }
