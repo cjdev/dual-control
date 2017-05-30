@@ -32,9 +32,14 @@ AC_ARG_WITH([cryptopp],
 	[WITH_CRYPTOPP=$withval],
 	[WITH_CRYPTOPP=yes])
 
-#and check crypto++
+AC_CHECK_LIB([ssl], [SSL_library_init],,[AC_MSG_ERROR("Can't find -lssl")])
+AC_CHECK_LIB([crypto], [EVP_EncryptInit],,[AC_MSG_ERROR("Can't find -lcrypto")])
+
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
+
+
 
 if test "$PAM_MODULE_DIRECTORY" = "$DEFAULT_PAM_MODULE_DIRECTORY"; then
     AC_MSG_WARN([

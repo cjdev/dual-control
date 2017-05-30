@@ -3,7 +3,7 @@ CRYPTOPP_NAME=cryptopp
 CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g -DCRYPTOPP_NAME=$(CRYPTOPP_NAME)
 CFLAGS += -fPIC -fno-stack-protector -g
 #LDFLAGS = -Wl,-Bstatic -l$(CRYPTOPP_NAME) -Wl,-Bdynamic -lpam -Wl,--as-needed
-LDFLAGS = -lpam -l$(CRYPTOPP_NAME)
+LDFLAGS = -lpam -l$(CRYPTOPP_NAME) @LIBS@
 
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
                    sys_stdlib.o sys_time.o
@@ -49,7 +49,7 @@ distclean: clean
 -include .depend
 
 %_test.out: %_test.o $(OBJS)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ -l$(CRYPTOPP_NAME)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) -o $@ $^
 
 RUN_%: %.out
 	@echo running $<
