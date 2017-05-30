@@ -58,12 +58,6 @@ unsigned long bytesToInt (const std::string &bytes)
     return result;
 }
 
-time_t time_step (const time_t time, const int step)
-{
-    // Time is > 0 so division produces the result we want.
-    return time / step;
-}
-
 class token_generator_impl : public token_generator_ifc
 {
 private:
@@ -109,6 +103,7 @@ public:
 
     std::string generate_token () const override
     {
+        // Assuming time is > 0, integer division produces the result we want.
         const time_t &time_chunk = clock.time (nullptr) / 30;
 
         unsigned char data[8] = {0,0,0,0,0,0,0,0};
