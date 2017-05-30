@@ -1,9 +1,7 @@
-CRYPTOPP_NAME=cryptopp
-
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g -DCRYPTOPP_NAME=$(CRYPTOPP_NAME)
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g
 CFLAGS += -fPIC -fno-stack-protector -g
-#LDFLAGS = -Wl,-Bstatic -l$(CRYPTOPP_NAME) -Wl,-Bdynamic -lpam -Wl,--as-needed
-LDFLAGS = -lpam -l$(CRYPTOPP_NAME) @LIBS@
+#LDFLAGS = -Wl,-Bstatic -Wl,-Bdynamic -lpam -Wl,--as-needed
+LDFLAGS = -lpam @LIBS@
 
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
                    sys_stdlib.o sys_time.o
@@ -44,7 +42,7 @@ distclean: clean
 
 .depend: $(OBJS:.o=.cc) $(TEST_SOURCES)
 	rm -f ./.depend
-	$(CXX) -std=c++11 -MM -DCRYPTOPP_NAME=$(CRYPTOPP_NAME) $^ > ./.depend;
+	$(CXX) -std=c++11 -MM $^ > ./.depend;
 
 -include .depend
 

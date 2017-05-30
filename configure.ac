@@ -26,12 +26,6 @@ AC_ARG_WITH(pam-module-directory,
     PAM_MODULE_DIRECTORY="$DEFAULT_PAM_MODULE_DIRECTORY")
 AC_SUBST(PAM_MODULE_DIRECTORY)
 
-#check whether to build with crypto++
-AC_ARG_WITH([cryptopp],
-	AC_HELP_STRING([--with-cryptopp],[Build algorithms that need Crypto++ support]),
-	[WITH_CRYPTOPP=$withval],
-	[WITH_CRYPTOPP=yes])
-
 AC_CHECK_HEADERS([openssl/hmac.h openssl/evp.h],,[AC_MSG_ERROR("Can't find Openssl")])
 AC_CHECK_LIB([ssl], [SSL_library_init],,[AC_MSG_ERROR("Can't find -lssl")])
 AC_CHECK_LIB([crypto], [EVP_EncryptInit],,[AC_MSG_ERROR("Can't find -lcrypto")])

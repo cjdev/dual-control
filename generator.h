@@ -19,11 +19,6 @@
 #include <cmath>
 #include <ctime>
 
-#include <cryptopp/base32.h>
-#include <cryptopp/hex.h>
-#include <cryptopp/hmac.h>
-#include <cryptopp/osrng.h>
-
 #include "sys_stdlib.h"
 #include "sys_time.h"
 

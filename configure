@@ -677,7 +677,6 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 with_pam_module_directory
-with_cryptopp
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1299,7 +1298,6 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-pam-module-directory=NAME
         Use NAME as installation directory for PAM modules
-  --with-cryptopp         Build algorithms that need Crypto++ support
 
 Some influential environment variables:
   CC          C compiler command
@@ -2840,16 +2838,6 @@ else
   PAM_MODULE_DIRECTORY="$DEFAULT_PAM_MODULE_DIRECTORY"
 fi
 
-
-
-#check whether to build with crypto++
-
-# Check whether --with-cryptopp was given.
-if test "${with_cryptopp+set}" = set; then :
-  withval=$with_cryptopp; WITH_CRYPTOPP=$withval
-else
-  WITH_CRYPTOPP=yes
-fi
 
 
 
