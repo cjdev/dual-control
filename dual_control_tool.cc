@@ -42,8 +42,10 @@ installer init_installer()
     stdlib stdlib (stdlib::get());
     sys_time time (sys_time::get());
     int code_digits = 6;
-    auto the_generator = std::make_shared<totp_generator> (time, "\x00", code_digits);
-    installer installer (installer::create (tokens, unistd, directory, the_generator));
+    auto the_generator = std::make_shared<totp_generator> (time, "\x00",
+                         code_digits);
+    installer installer (installer::create (tokens, unistd, directory,
+                                            the_generator));
 
     return installer;
 }

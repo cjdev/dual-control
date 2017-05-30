@@ -1,4 +1,4 @@
-CRYPTOPP_NAME=@CRYPTOPP_NAME@
+CRYPTOPP_NAME=cryptopp
 
 CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g -DCRYPTOPP_NAME=$(CRYPTOPP_NAME)
 CFLAGS += -fPIC -fno-stack-protector -g
