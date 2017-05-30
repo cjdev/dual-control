@@ -34,8 +34,8 @@
     { \
         int result = NAME (); \
         if (!result) { \
-            fprintf(stderr, "> test failed: %s\n", #NAME); \
-            return 0; \
+            fprintf(stderr, "! <%s:%d> test failed: %s\n", __FILE__, __LINE__, #NAME); \
+	    return 0; \
         } else { \
             fprintf (stderr, "> test passed: %s\n", #NAME); \
         } \
