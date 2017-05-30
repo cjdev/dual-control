@@ -1,10 +1,10 @@
 sudo: required
 dist: trusty
 install:
-  - sudo apt-get install libpam0g-dev libssl1.0-dev
+  - sudo apt-get install libpam0g-dev libssl-dev
 language: cpp
 notifications:
   email:
     on_success: change
     on_failure: change
-script: ./configure && make && make -k test
+script: ./configure && make -k test
