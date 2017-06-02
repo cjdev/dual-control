@@ -70,7 +70,7 @@ public:
     }
 };
 
-int six_digits()
+int given_digits()
 {
     // given
     std::initializer_list<time_t> samples { 1 };
@@ -162,7 +162,6 @@ int int_precomputed()
     // given
     // The token for key 76I6WTYEUTNCJUREMGKVM45PMA and time '2017/01/01 00:00:00' is 258675
     time_t theTime = 1483257600;
-    /// TODO: int -> time_t
     std::initializer_list<time_t> samples { theTime }; //
     auto test_stdtime = std::make_shared<fake_time> (samples);
 
@@ -184,7 +183,7 @@ int int_precomputed()
 
 int run_tests()
 {
-    test (six_digits);
+    test (given_digits);
     test (modulated_source_modulates_tokens);
     test (int_max);
     test (int_min);
@@ -196,4 +195,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

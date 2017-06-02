@@ -66,14 +66,6 @@ private:
     const std::string key;
 
 private:
-    unsigned long truncate (const std::string &mac) const
-    {
-        uint8_t offset = static_cast<uint8_t > (mac[19]) & static_cast<uint8_t>
-                         (0x0f);
-        std::string  offsetBytes = mac.substr (offset, 4);
-        return bytesToInt (offsetBytes) & 0x7fffffff;
-    }
-
     std::string zero_fill (unsigned long result, int digits) const
     {
         std::ostringstream result_stream;
@@ -81,13 +73,23 @@ private:
         return result_stream.str();
     }
 
+    unsigned long truncate (const std::string &mac) const
+    {
+        uint8_t offset = static_cast<uint8_t > (mac[19]) & static_cast<uint8_t> (0x0f);
+
+        std::string  offsetBytes = mac.substr (offset, 4);
+
+        return bytesToInt (offsetBytes) & 0x7fffffff;
+    }
+
     std::string hotp (const std::string &key, const unsigned char *data,
                       size_t data_size, const int digits=6) const
     {
-        unsigned char *digest = HMAC (EVP_sha1(), key.c_str(), key.size(), data,
-                                      data_size, NULL, NULL);
-        std::string digest_s = std::string (reinterpret_cast<const char *> (digest),
-                                            20);
+        // TODO: see if I can use sha256/etc. with google auth...
+        unsigned char *digest = HMAC (EVP_sha1(), key.c_str(), key.size(), data, data_size, NULL, NULL);
+
+        std::string digest_s = std::string (reinterpret_cast<const char *> (digest), 20); //TODO: use vectors
+
         unsigned long result = truncate (digest_s) % ipow (10,digits);
 
         return zero_fill (result, digits);
