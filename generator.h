@@ -29,7 +29,6 @@ class token_generator_ifc
 {
 public:
     virtual std::string generate_token () const = 0;
-
 };
 
 class totp_generator
@@ -49,6 +48,7 @@ public:
     totp_generator (delegate delegate_) :
         delegate_ (delegate_)
     {}
+
     totp_generator (const sys_time &clock,
                     const std::string &key_c,
                     const int code_digits);
