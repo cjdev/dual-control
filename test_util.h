@@ -14,9 +14,14 @@
 
 #include <cstring>
 #include <cstdio>
+
+#define RESET_COLORS "\x1b[0m"
+#define FOREGROUND_GREEN "\x1b[32m"
+#define FOREGROUND_RED "\x1b[31m"
+
 #define check(assertion, msg) \
     if (!(assertion)) { \
-      fprintf(stderr, "> assertion failed: %s\n", msg); \
+        fprintf(stderr, "> assertion failed: %s\n", msg);    \
       return 0; \
     }
 
@@ -34,10 +39,10 @@
     { \
         int result = NAME (); \
         if (!result) { \
-            fprintf(stderr, "! <%s:%d> test failed: %s\n", __FILE__, __LINE__, #NAME); \
+            fprintf(stderr, "%s! <%s:%d> test failed: %s\n%s", FOREGROUND_RED, __FILE__, __LINE__, #NAME, RESET_COLORS); \
 	    return 0; \
         } else { \
-            fprintf (stderr, "> test passed: %s\n", #NAME); \
+            fprintf (stderr, "%s> test passed: %s\n%s", FOREGROUND_GREEN, #NAME, RESET_COLORS); \
         } \
     }
 
@@ -45,4 +50,3 @@
 #define fail() return 0
 
 #endif
-
