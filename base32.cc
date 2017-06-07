@@ -9,10 +9,9 @@
  * at https://github.com/cjdev/dual-control.
  */
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
+#include <bitset>
 #include <unordered_map>
+#include <memory>
 
 #include "base32.h"
 
@@ -201,6 +200,7 @@ public:
 
 template class std::vector<unsigned char>;
 
-base32::base32 (
+base32::base32 ():
     delegate_ (std::make_shared<base32_impl> ())
 {}
+
