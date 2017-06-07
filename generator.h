@@ -43,7 +43,7 @@ public:
     std::string generate_token () const
     {
         return delegate_->generate_token();
-    };
+    }
 
     totp_generator (delegate delegate_) :
         delegate_ (delegate_)
@@ -55,3 +55,4 @@ public:
 };
 
 #endif
+

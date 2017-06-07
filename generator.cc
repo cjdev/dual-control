@@ -75,7 +75,8 @@ private:
 
     unsigned long truncate (const std::string &mac) const
     {
-        uint8_t offset = static_cast<uint8_t > (mac[19]) & static_cast<uint8_t> (0x0f);
+        uint8_t offset = static_cast<uint8_t > (mac[19]) & static_cast<uint8_t>
+                         (0x0f);
 
         std::string  offsetBytes = mac.substr (offset, 4);
 
@@ -86,9 +87,11 @@ private:
                       size_t data_size, const int digits=6) const
     {
         // TODO: see if I can use sha256/etc. with google auth...
-        unsigned char *digest = HMAC (EVP_sha1(), key.c_str(), key.size(), data, data_size, NULL, NULL);
+        unsigned char *digest = HMAC (EVP_sha1(), key.c_str(), key.size(), data,
+                                      data_size, NULL, NULL);
 
-        std::string digest_s = std::string (reinterpret_cast<const char *> (digest), 20); //TODO: use vectors
+        std::string digest_s = std::string (reinterpret_cast<const char *> (digest),
+                                            20); //TODO: use vectors
 
         unsigned long result = truncate (digest_s) % ipow (10,digits);
 
@@ -125,3 +128,4 @@ totp_generator::totp_generator (
     delegate_ (std::make_shared<token_generator_impl> (clock, key_c,
                code_digits))
 {}
+
