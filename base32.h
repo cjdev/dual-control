@@ -20,7 +20,7 @@ class base32_ifc
 {
 public:
     virtual std::string encode (std::vector<uint8_t> input) = 0;
-    virtual std::vector<uint8_t> decode (std::vector<uint8_t> input) = 0;
+    virtual std::vector<uint8_t> decode (std::string input) = 0;
 };
 
 class base32
@@ -32,13 +32,16 @@ private:
 public:
     base32 ();
 
-    std::string encode (std::vector<uint8_t> input) {
-        return delegate_->encode(input);
+    std::string encode (std::vector<uint8_t> input)
+    {
+        return delegate_->encode (input);
     };
 
-    std::vector<uint8_t> decode (std::vector<uint8_t> input) {
-        return delegate_->decode(input);
+    std::vector<uint8_t> decode (std::string input)
+    {
+        return delegate_->decode (input);
     };
 };
 
 #endif
+
