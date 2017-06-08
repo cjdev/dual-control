@@ -32,22 +32,22 @@ public:
         fstreams_ (fstreams), generator_(generator) {}
     std::string token (const user &user) const override
     {
-        // return generator_.generate_token();
+        return generator_.generate_token();
 
-        // Get key
-        const std::string file_path (user.home_directory() + "/.dual_control");
-        fstreams::pstream stream (fstreams_.open_fstream (file_path));
+        // // Get key
+        // const std::string file_path (user.home_directory() + "/.dual_control");
+        // fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
-        if (!stream->good()) {
-            return "";
-        }
+        // if (!stream->good()) {
+        //     return "";
+        // }
 
-        // TODO: decode key
-        std::vector<char> line (32);
-        stream->getline (line.data(), line.size());
+        // // TODO: decode key
+        // std::vector<char> line (32);
+        // stream->getline (line.data(), line.size());
 
-        // TODO: generate the token
-        return std::string (line.data());
+        // // TODO: generate the token
+        // return std::string (line.data());
     }
     void save (const user &user, const std::string &token) const override
     {
