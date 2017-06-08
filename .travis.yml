@@ -7,4 +7,4 @@ notifications:
   email:
     on_success: change
     on_failure: change
-script: ./configure && make -k test && ./dual_control
+script: ./configure && make -k test && make && ./dual_control
