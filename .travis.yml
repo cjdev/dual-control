@@ -7,4 +7,4 @@ notifications:
   email:
     on_success: change
     on_failure: change
-script: ./configure && make -k test && make && ./dual_control
+script: ./configure && make -k test && make && ./dual_control && ( nm -u dual_control | grep -v HMAC > /dev/null )

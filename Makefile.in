@@ -1,6 +1,12 @@
 CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g
 CFLAGS += -fPIC -fno-stack-protector -g
-LDFLAGS = -lpam @LIBS@
+LDFLAGS_COMMON = -lpam
+
+ifeq ($(UNAME_S), Linux)
+    LDFLAGS = $(LDFLAGS_COMMON) -l:libssl.a -l:libcrypto.a -ldl -lz
+else
+    LDFLAGS = $(LDFLAGS_COMMON) @LIBS@
+endif
 
 INTEGRATION_OBJS = sys_syslog.o sys_fstream.o sys_unistd.o sys_pwd.o sys_pam.o \
                    sys_stdlib.o sys_time.o
@@ -59,7 +65,7 @@ test: $(TESTRUNS)
 .PHONY: install
 install: $(OBJS) $(INTEGRATION_OBJS)
 ifeq ($(UNAME_S), Linux)
-	$(CXX) -lpam -shared -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) dual_control_integrate.o $(OBJS) $(INTEGRATION_OBJS)
+	$(CXX) -lpam -shared -o $(DESTDIR)@PAM_MODULE_DIRECTORY@/$(MODULELIB) dual_control_integrate.o $(OBJS) $(INTEGRATION_OBJS) -l:libssl.a -l:libcrypto.a -ldl -lz
 else
 	@echo installation recipe not known for $(UNAME_S)
 endif
