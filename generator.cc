@@ -61,7 +61,7 @@ unsigned long bytesToInt (const std::string &bytes)
 class token_generator_impl : public token_generator_ifc
 {
 private:
-    const sys_time &clock;
+    const sys_time clock;
     unsigned int code_digits;
     const std::string key;
 
@@ -99,7 +99,7 @@ private:
     }
 
 public:
-    token_generator_impl (const sys_time &clock,
+    token_generator_impl (const sys_time clock,
                           const std::string &key,
                           const int code_digits) :
         clock (clock), code_digits (code_digits),
@@ -122,10 +122,9 @@ public:
 // Generator goes here....
 
 totp_generator::totp_generator (
-    const sys_time &clock,
+    const sys_time clock,
     const std::string &key_c,
     const int code_digits) :
     delegate_ (std::make_shared<token_generator_impl> (clock, key_c,
                code_digits))
 {}
-

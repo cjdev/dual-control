@@ -49,10 +49,9 @@ public:
         delegate_ (delegate_)
     {}
 
-    totp_generator (const sys_time &clock,
+    totp_generator (const sys_time clock,
                     const std::string &key_c,
                     const int code_digits);
 };
 
 #endif
-
