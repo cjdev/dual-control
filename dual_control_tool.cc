@@ -35,17 +35,15 @@ class system init_system()
 installer init_installer()
 {
     fstreams fstreams (fstreams::create());
-    tokens tokens (tokens::create (fstreams));
     pwd pwd (pwd::create());
     unistd unistd (unistd::create());
     directory directory (directory::create (unistd, pwd));
     stdlib stdlib (stdlib::get());
     sys_time time (sys_time::get());
     int code_digits = 6;
-    auto the_generator = std::make_shared<totp_generator> (time, "\x00",
-                         code_digits);
-    installer installer (installer::create (tokens, unistd, directory,
-                                            the_generator));
+    totp_generator generator = totp_generator (time, "\x00", code_digits);
+    tokens tokens (tokens::create (fstreams, generator));
+    installer installer (installer::create (tokens, unistd, directory, generator));
 
     return installer;
 }
@@ -59,4 +57,3 @@ int main (int argc, char *argv[])
     std::cout << generated_token << std::endl;
     return 0;
 }
-

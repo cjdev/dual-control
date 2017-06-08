@@ -45,8 +45,7 @@ public:
     }
     static installer create (const tokens &tokens, const unistd &unistd,
                              const directory &directory,
-                             const std::shared_ptr<totp_generator> generator);
+                             const totp_generator &generator);
 };
 
 #endif
-

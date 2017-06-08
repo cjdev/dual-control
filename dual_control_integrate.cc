@@ -17,19 +17,20 @@
 #include <memory>
 #include <vector>
 
-#include "request.h"
-#include "dual_control.h"
-#include "validator.h"
-#include "logger.h"
 #include "conversation.h"
-#include "user.h"
-#include "token.h"
-#include "sys_pwd.h"
-#include "sys_unistd.h"
+#include "dual_control.h"
+#include "generator.h"
+#include "logger.h"
+#include "request.h"
+#include "session.h"
 #include "sys_fstream.h"
 #include "sys_pam.h"
+#include "sys_pwd.h"
 #include "sys_syslog.h"
-#include "session.h"
+#include "sys_unistd.h"
+#include "token.h"
+#include "user.h"
+#include "validator.h"
 
 namespace
 {
@@ -40,7 +41,10 @@ dual_control initialize()
     unistd unistd (unistd::create());
     directory directory (directory::create (unistd, pwd));
     fstreams fstreams (fstreams::create());
-    tokens tokens (tokens::create (fstreams));
+    sys_time time (sys_time::get());
+    int code_digits = 6;
+    totp_generator generator = totp_generator (time, "\x00", code_digits);
+    tokens tokens (tokens::create (fstreams, generator));
     validator validator (validator::create (directory, tokens));
     pam pam (pam::create());
     conversation conversation (conversation::create (pam));
@@ -67,4 +71,3 @@ PAM_EXTERN int pam_sm_setcred (pam_handle_t *pamh, int flags, int argc,
 {
     return dc.setcred (pam_request ( pamh, flags, argc, argv));
 }
-

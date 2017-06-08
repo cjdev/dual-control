@@ -26,21 +26,27 @@ class tokens_impl : public tokens_ifc
 {
 private:
     fstreams fstreams_;
+    totp_generator generator_;
 public:
-    tokens_impl (const fstreams &fstreams) :
-        fstreams_ (fstreams) {}
+    tokens_impl (const fstreams &fstreams, const totp_generator generator) :
+        fstreams_ (fstreams), generator_(generator) {}
     std::string token (const user &user) const override
     {
-        const std::string file_path (user.home_directory() + "/.dual_control");
-        std::vector<char> line (7);
+        // return generator_.generate_token();
 
+        // Get key
+        const std::string file_path (user.home_directory() + "/.dual_control");
         fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
         if (!stream->good()) {
             return "";
         }
 
+        // TODO: decode key
+        std::vector<char> line (32);
         stream->getline (line.data(), line.size());
+
+        // TODO: generate the token
         return std::string (line.data());
     }
     void save (const user &user, const std::string &token) const override
@@ -52,9 +58,9 @@ public:
     }
 };
 }
-tokens tokens::create (const fstreams &fstreams)
+
+tokens tokens::create (const fstreams &fstreams, const totp_generator &generator)
 {
     return tokens (tokens::delegate
-                   (new tokens_impl (fstreams)));
+                   (new tokens_impl (fstreams, generator)));
 }
-

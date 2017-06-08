@@ -21,6 +21,7 @@
 #include "test_util.h"
 #include "user.h"
 #include "sys_fstream.h"
+#include "generator.h"
 
 class fake_user : public user_ifc
 {
@@ -82,6 +83,16 @@ public:
     }
 };
 
+class fake_totp_generator : public token_generator_ifc
+{
+private:
+    std::string expected_token = "<unspecified>";
+public:
+    std::string generate_token () const override {
+        return expected_token;
+    }
+};
+
 int reads_from_the_right_file ()
 {
     //given
@@ -91,11 +102,11 @@ int reads_from_the_right_file ()
     std::string token ("123456");
     fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
                            token)));
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
-    tokens supplier (tokens::create (
-                         test_streams));
+    tokens supplier (tokens::create (test_streams, generator));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -113,9 +124,10 @@ int returns_empty_string_if_file_open_fail()
     std::string token_file = home_directory + "/.not_dual_control";
     fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
                            "654321")));
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+
     user test_user (user::delegate (new fake_user (home_directory)));
-    tokens supplier (tokens::create (
-                         test_streams));
+    tokens supplier (tokens::create (test_streams, generator));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -132,8 +144,9 @@ int writes_the_token ()
     user test_user (user::delegate (new fake_user (home_directory)));
     mock_write_fstreams *mockfs (new mock_write_fstreams);
     fstreams test_streams{fstreams::delegate (mockfs)};
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
     std::string token ("token");
-    tokens tokens (tokens::create (test_streams));
+    tokens tokens (tokens::create (test_streams, generator));
 
     //when
     tokens.save (test_user, token);
@@ -162,4 +175,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

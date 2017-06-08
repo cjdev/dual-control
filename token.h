@@ -18,6 +18,7 @@
 
 #include "user.h"
 #include "sys_fstream.h"
+#include "generator.h"
 
 class tokens_ifc
 {
@@ -50,8 +51,7 @@ public:
     {
         return delegate_->save (user, token);
     }
-    static tokens create (const fstreams &fstreams);
+    static tokens create (const fstreams &fstreams, const totp_generator &generator);
 };
 
 #endif
-

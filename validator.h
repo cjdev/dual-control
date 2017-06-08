@@ -17,6 +17,7 @@
 
 #include "user.h"
 #include "token.h"
+#include "generator.h"
 
 class validator_ifc
 {
@@ -53,4 +54,3 @@ public:
 };
 
 #endif
-

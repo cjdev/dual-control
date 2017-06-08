@@ -52,5 +52,6 @@ public:
     static unistd create();
 };
 
-#endif
+template class std::shared_ptr<unistd_ifc>;
 
+#endif
