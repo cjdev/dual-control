@@ -99,7 +99,7 @@ int installs_token()
     directory directory (std::make_shared<fake_directory> (user_name));
     std::shared_ptr<fake_totp_generator> fake_generator =
         std::make_shared<fake_totp_generator> (token);
-    auto generator = std::make_shared<totp_generator> (fake_generator);
+    totp_generator generator (fake_generator);
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
@@ -122,8 +122,7 @@ int unistd_does_not_find_user_name_nullptr_case()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fail_unistd>());
     directory directory (std::make_shared<fake_directory> (user_name));
-    auto generator = std::make_shared<totp_generator>
-                     (std::make_shared<fake_totp_generator>());
+    totp_generator generator (std::make_shared<fake_totp_generator>());
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
@@ -147,8 +146,7 @@ int unistd_does_not_find_user_name_empty_string_case()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (""));
     directory directory (std::make_shared<fake_directory> (user_name));
-    auto generator = std::shared_ptr<totp_generator> (new totp_generator (
-                         std::make_shared<fake_totp_generator>()));
+    totp_generator generator (totp_generator (std::make_shared<fake_totp_generator>()));
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
@@ -171,8 +169,7 @@ int directory_finds_no_user_info()
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> ("not the user"));
-    auto generator = std::shared_ptr<totp_generator> (new totp_generator (
-                         std::make_shared<fake_totp_generator>()));
+    totp_generator generator (std::make_shared<fake_totp_generator>());
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
@@ -199,4 +196,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-
