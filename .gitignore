@@ -19,5 +19,9 @@ format
 dual_control
 .idea
 Vagrantfile
-
 core
+GPATH
+GRTAGS
+GTAGS
+.dir-locals.el
+[#]*[#]

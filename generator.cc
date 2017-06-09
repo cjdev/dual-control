@@ -63,7 +63,6 @@ class token_generator_impl : public token_generator_ifc
 private:
     const sys_time clock;
     unsigned int code_digits;
-    const std::string key;
 
 private:
     std::string zero_fill (unsigned long result, int digits) const
@@ -100,13 +99,11 @@ private:
 
 public:
     token_generator_impl (const sys_time clock,
-                          const std::string &key,
                           const int code_digits) :
-        clock (clock), code_digits (code_digits),
-        key (key)
+        clock (clock), code_digits (code_digits)
     {}
 
-    std::string generate_token () const override
+    std::string generate_token (const std::string &key) const override
     {
         // Assuming time is > 0, integer division produces the result we want.
         const time_t &time_chunk = clock.time (nullptr) / 30;
@@ -123,8 +120,6 @@ public:
 
 totp_generator::totp_generator (
     const sys_time clock,
-    const std::string &key_c,
     const int code_digits) :
-    delegate_ (std::make_shared<token_generator_impl> (clock, key_c,
-               code_digits))
+    delegate_ (std::make_shared<token_generator_impl> (clock, code_digits))
 {}

@@ -28,29 +28,28 @@ time_t time_step (const time_t time, const int step);
 class token_generator_ifc
 {
 public:
-    virtual std::string generate_token () const = 0;
+    virtual std::string generate_token (const std::string &key) const = 0;
 };
 
 class totp_generator
 {
-public:
+ public:
     using delegate = std::shared_ptr<token_generator_ifc>;
 
-private:
+ private:
     delegate delegate_;
 
-public:
-    std::string generate_token () const
-    {
-        return delegate_->generate_token();
-    }
+ public:
+    std::string generate_token (const std::string &key) const
+        {
+            return delegate_->generate_token(key);
+        }
 
     totp_generator (delegate delegate_) :
-        delegate_ (delegate_)
+    delegate_ (delegate_)
     {}
 
     totp_generator (const sys_time clock,
-                    const std::string &key_c,
                     const int code_digits);
 };
 

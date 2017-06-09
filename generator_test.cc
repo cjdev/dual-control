@@ -78,11 +78,10 @@ int given_digits()
 
     sys_time stdtime (test_stdtime);
     // Fake the Key
-    std::string key = "\xff\x91\xebO\x04\xa4\xda$\xd2$a\x95Vs\xaf`";
-    auto generator = totp_generator (stdtime, key, 6);
+    auto generator = totp_generator (stdtime, 6);
 
     // when
-    auto actual = generator.generate_token();
+    auto actual = generator.generate_token("\x00");
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -99,13 +98,11 @@ int modulated_source_modulates_tokens()
     auto test_stdtime = std::make_shared<fake_time> (samples);
 
     sys_time stdtime (test_stdtime);
-    // Fake the Key
-    std::string key = "\xff\x91\xebO\x04\xa4\xda$\xd2$a\x95Vs\xaf`";
-    auto generator = totp_generator (stdtime, key, 6);
+    auto generator = totp_generator (stdtime, 6);
 
     // when
-    auto actual1 = generator.generate_token();
-    auto actual2 = generator.generate_token();
+    auto actual1 = generator.generate_token("\x00");
+    auto actual2 = generator.generate_token("\x00");
 
     // then
     check (actual1 != actual2, "tokens should be different");
@@ -119,12 +116,10 @@ int int_max()
     auto test_stdtime = std::make_shared<fake_time> (samples);
 
     sys_time stdtime (test_stdtime);
-    // Fake the Key
-    std::string key = "\xff\x91\xebO\x04\xa4\xda$\xd2$a\x95Vs\xaf`";
-    auto generator = totp_generator (stdtime, key, 6);
+    auto generator = totp_generator (stdtime, 6);
 
     // when
-    auto actual = generator.generate_token();
+    auto actual = generator.generate_token("\x00");
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -141,12 +136,10 @@ int int_min()
     auto test_stdtime = std::make_shared<fake_time> (samples);
 
     sys_time stdtime (test_stdtime);
-    // Fake the Key
-    std::string key = "\xff\x91\xebO\x04\xa4\xda$\xd2$a\x95Vs\xaf`";
-    auto generator = totp_generator (stdtime, key, 6);
+    auto generator = totp_generator (stdtime, 6);
 
     // when
-    auto actual = generator.generate_token();
+    auto actual = generator.generate_token("\x00");
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -168,11 +161,11 @@ int int_precomputed()
     sys_time stdtime (test_stdtime);
     // Fake the Key
     std::string key = "\xff\x91\xebO\x04\xa4\xda$\xd2$a\x95Vs\xaf`";
-    auto generator = totp_generator (stdtime, key, 6);
+    auto generator = totp_generator (stdtime, 6);
     std::string expected = "258675";
 
     // when
-    auto actual = generator.generate_token();
+    auto actual = generator.generate_token(key);
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -195,4 +188,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

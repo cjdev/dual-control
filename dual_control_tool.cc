@@ -41,8 +41,7 @@ installer init_installer()
     stdlib stdlib (stdlib::get());
     sys_time time (sys_time::get());
     int code_digits = 6;
-    //TODO: have generator take the key after construction
-    totp_generator generator = totp_generator (time, "\x00", code_digits);
+    totp_generator generator = totp_generator (time, code_digits);
     tokens tokens (tokens::create (fstreams, generator));
     installer installer (installer::create (tokens, unistd, directory, generator));
 
