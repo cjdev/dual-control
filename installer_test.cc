@@ -24,6 +24,16 @@ class mock_tokens : public tokens_ifc
 {
 public:
     mutable std::string captured_token;
+    const std::string key_;
+
+    mock_tokens (std::string key)
+        : key_ (key)
+    {}
+
+    std::string token (const user &user) const override {
+        return key_;
+    }
+
     void save (const user &user, const std::string &token) const override
     {
         captured_token = token;
@@ -92,13 +102,13 @@ int installs_token()
 {
     //given
     std::string user_name ("user");
-    std::string token ("token");
-    auto  test_tokens = std::make_shared<mock_tokens>();
+    std::string key ("thekey");
+    auto  test_tokens = std::make_shared<mock_tokens>(key);
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> (user_name));
     std::shared_ptr<fake_totp_generator> fake_generator =
-        std::make_shared<fake_totp_generator> (token);
+        std::make_shared<fake_totp_generator> ();
     totp_generator generator (fake_generator);
 
     installer installer = installer::create (tokens, unistd, directory,
@@ -108,8 +118,8 @@ int installs_token()
     std::string result = installer.install_token();
 
     //then
-    check (test_tokens->captured_token == token, "installed wrong token");
-    check (result == token, "installer returned wrong token");
+    check (test_tokens->captured_token == key, "installed wrong token");
+    check (result == key, "installer returned wrong token");
     succeed();
 }
 
@@ -117,8 +127,8 @@ int unistd_does_not_find_user_name_nullptr_case()
 {
     //given
     std::string user_name ("user");
-    std::string token ("token");
-    auto  test_tokens = std::make_shared<mock_tokens>();
+    std::string key ("token");
+    auto  test_tokens = std::make_shared<mock_tokens>(key);
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fail_unistd>());
     directory directory (std::make_shared<fake_directory> (user_name));
@@ -141,8 +151,8 @@ int unistd_does_not_find_user_name_empty_string_case()
 {
     //given
     std::string user_name ("user");
-    std::string token ("token");
-    auto  test_tokens = std::make_shared<mock_tokens>();
+    std::string key ("token");
+    auto  test_tokens = std::make_shared<mock_tokens>(key);
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (""));
     directory directory (std::make_shared<fake_directory> (user_name));
@@ -164,8 +174,8 @@ int unistd_does_not_find_user_name_empty_string_case()
 int directory_finds_no_user_info()
 {
     std::string user_name ("user");
-    std::string token ("token");
-    auto  test_tokens = std::make_shared<mock_tokens>();
+    std::string key ("token");
+    auto  test_tokens = std::make_shared<mock_tokens>(key);
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> ("not the user"));

@@ -51,7 +51,7 @@ public:
         }
 
         user user (found_user[0]);
-        std::string token (generator_.generate_token("\x00"));
+        std::string token (tokens_.token(user));
         tokens_.save (user, token);
         return token;
     }
