@@ -38,7 +38,7 @@ public:
         fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
         // TODO: ignore newlines
-        std::vector<char> line_v(64);
+        std::vector<char> line_v(16);
         stream->read(line_v.data(), line_v.size());
 
         if (stream->fail()) {

@@ -103,7 +103,7 @@ int reads_from_the_right_file ()
     std::string home_directory = "/somedir";
     // hardcoded file name is .dual_control in the user's home directory
     std::string token_file = home_directory + "/.dual_control";
-    std::string token ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    std::string token ("AAAAAAAAAAAAAAAA");
 
     fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file, token)));
     totp_generator generator (totp_generator::delegate (new fake_totp_generator (token)));
@@ -148,7 +148,7 @@ int returns_empty_string_if_file_too_short()
     // hardcoded file name is .dual_control in the user's home directory
     std::string token_file = home_directory + "/.dual_control";
     // we want a 40-byte key, so we need a 64-byte base32-encoded file.
-    std::string token ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    std::string token ("AAAAAAAAAAAAAAA");
 
     fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file, token)));
     totp_generator generator (totp_generator::delegate (new fake_totp_generator (token)));
