@@ -89,6 +89,9 @@ private:
     std::string expected_token = "<unspecified>";
     std::string key = "<unset>";
 public:
+    fake_totp_generator (std::string expected_token = "<unspecified>") :
+        expected_token (expected_token)
+    {}
     std::string generate_token (const std::string &key) const override {
         return expected_token;
     }
@@ -100,10 +103,10 @@ int reads_from_the_right_file ()
     std::string home_directory = "/somedir";
     // hardcoded file name is .dual_control in the user's home directory
     std::string token_file = home_directory + "/.dual_control";
-    std::string token ("123456");
-    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
-                           token)));
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+    std::string token ("AAAAAAAA");
+
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file, token)));
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator (token)));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
@@ -157,18 +160,16 @@ int writes_the_token ()
     temp << token << std::endl;
     std::string expected_written = temp.str();
     std::string expected_filename (home_directory + "/.dual_control");
-    check (mockfs->captured_filename() == expected_filename,
-           "filename does not match");
-    check (mockfs->captured_written() == expected_written,
-           "token does not match");
+    check (mockfs->captured_filename() == expected_filename, "filename does not match");
+    check (mockfs->captured_written() == expected_written, "token does not match");
     succeed();
 }
 
 int run_tests()
 {
-    // test (reads_from_the_right_file);
-    // test (returns_empty_string_if_file_open_fail);
-    // test (writes_the_token);
+    test (reads_from_the_right_file);
+    test (returns_empty_string_if_file_open_fail);
+    test (writes_the_token);
     succeed();
 }
 

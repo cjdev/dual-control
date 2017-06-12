@@ -18,6 +18,7 @@
 
 #include "token.h"
 #include "user.h"
+#include "base32.h"
 #include "sys_fstream.h"
 
 namespace
@@ -32,22 +33,24 @@ public:
         fstreams_ (fstreams), generator_(generator) {}
     std::string token (const user &user) const override
     {
-        return generator_.generate_token("\x00");
+        // Get key
+        const std::string file_path (user.home_directory() + "/.dual_control");
+        fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
-        // // Get key
-        // const std::string file_path (user.home_directory() + "/.dual_control");
-        // fstreams::pstream stream (fstreams_.open_fstream (file_path));
+        // TODO: decode key
+        std::vector<char> line_v(40);
+        stream->getline(line_v.data(), line_v.size());
 
-        // if (!stream->good()) {
-        //     return "";
-        // }
+        if (stream->fail()) {
+            return "";
+        }
 
-        // // TODO: decode key
-        // std::vector<char> line (21);
-        // stream->getline (line.data(), line.size());
-        // std::vector<char> key = Base32.decode(line.data());
-        // // TODO: generate the token
-        // return generator_.generate_token (key);
+        base32 codec;
+        std::string line(line_v.begin(), line_v.end());
+        std::vector<uint8_t> key = codec.decode(line);
+
+        // TODO: generate the token
+        return generator_.generate_token (std::string (key.begin(), key.end()));
     }
     void save (const user &user, const std::string &token) const override
     {
