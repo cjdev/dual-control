@@ -103,7 +103,7 @@ int reads_from_the_right_file ()
     std::string home_directory = "/somedir";
     // hardcoded file name is .dual_control in the user's home directory
     std::string token_file = home_directory + "/.dual_control";
-    std::string token ("AAAAAAAA");
+    std::string token ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
     fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file, token)));
     totp_generator generator (totp_generator::delegate (new fake_totp_generator (token)));
@@ -130,6 +130,30 @@ int returns_empty_string_if_file_open_fail()
                            "654321")));
     totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
 
+    user test_user (user::delegate (new fake_user (home_directory)));
+    tokens supplier (tokens::create (test_streams, generator));
+
+    //when
+    std::string actual = supplier.token (test_user);
+
+    //then
+    check (actual == "", "should have returned empty string");
+    succeed();
+}
+
+int returns_empty_string_if_file_too_short()
+{
+    //given
+    std::string home_directory = "/somedir";
+    // hardcoded file name is .dual_control in the user's home directory
+    std::string token_file = home_directory + "/.dual_control";
+    // we want a 40-byte key, so we need a 64-byte base32-encoded file.
+    std::string token ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file, token)));
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator (token)));
+
+    //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
     tokens supplier (tokens::create (test_streams, generator));
 
@@ -169,6 +193,7 @@ int run_tests()
 {
     test (reads_from_the_right_file);
     test (returns_empty_string_if_file_open_fail);
+    test (returns_empty_string_if_file_too_short);
     test (writes_the_token);
     succeed();
 }

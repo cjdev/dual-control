@@ -37,9 +37,9 @@ public:
         const std::string file_path (user.home_directory() + "/.dual_control");
         fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
-        // TODO: decode key
-        std::vector<char> line_v(40);
-        stream->getline(line_v.data(), line_v.size());
+        // TODO: ignore newlines
+        std::vector<char> line_v(64);
+        stream->read(line_v.data(), line_v.size());
 
         if (stream->fail()) {
             return "";
