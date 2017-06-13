@@ -22,6 +22,7 @@
 #include "token.h"
 #include "system.h"
 #include "sys_fstream.h"
+#include "random_source.h"
 
 namespace
 {
@@ -36,6 +37,15 @@ class system init_system()
 installer init_installer()
 {
     fstreams fstreams (fstreams::create());
+
+    random_source_ifc foo (fstreams);
+    auto bytes = foo.get_random_bytes(16);
+    std::cout << "I'm random: ";
+    for (auto byte: bytes) {
+        std::cout << static_cast<unsigned int>(byte) << ", ";
+    }
+    std::cout << std::endl;
+
     pwd pwd (pwd::create());
     unistd unistd (unistd::create());
     directory directory (directory::create (unistd, pwd));
@@ -59,4 +69,3 @@ int main (int argc, char *argv[])
     std::cout << generated_key_and_sample_token.first << " " <<
               generated_key_and_sample_token.second << std::endl;
 }
-
