@@ -20,6 +20,7 @@
 #include "user.h"
 #include "base32.h"
 #include "sys_fstream.h"
+#include "random_source.h"
 
 namespace
 {
@@ -64,11 +65,13 @@ private:
     std::string generate_key() const
     {
         base32 codec;
+        random_source rand = random_source::create(fstreams_);
         // get randomness
-        std::vector<unsigned char> random_bytes (16);
+        int length = 10;
+        std::vector<uint8_t> random_bytes (rand.get_random_bytes(length));
         // base32encode it
         std::string key = codec.encode (random_bytes);
-        return "QWERQWERQWERQWER";
+        return key;
     }
 
     std::string read_key (const user &user) const
@@ -115,4 +118,3 @@ tokens tokens::create (const fstreams &fstreams,
     return tokens (tokens::delegate
                    (new tokens_impl (fstreams, generator)));
 }
-

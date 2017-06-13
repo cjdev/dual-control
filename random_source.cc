@@ -22,7 +22,7 @@ class impl : public random_source_ifc
 private:
     fstreams fstreams_;
 public:
-    impl (fstreams fstreams)
+    impl (const fstreams fstreams)
         : fstreams_ (fstreams)
     {}
     std::vector<uint8_t> get_random_bytes (int length) const override
@@ -43,8 +43,7 @@ public:
 
 const std::string random_source_ifc::file_path = "/dev/urandom";
 
-random_source random_source::create (fstreams &fstreams)
+random_source random_source::create (const fstreams &fstreams)
 {
     return random_source (random_source::delegate (new impl (fstreams)));
 };
-
