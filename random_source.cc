@@ -14,6 +14,9 @@
 
 namespace
 {
+class invalid_random_source_exception : public std::exception
+{};
+
 class impl : public random_source_ifc
 {
 private:
@@ -23,15 +26,21 @@ public:
         : fstreams_ (fstreams)
     {}
     std::vector<uint8_t> get_random_bytes (int length) const override {
-        std::string file_path = "/dev/urandom";
         fstreams::pstream random_source = fstreams_.open_fstream (file_path);
 
         std::vector<uint8_t> result (length);
         random_source->read (reinterpret_cast<char *> (result.data()), length);
+
+        if (random_source->fail()) {
+            throw invalid_random_source_exception();
+        }
+
         return result;
     }
 };
 }
+
+const std::string random_source_ifc::file_path = "/dev/urandom";
 
 random_source random_source::create(fstreams &fstreams) {
     return random_source(random_source::delegate (new impl (fstreams)));

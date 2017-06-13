@@ -23,6 +23,8 @@
 class random_source_ifc
 {
 public:
+    const static std::string file_path;
+
     virtual std::vector<uint8_t> get_random_bytes (int length) const
     {
         return {};
