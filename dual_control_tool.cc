@@ -53,7 +53,6 @@ int main (int argc, char *argv[])
 {
     class system system (init_system());
     installer tool (init_installer());
-    std::string generated_token = tool.install_token();
-    std::cout << generated_token << std::endl;
-    return 0;
+    std::string generated_key = tool.install_key();
+    std::cout << generated_key << std::endl;
 }

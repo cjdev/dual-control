@@ -34,7 +34,7 @@ public:
           const totp_generator generator) :
         tokens_ (tokens), unistd_ (unistd), directory_ (directory),
         generator_ (generator) {}
-    std::string install_token() const override
+    std::string install_key() const override
     {
         const char *c_user_name = unistd_.getlogin();
 
@@ -51,9 +51,10 @@ public:
         }
 
         user user (found_user[0]);
-        std::string token (tokens_.token(user));
-        tokens_.save (user, token);
-        return token;
+
+        std::string key = tokens_.ensure_key(user);
+
+        return key;
     }
 };
 

@@ -29,6 +29,7 @@ public:
     {
         return "";
     }
+    virtual std::string ensure_key (const user &user) const { return ""; };
     virtual void save (const user &user, const std::string &token) const {}
 };
 
@@ -43,6 +44,9 @@ public:
         delegate_ (delegate) {}
     tokens() : tokens (
             delegate (new tokens_ifc)) {}
+    std::string ensure_key (const user &user) const {
+        return delegate_->ensure_key(user);
+    }
     std::string token (const user &user) const
     {
         return delegate_->token (user);

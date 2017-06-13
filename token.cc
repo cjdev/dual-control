@@ -34,7 +34,41 @@ public:
     std::string token (const user &user) const override
     {
         // Get key
-        const std::string file_path (user.home_directory() + "/.dual_control");
+        std::string line = read_key(user);
+        if (line == "") {
+            return "";
+        }
+
+        base32 codec;
+        std::vector<uint8_t> key = codec.decode(line);
+
+        // TODO: generate the token
+        return generator_.generate_token (std::string (key.begin(), key.end()));
+    }
+
+private:
+    std::string get_key_path(const user &user) const {
+        return user.home_directory() + "/.dual_control";
+    }
+
+    bool key_exists (const user &user) const {
+        // check if file exists
+        std::string file_path = get_key_path(user);
+        fstreams::pstream stream (fstreams_.open_fstream(file_path));
+        return stream->good();
+    }
+
+    std::string generate_key() const {
+        base32 codec;
+        // get randomness
+        std::vector<unsigned char> random_bytes (16);
+        // base32encode it
+        std::string key = codec.encode(random_bytes);
+        return "QWERQWERQWERQWER";
+    }
+
+    std::string read_key (const user &user) const {
+        std::string file_path = get_key_path(user);
         fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
         // TODO: ignore newlines
@@ -45,16 +79,23 @@ public:
             return "";
         }
 
-        base32 codec;
         std::string line(line_v.begin(), line_v.end());
-        std::vector<uint8_t> key = codec.decode(line);
-
-        // TODO: generate the token
-        return generator_.generate_token (std::string (key.begin(), key.end()));
+        return line;
     }
+public:
+    std::string ensure_key (const user &user) const override {
+        if (!key_exists(user)) {
+            std::string key = generate_key();
+            save(user, key);
+            return key;
+        } else {
+            return read_key(user);
+        }
+    }
+
     void save (const user &user, const std::string &token) const override
     {
-        std::string file_path (user.home_directory() + "/.dual_control");
+        std::string file_path = get_key_path(user);
         fstreams::postream stream (fstreams_.open_ofstream (file_path,
                                    std::ios_base::trunc));
         *stream << token << std::endl;

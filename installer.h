@@ -24,7 +24,7 @@
 class installer_ifc
 {
 public:
-    virtual std::string install_token() const
+    virtual std::string install_key() const
     {
         return "123456";
     }
@@ -39,9 +39,9 @@ private:
 public:
     installer (const delegate &delegate = std::make_shared<installer_ifc>()) :
         delegate_ (delegate) {}
-    std::string install_token() const
+    std::string install_key() const
     {
-        return delegate_->install_token();
+        return delegate_->install_key();
     }
     static installer create (const tokens &tokens, const unistd &unistd,
                              const directory &directory,

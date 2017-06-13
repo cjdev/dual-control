@@ -34,6 +34,11 @@ public:
         return key_;
     }
 
+    std::string ensure_key(const user &user) const override {
+        save(user, key_);
+        return key_;
+    }
+
     void save (const user &user, const std::string &token) const override
     {
         captured_token = token;
@@ -115,7 +120,7 @@ int installs_token()
                           generator);
 
     //when
-    std::string result = installer.install_token();
+    std::string result = installer.install_key();
 
     //then
     check (test_tokens->captured_token == key, "installed wrong token");
@@ -138,7 +143,7 @@ int unistd_does_not_find_user_name_nullptr_case()
                           generator);
 
     //when
-    auto returned = installer.install_token();
+    auto returned = installer.install_key();
 
     //then
     check (test_tokens->captured_token == "",
@@ -162,7 +167,7 @@ int unistd_does_not_find_user_name_empty_string_case()
                           generator);
 
     //when
-    auto returned = installer.install_token();
+    auto returned = installer.install_key();
 
     //then
     check (test_tokens->captured_token == "",
@@ -185,7 +190,7 @@ int directory_finds_no_user_info()
                           generator);
 
     //when
-    auto returned = installer.install_token();
+    auto returned = installer.install_key();
 
     //then
     check (test_tokens->captured_token == "", "installed wrong token");
