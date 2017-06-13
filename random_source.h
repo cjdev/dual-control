@@ -22,36 +22,29 @@
 
 class random_source_ifc
 {
- private:
-    fstreams fstreams_;
- public:
-    random_source_ifc (fstreams fstreams)
-        : fstreams_ (fstreams)
-    {}
-    virtual std::vector<uint8_t> get_random_bytes (int length) const {
-        std::string file_path = "/dev/urandom";
-        fstreams::pstream random_source = fstreams_.open_fstream(file_path);
-
-        std::vector<uint8_t> result(length);
-        random_source->read(reinterpret_cast<char *>(result.data()), length);
-        return result;
-        /* return {}; */
+public:
+    virtual std::vector<uint8_t> get_random_bytes (int length) const
+    {
+        return {};
     }
 };
 
 class random_source
 {
- public:
+public:
     using delegate = std::shared_ptr<random_source_ifc>;
- private:
+private:
     delegate delegate_;
- public:
+public:
     random_source (delegate delegate)
         : delegate_ (delegate)
     {}
-    std::vector<uint8_t> get_random_bytes (int length) const {
-        return delegate_->get_random_bytes(length);
+    std::vector<uint8_t> get_random_bytes (int length) const
+    {
+        return delegate_->get_random_bytes (length);
     }
+
+    static random_source create(fstreams &fstreams);
 };
 
 #endif

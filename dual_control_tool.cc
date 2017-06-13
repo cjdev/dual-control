@@ -38,12 +38,14 @@ installer init_installer()
 {
     fstreams fstreams (fstreams::create());
 
-    random_source_ifc foo (fstreams);
-    auto bytes = foo.get_random_bytes(16);
+    random_source foo (random_source::create(fstreams));
+    auto bytes = foo.get_random_bytes (16);
     std::cout << "I'm random: ";
+
     for (auto byte: bytes) {
-        std::cout << static_cast<unsigned int>(byte) << ", ";
+        std::cout << static_cast<unsigned int> (byte) << ", ";
     }
+
     std::cout << std::endl;
 
     pwd pwd (pwd::create());
