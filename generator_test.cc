@@ -81,7 +81,8 @@ int given_digits()
     auto generator = totp_generator (stdtime, 6);
 
     // when
-    auto actual = generator.generate_token("\x00");
+    std::string key { 0 };
+    auto actual = generator.generate_token (key);
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -101,8 +102,9 @@ int modulated_source_modulates_tokens()
     auto generator = totp_generator (stdtime, 6);
 
     // when
-    auto actual1 = generator.generate_token("\x00");
-    auto actual2 = generator.generate_token("\x00");
+    std::string key ("\x00", 1);
+    auto actual1 = generator.generate_token (key);
+    auto actual2 = generator.generate_token (key);
 
     // then
     check (actual1 != actual2, "tokens should be different");
@@ -117,9 +119,10 @@ int int_max()
 
     sys_time stdtime (test_stdtime);
     auto generator = totp_generator (stdtime, 6);
+    std::string key ("\x00", 1);
 
     // when
-    auto actual = generator.generate_token("\x00");
+    auto actual = generator.generate_token (key);
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -134,12 +137,13 @@ int int_min()
     // given
     std::initializer_list<time_t> samples { INT_MIN };
     auto test_stdtime = std::make_shared<fake_time> (samples);
+    std::string key ("\x00", 1);
 
     sys_time stdtime (test_stdtime);
     auto generator = totp_generator (stdtime, 6);
 
     // when
-    auto actual = generator.generate_token("\x00");
+    auto actual = generator.generate_token (key);
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -165,7 +169,7 @@ int int_precomputed()
     std::string expected = "258675";
 
     // when
-    auto actual = generator.generate_token(key);
+    auto actual = generator.generate_token (key);
 
     // then
     check (actual.size() == 6, "size is wrong");
@@ -188,3 +192,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+

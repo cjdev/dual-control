@@ -15,8 +15,12 @@
 #include <openssl/hmac.h>
 #include <openssl/evp.h>
 
+#include "base32.h"
 namespace
 {
+class hmac_failed_exception : public std::exception
+{};
+
 int ipow (int base, int exp)
 {
     int result = 1;
@@ -62,7 +66,8 @@ class token_generator_impl : public token_generator_ifc
 {
 private:
     const sys_time clock;
-    unsigned int code_digits;
+    const unsigned int code_digits;
+    const base32 codec;
 
 private:
     std::string zero_fill (unsigned long result, int digits) const
@@ -82,12 +87,17 @@ private:
         return bytesToInt (offsetBytes) & 0x7fffffff;
     }
 
-    std::string hotp (const std::string &key, const unsigned char *data,
+    std::string hotp (const std::vector<uint8_t> &key,
+                      const unsigned char *data,
                       size_t data_size, const int digits=6) const
     {
         // TODO: see if I can use sha256/etc. with google auth...
-        unsigned char *digest = HMAC (EVP_sha1(), key.c_str(), key.size(), data,
+        unsigned char *digest = HMAC (EVP_sha1(), key.data(), key.size(), data,
                                       data_size, NULL, NULL);
+
+        if (digest == nullptr) {
+            throw hmac_failed_exception();
+        }
 
         std::string digest_s = std::string (reinterpret_cast<const char *> (digest),
                                             20); //TODO: use vectors
@@ -103,7 +113,16 @@ public:
         clock (clock), code_digits (code_digits)
     {}
 
-    std::string generate_token (const std::string &key) const override
+    std::string generate_token (const std::string &key_string) const override
+    {
+        // std::cout << "KEY SIZE: " << key_string.size() << std::endl;
+        // std::vector<uint8_t> key = codec.decode(key_string);
+        // std::cout << "LENGTH: " << key.size() << " '" << key_string << "'" << std::endl;
+        std::vector<uint8_t> key (key_string.begin(), key_string.end());
+        return generate_token (key);
+    }
+
+    std::string generate_token (const std::vector<uint8_t> key) const
     {
         // Assuming time is > 0, integer division produces the result we want.
         const time_t &time_chunk = clock.time (nullptr) / 30;
@@ -123,3 +142,4 @@ totp_generator::totp_generator (
     const int code_digits) :
     delegate_ (std::make_shared<token_generator_impl> (clock, code_digits))
 {}
+

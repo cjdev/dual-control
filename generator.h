@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <cmath>
 #include <ctime>
+#include <iostream>
 
 #include "sys_stdlib.h"
 #include "sys_time.h"
@@ -33,20 +34,20 @@ public:
 
 class totp_generator
 {
- public:
+public:
     using delegate = std::shared_ptr<token_generator_ifc>;
 
- private:
+private:
     delegate delegate_;
 
- public:
+public:
     std::string generate_token (const std::string &key) const
-        {
-            return delegate_->generate_token(key);
-        }
+    {
+        return delegate_->generate_token (key);
+    }
 
     totp_generator (delegate delegate_) :
-    delegate_ (delegate_)
+        delegate_ (delegate_)
     {}
 
     totp_generator (const sys_time clock,
@@ -54,3 +55,4 @@ class totp_generator
 };
 
 #endif
+
