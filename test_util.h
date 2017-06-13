@@ -48,6 +48,9 @@
     }
 
 #define succeed() return 1
-#define fail() return 0
+#define fail(MSG) {\
+        fprintf(stderr, "%s! <%s:%d> test failed: %s\n%s", FOREGROUND_RED, __FILE__, __LINE__, MSG, RESET_COLORS); \
+        return 0;                                                       \
+    }
 
 #endif
