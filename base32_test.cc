@@ -58,6 +58,18 @@ int precomputed_values()
     succeed();
 }
 
+int decode_validates_input()
+{
+    // given
+    // The token for key 76I6WTYEUTNCJUREMGKVM45PMA and time '2017/01/01 00:00:00' is 258675
+    base32 codec = base32();
+
+    std::vector<uint8_t> result = codec.decode("\x00");
+    check(result.empty(), "invalid input doesn't produce an empty result");
+
+    succeed();
+}
+
 int roundtrip()
 {
     // given
@@ -66,7 +78,6 @@ int roundtrip()
         { 5, 5, 5, 5, 5, 5, }, { 6, 6, 6, 6, 6, 6, 6, }
     };
 
-    // The token for key 76I6WTYEUTNCJUREMGKVM45PMA and time '2017/01/01 00:00:00' is 258675
     base32 codec = base32();
 
     for (auto expected: values) {
@@ -82,6 +93,7 @@ int roundtrip()
 int run_tests()
 {
     test (precomputed_values);
+    test (decode_validates_input);
     test (roundtrip);
     succeed();
 }
@@ -90,4 +102,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

@@ -12,6 +12,7 @@
 #include <bitset>
 #include <unordered_map>
 #include <memory>
+#include <iostream>
 
 #include "base32.h"
 
@@ -27,7 +28,7 @@ namespace
 class base32_impl : public base32_ifc
 {
 private:
-    uint64_t calculate_padding_bytes (uint64_t extra_bytes)
+    uint64_t calculate_padding_bytes (uint64_t extra_bytes) const
     {
         auto padding_chars = 0;
 
@@ -52,7 +53,7 @@ private:
         return padding_chars;
     }
 
-    std::string &pad_string (uint64_t extra_bytes, std::string &input)
+    std::string &pad_string (uint64_t extra_bytes, std::string &input) const
     {
         auto padding_chars = calculate_padding_bytes (extra_bytes);
 
@@ -68,7 +69,7 @@ private:
     }
 
 public:
-    std::string encode (const std::vector<uint8_t> data) override
+    std::string encode (const std::vector<uint8_t> data) const override
     {
         std::string result;
 
@@ -117,7 +118,7 @@ public:
 
 private:
 
-    std::unordered_map <char, unsigned char> construct_lookup_table()
+    std::unordered_map <char, unsigned char> construct_lookup_table() const
     {
         std::unordered_map<char, unsigned char> lookup_table;
 
@@ -129,7 +130,7 @@ private:
     }
 
     std::pair<uint8_t, uint8_t> split_value (uint8_t item, uint8_t pos,
-            uint8_t width)
+            uint8_t width) const
     {
         auto shift = width-pos;
         uint8_t part2_mask = (1 << (shift)) - 1;
@@ -140,7 +141,7 @@ private:
 
     void set_vector_at_bit (std::vector<uint8_t> &data, uint8_t item,
                             std::vector<uint8_t>::size_type byte_offset, uint8_t bit_offset_from_start,
-                            uint8_t width)
+                            uint8_t width) const
     {
         bool need_to_split = bit_offset_from_start + width > 8;
         uint8_t bit_offset_from_end = 7 - bit_offset_from_start;
@@ -159,7 +160,7 @@ private:
         }
     }
 
-    std::string::size_type calculate_decoded_size (std::string input)
+    std::string::size_type calculate_decoded_size (std::string input) const
     {
         std::string::size_type input_size = input.size();
         std::string::size_type first_equals = input.find_first_of ('=');
@@ -173,8 +174,9 @@ private:
 
 public:
 
-    std::vector<uint8_t> decode (std::string input) override
+    std::vector<uint8_t> decode (std::string input) const override
     {
+        //TODO: where to pad input to required size?
         auto lookup_table = construct_lookup_table();
         auto input_size = calculate_decoded_size (input);
 
@@ -192,6 +194,8 @@ public:
 
             bits_written += 5;
         }
+
+
 
         return result;
     }
