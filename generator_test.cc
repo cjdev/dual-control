@@ -176,11 +176,11 @@ int int_precomputed()
 
 int run_tests()
 {
-    test (given_digits);
     test (modulated_source_modulates_tokens);
     test (int_max);
     test (int_min);
     test (int_precomputed);
+    test (given_digits);
     succeed();
 }
 

@@ -15,8 +15,12 @@
 #include <openssl/hmac.h>
 #include <openssl/evp.h>
 
+#include "base32.h"
 namespace
 {
+class hmac_failed_exception : public std::exception
+{};
+
 int ipow (int base, int exp)
 {
     int result = 1;
@@ -82,12 +86,16 @@ private:
         return bytesToInt (offsetBytes) & 0x7fffffff;
     }
 
-    std::string hotp (const std::string &key, const unsigned char *data,
+    std::string hotp (const std::vector<uint8_t> &key, const unsigned char *data,
                       size_t data_size, const int digits=6) const
     {
         // TODO: see if I can use sha256/etc. with google auth...
-        unsigned char *digest = HMAC (EVP_sha1(), key.c_str(), key.size(), data,
+        unsigned char *digest = HMAC (EVP_sha1(), key.data(), key.size(), data,
                                       data_size, NULL, NULL);
+
+        if (digest == nullptr) {
+            throw hmac_failed_exception();
+        }
 
         std::string digest_s = std::string (reinterpret_cast<const char *> (digest),
                                             20); //TODO: use vectors
@@ -103,7 +111,12 @@ public:
         clock (clock), code_digits (code_digits)
     {}
 
-    std::string generate_token (const std::string &key) const override
+    std::string generate_token (const std::string &key_string) const override {
+        std::vector<uint8_t> key = base32().decode(key_string);
+        return generate_token(key);
+    }
+
+    std::string generate_token (const std::vector<uint8_t> key) const
     {
         // Assuming time is > 0, integer division produces the result we want.
         const time_t &time_chunk = clock.time (nullptr) / 30;
