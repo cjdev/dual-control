@@ -25,7 +25,8 @@ public:
     impl (fstreams fstreams)
         : fstreams_ (fstreams)
     {}
-    std::vector<uint8_t> get_random_bytes (int length) const override {
+    std::vector<uint8_t> get_random_bytes (int length) const override
+    {
         fstreams::pstream random_source = fstreams_.open_fstream (file_path);
 
         std::vector<uint8_t> result (length);
@@ -42,6 +43,8 @@ public:
 
 const std::string random_source_ifc::file_path = "/dev/urandom";
 
-random_source random_source::create(fstreams &fstreams) {
-    return random_source(random_source::delegate (new impl (fstreams)));
+random_source random_source::create (fstreams &fstreams)
+{
+    return random_source (random_source::delegate (new impl (fstreams)));
 };
+

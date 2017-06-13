@@ -65,9 +65,9 @@ int decode_validates_input()
     base32 codec = base32();
 
     try {
-        codec.decode("\x00");
-        codec.decode("\x00\x00\x00\x00\x00\x00\x00\x00\x00");
-        fail("invalid length should result in an exception");
+        codec.decode ("\x00");
+        codec.decode ("\x00\x00\x00\x00\x00\x00\x00\x00\x00");
+        fail ("invalid length should result in an exception");
     } catch (std::exception e) {
         succeed();
     }
@@ -107,3 +107,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+

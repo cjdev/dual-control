@@ -49,7 +49,8 @@ int reads_from_the_right_file ()
     std::string very_random_bytes { 4, 2 };
     // hardcoded file name is .dual_control in the user's home directory
 
-    fstreams test_streams (fstreams::delegate (new fake_fstreams (random_source, very_random_bytes)));
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (random_source,
+                           very_random_bytes)));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     class random_source supplier (random_source::create (test_streams));
@@ -69,7 +70,8 @@ int handles_missing_random_source_correctly ()
     std::string very_random_bytes { 4, 2 };
     // hardcoded file name is .dual_control in the user's home directory
 
-    fstreams test_streams (fstreams::delegate (new fake_fstreams ("/nowhere", very_random_bytes)));
+    fstreams test_streams (fstreams::delegate (new fake_fstreams ("/nowhere",
+                           very_random_bytes)));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     class random_source supplier (random_source::create (test_streams));
@@ -77,7 +79,7 @@ int handles_missing_random_source_correctly ()
     //when
     try {
         supplier.get_random_bytes (2);
-        fail("get_random_bytes() should throw if it can't access /dev/urandom");
+        fail ("get_random_bytes() should throw if it can't access /dev/urandom");
     } catch (std::exception e) {
         succeed();
     }
@@ -97,3 +99,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+

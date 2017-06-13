@@ -31,7 +31,7 @@ private:
     using string_size = std::string::size_type;
 public:
     string_size received_size;
-    invalid_input_size(string_size received_size) :
+    invalid_input_size (string_size received_size) :
         received_size (received_size)
     {}
 };
@@ -177,7 +177,7 @@ private:
         std::string::size_type first_equals = input.find_first_of ('=');
 
         if (input_size == 0 || (input_size % 8 != 0)) {
-            throw invalid_input_size(input_size);
+            throw invalid_input_size (input_size);
         }
 
         if (first_equals != std::string::npos) {
@@ -211,8 +211,6 @@ public:
             bits_written += 5;
         }
 
-
-
         return result;
     }
 };
@@ -223,3 +221,4 @@ template class std::vector<unsigned char>;
 base32::base32 ():
     delegate_ (std::make_shared<base32_impl> ())
 {}
+

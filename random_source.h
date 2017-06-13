@@ -46,7 +46,8 @@ public:
         return delegate_->get_random_bytes (length);
     }
 
-    static random_source create(fstreams &fstreams);
+    static random_source create (fstreams &fstreams);
 };
 
 #endif
+

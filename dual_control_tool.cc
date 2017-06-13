@@ -38,7 +38,7 @@ installer init_installer()
 {
     fstreams fstreams (fstreams::create());
 
-    random_source foo (random_source::create(fstreams));
+    random_source foo (random_source::create (fstreams));
     auto bytes = foo.get_random_bytes (16);
     std::cout << "I'm random: ";
 
@@ -71,3 +71,4 @@ int main (int argc, char *argv[])
     std::cout << generated_key_and_sample_token.first << " " <<
               generated_key_and_sample_token.second << std::endl;
 }
+
