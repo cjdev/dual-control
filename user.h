@@ -54,7 +54,8 @@ public:
     {
         return std::vector<user>();
     }
-    virtual std::vector<user> get_current_user () const {
+    virtual std::vector<user> get_current_user () const
+    {
         return {};
     };
 };
@@ -81,3 +82,4 @@ public:
 };
 
 #endif
+

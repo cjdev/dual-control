@@ -46,10 +46,10 @@ public:
 
         user user (found_user[0]);
 
-        std::string key_string = tokens_.ensure_key(user);
-        std::vector<uint8_t> key = base32().decode(key_string);
+        std::string key_string = tokens_.ensure_key (user);
+        std::vector<uint8_t> key = base32().decode (key_string);
         std::string decoded_key (key.begin(), key.end());
-        std::string token = generator_.generate_token(decoded_key);
+        std::string token = generator_.generate_token (decoded_key);
 
         // TODO: fix generator input
         return {key_string, token};
@@ -61,5 +61,7 @@ public:
 installer installer::create (const tokens &tokens, const unistd &unistd,
                              const directory &directory, const totp_generator &generator)
 {
-    return installer (std::make_shared<impl> (tokens, unistd, directory, generator));
+    return installer (std::make_shared<impl> (tokens, unistd, directory,
+                      generator));
 }
+

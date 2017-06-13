@@ -56,7 +56,8 @@ public:
         return return_value;
     }
 
-    std::vector<user> get_current_user () const override {
+    std::vector<user> get_current_user () const override
+    {
         const char *c_user_name = unistd_.getlogin();
 
         if (c_user_name == nullptr) {
@@ -80,3 +81,4 @@ directory directory::create (unistd &unistd, pwd &pwd)
 {
     return directory (delegate (new directory_impl (unistd, pwd)));
 }
+

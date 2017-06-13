@@ -79,7 +79,8 @@ private:
     const char *expected_username_;
     long int return_value_;
 public:
-    fake_unistd (int expected_sysconf_name, long int return_value = 0, const char *expected_username = "<unspecified>")
+    fake_unistd (int expected_sysconf_name, long int return_value = 0,
+                 const char *expected_username = "<unspecified>")
         : expected_sysconf_name_ (expected_sysconf_name),
           expected_username_ (expected_username),
           return_value_ (return_value) {}
@@ -91,7 +92,8 @@ public:
 
         return -1;
     }
-    const char * getlogin() const override{
+    const char *getlogin() const override
+    {
         return expected_username_;
     }
 };
@@ -167,8 +169,9 @@ int get_current_user_happy_path()
 {
     //given
     std::string user_name ("user");
-    pwd test_pwd(pwd::delegate (new fake_pwd (user_name)));
-    unistd test_unistd (unistd::delegate (new fake_unistd (_SC_GETPW_R_SIZE_MAX, 0, user_name.c_str())));
+    pwd test_pwd (pwd::delegate (new fake_pwd (user_name)));
+    unistd test_unistd (unistd::delegate (new fake_unistd (_SC_GETPW_R_SIZE_MAX,
+                                          0, user_name.c_str())));
     directory directory (directory::create (test_unistd, test_pwd));
 
     //when
@@ -176,15 +179,17 @@ int get_current_user_happy_path()
 
     //then
     check (!results.empty(), "user should have been found");
-    check (!(results[0].home_directory() == user_name), "user should have been found");
+    check (! (results[0].home_directory() == user_name),
+           "user should have been found");
     succeed();
 }
 
 int get_current_user_nullptr_path()
 {
     //given
-    pwd test_pwd(pwd::delegate (new fake_pwd ("<unspecified>")));
-    unistd test_unistd (unistd::delegate (new fake_unistd (_SC_GETPW_R_SIZE_MAX, 0, nullptr)));
+    pwd test_pwd (pwd::delegate (new fake_pwd ("<unspecified>")));
+    unistd test_unistd (unistd::delegate (new fake_unistd (_SC_GETPW_R_SIZE_MAX,
+                                          0, nullptr)));
     directory directory (directory::create (test_unistd, test_pwd));
 
     //when
@@ -210,3 +215,4 @@ int main (int argc, char **argv)
 {
     return !run_tests();
 }
+

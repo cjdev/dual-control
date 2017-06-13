@@ -44,7 +44,8 @@ installer init_installer()
     int code_digits = 6;
     totp_generator generator = totp_generator (time, code_digits);
     tokens tokens (tokens::create (fstreams, generator));
-    installer installer (installer::create (tokens, unistd, directory, generator));
+    installer installer (installer::create (tokens, unistd, directory,
+                                            generator));
 
     return installer;
 }
@@ -55,5 +56,7 @@ int main (int argc, char *argv[])
     class system system (init_system());
     installer tool (init_installer());
     auto generated_key_and_sample_token = tool.install_key();
-    std::cout << generated_key_and_sample_token.first << " " << generated_key_and_sample_token.second << std::endl;
+    std::cout << generated_key_and_sample_token.first << " " <<
+              generated_key_and_sample_token.second << std::endl;
 }
+

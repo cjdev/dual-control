@@ -92,7 +92,8 @@ public:
     fake_totp_generator (std::string expected_token = "<unspecified>") :
         expected_token (expected_token)
     {}
-    std::string generate_token (const std::string &key) const override {
+    std::string generate_token (const std::string &key) const override
+    {
         return expected_token;
     }
 };
@@ -105,8 +106,10 @@ int reads_from_the_right_file ()
     std::string token_file = home_directory + "/.dual_control";
     std::string token ("AAAAAAAAAAAAAAAA");
 
-    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file, token)));
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator (token)));
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
+                           token)));
+    totp_generator generator (totp_generator::delegate (new
+                              fake_totp_generator (token)));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
@@ -128,7 +131,8 @@ int returns_empty_string_if_file_open_fail()
     std::string token_file = home_directory + "/.not_dual_control";
     fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
                            "654321")));
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+    totp_generator generator (totp_generator::delegate (new
+                              fake_totp_generator ()));
 
     user test_user (user::delegate (new fake_user (home_directory)));
     tokens supplier (tokens::create (test_streams, generator));
@@ -150,8 +154,10 @@ int returns_empty_string_if_file_too_short()
     // we want a 40-byte key, so we need a 64-byte base32-encoded file.
     std::string token ("AAAAAAAAAAAAAAA");
 
-    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file, token)));
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator (token)));
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (token_file,
+                           token)));
+    totp_generator generator (totp_generator::delegate (new
+                              fake_totp_generator (token)));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
@@ -172,7 +178,8 @@ int writes_the_token ()
     user test_user (user::delegate (new fake_user (home_directory)));
     mock_write_fstreams *mockfs (new mock_write_fstreams);
     fstreams test_streams{fstreams::delegate (mockfs)};
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+    totp_generator generator (totp_generator::delegate (new
+                              fake_totp_generator ()));
     std::string token ("token");
     tokens tokens (tokens::create (test_streams, generator));
 
@@ -184,8 +191,10 @@ int writes_the_token ()
     temp << token << std::endl;
     std::string expected_written = temp.str();
     std::string expected_filename (home_directory + "/.dual_control");
-    check (mockfs->captured_filename() == expected_filename, "filename does not match");
-    check (mockfs->captured_written() == expected_written, "token does not match");
+    check (mockfs->captured_filename() == expected_filename,
+           "filename does not match");
+    check (mockfs->captured_written() == expected_written,
+           "token does not match");
     succeed();
 }
 
@@ -202,3 +211,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+
