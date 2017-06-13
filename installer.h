@@ -15,6 +15,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <utility>
 
 #include "token.h"
 #include "sys_unistd.h"
@@ -24,9 +25,9 @@
 class installer_ifc
 {
 public:
-    virtual std::string install_key() const
+    virtual std::pair<std::string, std::string> install_key() const
     {
-        return "123456";
+        return {"AAAA", "123456"};
     }
 };
 
@@ -39,7 +40,7 @@ private:
 public:
     installer (const delegate &delegate = std::make_shared<installer_ifc>()) :
         delegate_ (delegate) {}
-    std::string install_key() const
+    std::pair<std::string, std::string> install_key() const
     {
         return delegate_->install_key();
     }

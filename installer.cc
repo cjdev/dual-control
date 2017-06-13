@@ -11,12 +11,14 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "installer.h"
 #include "token.h"
 #include "sys_unistd.h"
 #include "user.h"
 #include "generator.h"
+#include "base32.h"
 
 namespace
 {
@@ -34,19 +36,23 @@ public:
           const totp_generator generator) :
         tokens_ (tokens), unistd_ (unistd), directory_ (directory),
         generator_ (generator) {}
-    std::string install_key() const override
+    std::pair<std::string, std::string> install_key() const override
     {
         auto found_user = directory_.get_current_user ();
 
         if (found_user.empty()) {
-            return "";
+            return {"", ""};
         }
 
         user user (found_user[0]);
 
-        std::string key = tokens_.ensure_key(user);
+        std::string key_string = tokens_.ensure_key(user);
+        std::vector<uint8_t> key = base32().decode(key_string);
+        std::string decoded_key (key.begin(), key.end());
+        std::string token = generator_.generate_token(decoded_key);
 
-        return key;
+        // TODO: fix generator input
+        return {key_string, token};
     }
 };
 

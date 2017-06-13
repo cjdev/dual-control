@@ -32,6 +32,7 @@ class system init_system()
     class system system (stdlib, time);
     return system;
 }
+
 installer init_installer()
 {
     fstreams fstreams (fstreams::create());
@@ -53,6 +54,6 @@ int main (int argc, char *argv[])
 {
     class system system (init_system());
     installer tool (init_installer());
-    std::string generated_key = tool.install_key();
-    std::cout << generated_key << std::endl;
+    auto generated_key_and_sample_token = tool.install_key();
+    std::cout << generated_key_and_sample_token.first << " " << generated_key_and_sample_token.second << std::endl;
 }

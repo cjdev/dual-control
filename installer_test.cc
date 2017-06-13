@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <tuple>
 
 #include "installer.h"
 #include "user.h"
@@ -117,23 +118,25 @@ int installs_token()
     //given
     std::string user_name ("user");
     std::string key ("thekey");
+    std::string token ("thetoken");
     auto  test_tokens = std::make_shared<mock_tokens>(key);
     tokens tokens{test_tokens};
     unistd unistd (std::make_shared<fake_unistd> (user_name));
     directory directory (std::make_shared<fake_directory> (user_name));
-    std::shared_ptr<fake_totp_generator> fake_generator =
-        std::make_shared<fake_totp_generator> ();
-    totp_generator generator (fake_generator);
+    std::shared_ptr<fake_totp_generator> fake_generator = std::make_shared<fake_totp_generator> (token);
+    totp_generator generator (fake_generator );
 
     installer installer = installer::create (tokens, unistd, directory,
                           generator);
 
     //when
-    std::string result = installer.install_key();
+    std::string actual_key, actual_token;
+    std::tie(actual_key, actual_token) = installer.install_key();
 
     //then
-    check (test_tokens->captured_token == key, "installed wrong token");
-    check (result == key, "installer returned wrong token");
+    check (test_tokens->captured_token == key, "installed wrong key");
+    check (actual_key == key, "installer returned wrong key");
+    check (actual_token == token, "installer returned wrong token");
     succeed();
 }
 
@@ -176,12 +179,17 @@ int unistd_does_not_find_user_name_empty_string_case()
                           generator);
 
     //when
-    auto returned = installer.install_key();
+    std::string actual_key, actual_token;
+    std::tie(actual_key, actual_token) = installer.install_key();
 
     //then
+    // TODO: rethink this...
     check (test_tokens->captured_token == "",
            "should not have installed a token");
-    check (returned == "", "did not return empty token");
+    check (actual_key == "",
+           "should not have installed a token");
+    check (actual_token == "",
+           "should not have installed a token");
     succeed();
 }
 
@@ -199,11 +207,13 @@ int directory_finds_no_user_info()
                           generator);
 
     //when
-    auto returned = installer.install_key();
+    std::string actual_key, actual_token;
+    std::tie(actual_key, actual_token) = installer.install_key();
 
     //then
-    check (test_tokens->captured_token == "", "installed wrong token");
-    check (returned == "", "did not return empty token");
+    check (test_tokens->captured_token == "", "installed wrong key");
+    check (actual_key == "", "did not return empty token");
+    check (actual_token == "", "did not return an empty token");
     succeed();
 }
 
