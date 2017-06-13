@@ -64,8 +64,13 @@ int decode_validates_input()
     // The token for key 76I6WTYEUTNCJUREMGKVM45PMA and time '2017/01/01 00:00:00' is 258675
     base32 codec = base32();
 
-    std::vector<uint8_t> result = codec.decode("\x00");
-    check(result.empty(), "invalid input doesn't produce an empty result");
+    try {
+        codec.decode("\x00");
+        codec.decode("\x00\x00\x00\x00\x00\x00\x00\x00\x00");
+        fail("invalid length should result in an exception");
+    } catch (std::exception e) {
+        succeed();
+    }
 
     succeed();
 }

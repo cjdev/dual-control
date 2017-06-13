@@ -122,7 +122,7 @@ int installs_token()
 {
     //given
     std::string user_name ("user");
-    std::string key ("thekey");
+    std::string key ("thekeyis");
     std::string token ("thetoken");
     auto  test_tokens = std::make_shared<mock_tokens> (key);
     tokens tokens{test_tokens};
@@ -238,4 +238,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

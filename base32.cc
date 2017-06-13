@@ -25,6 +25,17 @@ static const std::vector<char> alphabet = {
 
 namespace
 {
+class invalid_input_size : public std::exception
+{
+private:
+    using string_size = std::string::size_type;
+public:
+    string_size received_size;
+    invalid_input_size(string_size received_size) :
+        received_size (received_size)
+    {}
+};
+
 class base32_impl : public base32_ifc
 {
 private:
@@ -165,11 +176,16 @@ private:
         std::string::size_type input_size = input.size();
         std::string::size_type first_equals = input.find_first_of ('=');
 
+        if (input_size == 0 || (input_size % 8 != 0)) {
+            throw invalid_input_size(input_size);
+        }
+
         if (first_equals != std::string::npos) {
             input_size = first_equals;
         }
 
         return (input_size * 5) / 8;
+
     }
 
 public:
