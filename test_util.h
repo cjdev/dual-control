@@ -44,6 +44,7 @@
         } else { \
             fprintf (stderr, "%s> test passed: %s\n%s", FOREGROUND_GREEN, #NAME, RESET_COLORS); \
         } \
+        fflush(stderr); \
     }
 
 #define succeed() return 1
