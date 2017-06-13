@@ -75,19 +75,24 @@ public:
 class fake_unistd : public unistd_ifc
 {
 private:
-    int expected_name_;
+    int expected_sysconf_name_;
+    const char *expected_username_;
     long int return_value_;
 public:
-    fake_unistd (int expected_name, long int return_value = 0)
-        : expected_name_ (expected_name),
+    fake_unistd (int expected_sysconf_name, long int return_value = 0, const char *expected_username = "<unspecified>")
+        : expected_sysconf_name_ (expected_sysconf_name),
+          expected_username_ (expected_username),
           return_value_ (return_value) {}
     long int sysconf (int name) const override
     {
-        if (name == expected_name_) {
+        if (name == expected_sysconf_name_) {
             return return_value_;
         }
 
         return -1;
+    }
+    const char * getlogin() const override{
+        return expected_username_;
     }
 };
 
@@ -158,12 +163,46 @@ int find_user_fails_on_pwnam_r_error_and_result_ok()
     succeed();
 }
 
+int get_current_user_happy_path()
+{
+    //given
+    std::string user_name ("user");
+    pwd test_pwd(pwd::delegate (new fake_pwd (user_name)));
+    unistd test_unistd (unistd::delegate (new fake_unistd (_SC_GETPW_R_SIZE_MAX, 0, user_name.c_str())));
+    directory directory (directory::create (test_unistd, test_pwd));
+
+    //when
+    std::vector<user> results = directory.get_current_user();
+
+    //then
+    check (!results.empty(), "user should have been found");
+    check (!(results[0].home_directory() == user_name), "user should have been found");
+    succeed();
+}
+
+int get_current_user_nullptr_path()
+{
+    //given
+    pwd test_pwd(pwd::delegate (new fake_pwd ("<unspecified>")));
+    unistd test_unistd (unistd::delegate (new fake_unistd (_SC_GETPW_R_SIZE_MAX, 0, nullptr)));
+    directory directory (directory::create (test_unistd, test_pwd));
+
+    //when
+    std::vector<user> results = directory.get_current_user();
+
+    //then
+    check (results.empty(), "user should have been found");
+    succeed();
+}
+
 int run_tests()
 {
     test (find_user_happy);
     test (user_not_found);
     test (find_user_passes_buffer_and_size);
     test (find_user_fails_on_pwnam_r_error_and_result_ok);
+    test (get_current_user_happy_path);
+    test (get_current_user_nullptr_path);
     succeed();
 }
 
@@ -171,4 +210,3 @@ int main (int argc, char **argv)
 {
     return !run_tests();
 }
-

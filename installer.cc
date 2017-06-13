@@ -36,15 +36,7 @@ public:
         generator_ (generator) {}
     std::string install_key() const override
     {
-        const char *c_user_name = unistd_.getlogin();
-
-        if (c_user_name == nullptr) {
-            return "";
-        }
-
-        std::string user_name = c_user_name;
-
-        auto found_user = directory_.find_user (user_name);
+        auto found_user = directory_.get_current_user ();
 
         if (found_user.empty()) {
             return "";

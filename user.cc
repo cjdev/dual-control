@@ -55,6 +55,24 @@ public:
 
         return return_value;
     }
+
+    std::vector<user> get_current_user () const override {
+        const char *c_user_name = unistd_.getlogin();
+
+        if (c_user_name == nullptr) {
+            return {};
+        }
+
+        std::string user_name = c_user_name;
+
+        auto found_user = find_user (user_name);
+
+        if (found_user.empty()) {
+            return {};
+        }
+
+        return {found_user[0]};
+    }
 };
 }
 
@@ -62,4 +80,3 @@ directory directory::create (unistd &unistd, pwd &pwd)
 {
     return directory (delegate (new directory_impl (unistd, pwd)));
 }
-
