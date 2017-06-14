@@ -25,6 +25,10 @@ public:
     {
         return ::getlogin();
     }
+    virtual int seteuid(uid_t euid) const override
+    {
+        return ::seteuid(euid);
+    };
 };
 }
 
@@ -33,4 +37,3 @@ unistd unistd::create()
     static unistd sys_unistd (unistd::delegate (new impl));
     return sys_unistd;
 }
-

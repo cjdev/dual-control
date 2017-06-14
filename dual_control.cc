@@ -20,6 +20,11 @@
 #include "session.h"
 #include "logger.h"
 
+#include "user.h"
+#include "sys_pwd.h"
+#include "sys_unistd.h"
+#include "unistd.h"
+
 int dual_control_ifc::authenticate (const pam_request &request)
 {
     return PAM_SERVICE_ERR;
@@ -62,6 +67,15 @@ int impl::authenticate (const pam_request &request)
 
     auto requester_user_name = sessions_.user_name (request);
 
+    /// PROTOTYPE
+    unistd unistd_ = unistd::create();
+    pwd pwd_ = pwd::create();
+    directory directory_ = directory::create (unistd_, pwd_);
+    auto found_user = directory_.find_user ("eng2");
+    uid_t uid = found_user.uid();
+    seteuid(uid);
+    ///
+
     int auth_result = validator_.validate (requester_user_name, input.user_name,
                                            input.token, input.reason) ? PAM_SUCCESS : PAM_AUTH_ERR;
 
@@ -76,4 +90,3 @@ dual_control dual_control::create (const dual_control_configuration
     return dual_control (std::shared_ptr<dual_control_ifc> (new impl (
                              configuration)));
 }
-
