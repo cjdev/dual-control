@@ -47,3 +47,4 @@ random_source random_source::create (const fstreams &fstreams)
 {
     return random_source (random_source::delegate (new impl (fstreams)));
 };
+

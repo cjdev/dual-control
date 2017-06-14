@@ -43,7 +43,7 @@ installer init_installer()
     sys_time time (sys_time::get());
     int code_digits = 6;
     totp_generator generator = totp_generator (time, code_digits);
-    random_source rand (random_source::create(fstreams));
+    random_source rand (random_source::create (fstreams));
     directory directory (directory::create (unistd, pwd));
     tokens tokens (tokens::create (fstreams, generator, rand));
     installer installer (installer::create (tokens, unistd, directory,
@@ -65,3 +65,4 @@ int main (int argc, char *argv[])
               << "Run again to get another token from the same key."
               << std::endl;
 }
+

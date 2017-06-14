@@ -48,7 +48,7 @@ private:
 public:
     pstream open_fstream (const std::string &file_path) const override
     {
-        pstream result = std::make_shared<std::istringstream>("");
+        pstream result = std::make_shared<std::istringstream> ("");
         std::string badinator (1, '\0');
         result->read (&badinator[0], badinator.size());
         return result;
@@ -146,7 +146,7 @@ int reads_from_the_right_file ()
                            token)));
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator (token)));
-    random_source fake_rand(random_source::delegate (new class fake_rand));
+    random_source fake_rand (random_source::delegate (new class fake_rand));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
@@ -170,7 +170,7 @@ int returns_empty_string_if_file_open_fail()
                            "654321")));
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator ()));
-    random_source fake_rand(random_source::delegate (new class fake_rand));
+    random_source fake_rand (random_source::delegate (new class fake_rand));
 
     user test_user (user::delegate (new fake_user (home_directory)));
     tokens supplier (tokens::create (test_streams, generator, fake_rand));
@@ -196,7 +196,7 @@ int returns_empty_string_if_file_too_short()
                            token)));
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator (token)));
-    random_source fake_rand(random_source::delegate (new class fake_rand));
+    random_source fake_rand (random_source::delegate (new class fake_rand));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
@@ -220,7 +220,7 @@ int writes_the_key ()
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator ()));
     std::string token ("token");
-    random_source fake_rand(random_source::delegate (new class fake_rand));
+    random_source fake_rand (random_source::delegate (new class fake_rand));
     tokens tokens (tokens::create (test_streams, generator, fake_rand));
 
     //when
@@ -247,17 +247,19 @@ int ensure_key_creates_key_file_if_not_exists ()
 
     fstreams test_streams{fstreams::delegate (mockfs)};
 
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+    totp_generator generator (totp_generator::delegate (new
+                              fake_totp_generator ()));
 
     std::vector<uint8_t> random_bytes {4,2,4, 2,4,  2,4,2, 4,2};
-    random_source fake_rand(random_source::delegate (new fake_rand_with_specified_result(random_bytes)));
+    random_source fake_rand (random_source::delegate (new
+                             fake_rand_with_specified_result (random_bytes)));
     tokens tokens (tokens::create (test_streams, generator, fake_rand));
 
     //when
     std::string actual = tokens.ensure_key (test_user);
 
     base32 codec;
-    octet_vector actual_decoded = codec.decode(actual);
+    octet_vector actual_decoded = codec.decode (actual);
     // then
     std::string expected_filename (home_directory + "/.dual_control");
     check (mockfs->captured_filename() == expected_filename,
@@ -276,14 +278,15 @@ int ensure_key_reads_key_file_if_exists ()
     user test_user (user::delegate (new fake_user (home_directory)));
     fstreams test_streams (fstreams::delegate (new fake_fstreams (key_file,
                            key)));
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
-    random_source fake_rand(random_source::delegate (new class fake_rand));
+    totp_generator generator (totp_generator::delegate (new
+                              fake_totp_generator ()));
+    random_source fake_rand (random_source::delegate (new class fake_rand));
     tokens tokens (tokens::create (test_streams, generator, fake_rand));
 
     //when
     std::string actual = tokens.ensure_key (test_user);
     //then
-    check(actual == key, "read key does not match given key");
+    check (actual == key, "read key does not match given key");
     succeed();
 }
 
@@ -292,14 +295,17 @@ int generate_key_uses_random_source ()
     // given
     user test_user (user::delegate (new fake_user ("/nowhere")));
     fstreams test_streams{fstreams::delegate (new fake_fstreams ("<>", "<>"))};
-    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+    totp_generator generator (totp_generator::delegate (new
+                              fake_totp_generator ()));
 
     std::vector<uint8_t> random_bytes1 {4,2,4, 2,4,  2,4,2, 4,2};
-    random_source fake_rand1(random_source::delegate (new fake_rand_with_specified_result(random_bytes1)));
+    random_source fake_rand1 (random_source::delegate (new
+                              fake_rand_with_specified_result (random_bytes1)));
     tokens tokens1 (tokens::create (test_streams, generator, fake_rand1));
 
     std::vector<uint8_t> random_bytes2 {1,2,1, 2,1,  1,2,1, 2,1};
-    random_source fake_rand2(random_source::delegate (new fake_rand_with_specified_result(random_bytes2)));
+    random_source fake_rand2 (random_source::delegate (new
+                              fake_rand_with_specified_result (random_bytes2)));
     tokens tokens2 (tokens::create (test_streams, generator, fake_rand2));
 
     //when
@@ -307,7 +313,8 @@ int generate_key_uses_random_source ()
     std::string second_key = tokens2.generate_key();
 
     // then
-    check (first_key != second_key, "keys generated from differing random data should not match");
+    check (first_key != second_key,
+           "keys generated from differing random data should not match");
     succeed();
 }
 
@@ -326,3 +333,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+

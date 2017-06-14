@@ -30,7 +30,8 @@ public:
     {
         return "";
     }
-    virtual std::string generate_key() const {
+    virtual std::string generate_key() const
+    {
         return "";
     }
     virtual std::string ensure_key (const user &user) const
@@ -73,3 +74,4 @@ public:
 };
 
 #endif
+
