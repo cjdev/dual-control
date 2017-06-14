@@ -79,7 +79,6 @@ private:
         return line;
     }
 public:
-    // TODO: test to make sure that generate_key's output is different for different random numbers
     std::string generate_key() const override
     {
         base32 codec;

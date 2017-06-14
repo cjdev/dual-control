@@ -51,7 +51,7 @@ public:
         delegate_ (delegate) {}
     tokens() : tokens (
             delegate (new tokens_ifc)) {}
-    std::string generate_key (const user &user) const
+    std::string generate_key () const
     {
         return delegate_->generate_key ();
     }

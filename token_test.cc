@@ -287,6 +287,30 @@ int ensure_key_reads_key_file_if_exists ()
     succeed();
 }
 
+int generate_key_uses_random_source ()
+{
+    // given
+    user test_user (user::delegate (new fake_user ("/nowhere")));
+    fstreams test_streams{fstreams::delegate (new fake_fstreams ("<>", "<>"))};
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+
+    std::vector<uint8_t> random_bytes1 {4,2,4, 2,4,  2,4,2, 4,2};
+    random_source fake_rand1(random_source::delegate (new fake_rand_with_specified_result(random_bytes1)));
+    tokens tokens1 (tokens::create (test_streams, generator, fake_rand1));
+
+    std::vector<uint8_t> random_bytes2 {1,2,1, 2,1,  1,2,1, 2,1};
+    random_source fake_rand2(random_source::delegate (new fake_rand_with_specified_result(random_bytes2)));
+    tokens tokens2 (tokens::create (test_streams, generator, fake_rand2));
+
+    //when
+    std::string first_key = tokens1.generate_key();
+    std::string second_key = tokens2.generate_key();
+
+    // then
+    check (first_key != second_key, "keys generated from differing random data should not match");
+    succeed();
+}
+
 int run_tests()
 {
     test (reads_from_the_right_file);
@@ -294,6 +318,7 @@ int run_tests()
     test (returns_empty_string_if_file_too_short);
     test (ensure_key_creates_key_file_if_not_exists);
     test (ensure_key_reads_key_file_if_exists);
+    test (generate_key_uses_random_source);
     succeed();
 }
 
