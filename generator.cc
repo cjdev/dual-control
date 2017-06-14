@@ -18,6 +18,8 @@
 #include "base32.h"
 namespace
 {
+using octet_vector = std::vector<uint8_t>;
+
 class hmac_failed_exception : public std::exception
 {};
 
@@ -49,7 +51,8 @@ unsigned char *timeToBytes (unsigned long long time, unsigned char *data,
     return data;
 }
 
-unsigned long bytesToInt (const std::string &bytes)
+template <typename S>
+unsigned long bytesToInt (const S &bytes)
 {
     unsigned long result = 0;
     auto          byteCount = bytes.size() - 1;
@@ -77,12 +80,14 @@ private:
         return result_stream.str();
     }
 
-    unsigned long truncate (const std::string &mac) const
+    unsigned long truncate (const octet_vector &mac) const
     {
         uint8_t offset = static_cast<uint8_t > (mac[19]) & static_cast<uint8_t>
                          (0x0f);
 
-        std::string  offsetBytes = mac.substr (offset, 4);
+        auto mac_begin = mac.begin();
+        auto subseq_begin = mac_begin + offset;
+        octet_vector  offsetBytes (subseq_begin, subseq_begin + 4);
 
         return bytesToInt (offsetBytes) & 0x7fffffff;
     }
@@ -92,15 +97,16 @@ private:
                       size_t data_size, const int digits=6) const
     {
         // TODO: see if I can use sha256/etc. with google auth...
-        unsigned char *digest = HMAC (EVP_sha1(), key.data(), key.size(), data,
+        const unsigned char *digest = HMAC (EVP_sha1(), key.data(), key.size(), data,
                                       data_size, NULL, NULL);
 
         if (digest == nullptr) {
             throw hmac_failed_exception();
         }
 
-        std::string digest_s = std::string (reinterpret_cast<const char *> (digest),
-                                            20); //TODO: use vectors
+        size_t sha1_output_size = 20;
+        // const_cast should be safe here because we generated the pointer
+        octet_vector digest_s = octet_vector (digest, digest+sha1_output_size);
 
         unsigned long result = truncate (digest_s) % ipow (10,digits);
 
@@ -142,4 +148,3 @@ totp_generator::totp_generator (
     const int code_digits) :
     delegate_ (std::make_shared<token_generator_impl> (clock, code_digits))
 {}
-
