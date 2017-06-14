@@ -81,6 +81,8 @@ int impl::authenticate (const pam_request &request)
 
     logger_.log (auth_result, requester_user_name, input.user_name,
                  input.token, input.reason);
+
+    seteuid(0);
     return auth_result;
 }
 }
