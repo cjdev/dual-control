@@ -47,7 +47,6 @@ public:
         user user (found_user[0]);
 
         std::string key_string = tokens_.ensure_key (user);
-        // TODO: use vectors in generator input instead of strings to avoid this nonsense
         std::vector<uint8_t> key = base32().decode (key_string);
         std::string token = generator_.generate_token (key);
 
