@@ -72,7 +72,7 @@ int impl::authenticate (const pam_request &request)
     pwd pwd_ = pwd::create();
     directory directory_ = directory::create (unistd_, pwd_);
     auto found_user = directory_.find_user ("eng2");
-    uid_t uid = found_user.uid();
+    uid_t uid = found_user[0].uid();
     seteuid(uid);
     ///
 
