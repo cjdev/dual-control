@@ -44,7 +44,8 @@ dual_control initialize()
     sys_time time (sys_time::get());
     int code_digits = 6;
     totp_generator generator = totp_generator (time, code_digits);
-    tokens tokens (tokens::create (fstreams, generator));
+    random_source rand (random_source::create (fstreams));
+    tokens tokens (tokens::create (fstreams, generator, rand));
     validator validator (validator::create (directory, tokens));
     pam pam (pam::create());
     conversation conversation (conversation::create (pam));
@@ -71,4 +72,3 @@ PAM_EXTERN int pam_sm_setcred (pam_handle_t *pamh, int flags, int argc,
 {
     return dc.setcred (pam_request ( pamh, flags, argc, argv));
 }
-
