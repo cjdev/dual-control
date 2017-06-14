@@ -24,6 +24,7 @@
 #include "sys_pwd.h"
 #include "sys_unistd.h"
 #include "unistd.h"
+#include "become.h"
 
 int dual_control_ifc::authenticate (const pam_request &request)
 {
@@ -71,10 +72,7 @@ int impl::authenticate (const pam_request &request)
     unistd unistd_ = unistd::create();
     pwd pwd_ = pwd::create();
     directory directory_ = directory::create (unistd_, pwd_);
-    auto found_user = directory_.find_user ("eng2");
-    uid_t uid = found_user[0].uid();
-    seteuid(uid);
-    ///
+    become become_(input.user_name, directory_);
 
     int auth_result = validator_.validate (requester_user_name, input.user_name,
                                            input.token, input.reason) ? PAM_SUCCESS : PAM_AUTH_ERR;
@@ -82,7 +80,6 @@ int impl::authenticate (const pam_request &request)
     logger_.log (auth_result, requester_user_name, input.user_name,
                  input.token, input.reason);
 
-    seteuid(0);
     return auth_result;
 }
 }
