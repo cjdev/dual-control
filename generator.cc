@@ -18,8 +18,6 @@
 #include "base32.h"
 namespace
 {
-using octet_vector = std::vector<uint8_t>;
-
 class hmac_failed_exception : public std::exception
 {};
 
@@ -119,16 +117,7 @@ public:
         clock (clock), code_digits (code_digits)
     {}
 
-    std::string generate_token (const std::string &key_string) const override
-    {
-        // std::cout << "KEY SIZE: " << key_string.size() << std::endl;
-        // std::vector<uint8_t> key = codec.decode(key_string);
-        // std::cout << "LENGTH: " << key.size() << " '" << key_string << "'" << std::endl;
-        std::vector<uint8_t> key (key_string.begin(), key_string.end());
-        return generate_token (key);
-    }
-
-    std::string generate_token (const std::vector<uint8_t> key) const
+    std::string generate_token (const octet_vector &key) const override
     {
         // Assuming time is > 0, integer division produces the result we want.
         const time_t &time_chunk = clock.time (nullptr) / 30;

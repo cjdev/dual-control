@@ -81,7 +81,7 @@ int given_digits()
     auto generator = totp_generator (stdtime, 6);
 
     // when
-    std::string key { 0 };
+    octet_vector key { 0 };
     auto actual = generator.generate_token (key);
 
     // then
@@ -102,7 +102,7 @@ int modulated_source_modulates_tokens()
     auto generator = totp_generator (stdtime, 6);
 
     // when
-    std::string key ("\x00", 1);
+    octet_vector key { 0 };
     auto actual1 = generator.generate_token (key);
     auto actual2 = generator.generate_token (key);
 
@@ -119,7 +119,7 @@ int int_max()
 
     sys_time stdtime (test_stdtime);
     auto generator = totp_generator (stdtime, 6);
-    std::string key ("\x00", 1);
+    octet_vector key { 0 };
 
     // when
     auto actual = generator.generate_token (key);
@@ -137,7 +137,7 @@ int int_min()
     // given
     std::initializer_list<time_t> samples { INT_MIN };
     auto test_stdtime = std::make_shared<fake_time> (samples);
-    std::string key ("\x00", 1);
+    octet_vector key { 0 };
 
     sys_time stdtime (test_stdtime);
     auto generator = totp_generator (stdtime, 6);
@@ -164,7 +164,7 @@ int int_precomputed()
 
     sys_time stdtime (test_stdtime);
     // Fake the Key
-    std::string key = "\xff\x91\xebO\x04\xa4\xda$\xd2$a\x95Vs\xaf`";
+    octet_vector key {255, 145, 235, 79, 4, 164, 218, 36, 210, 36, 97, 149, 86, 115, 175, 96};
     auto generator = totp_generator (stdtime, 6);
     std::string expected = "258675";
 
@@ -191,4 +191,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

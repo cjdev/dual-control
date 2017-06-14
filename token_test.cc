@@ -128,7 +128,7 @@ public:
     fake_totp_generator (std::string expected_token = "<unspecified>") :
         expected_token (expected_token)
     {}
-    std::string generate_token (const std::string &key) const override
+    std::string generate_token (const octet_vector &key) const override
     {
         return expected_token;
     }
@@ -333,4 +333,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

@@ -46,7 +46,7 @@ public:
         base32 codec;
         std::vector<uint8_t> key = codec.decode (line);
 
-        return generator_.generate_token (std::string (key.begin(), key.end()));
+        return generator_.generate_token (key);
     }
 
 private:
@@ -118,4 +118,3 @@ tokens tokens::create (const fstreams &fstreams,
     return tokens (tokens::delegate
                    (new tokens_impl (fstreams, generator, rand)));
 }
-

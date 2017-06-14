@@ -49,8 +49,7 @@ public:
         std::string key_string = tokens_.ensure_key (user);
         // TODO: use vectors in generator input instead of strings to avoid this nonsense
         std::vector<uint8_t> key = base32().decode (key_string);
-        std::string decoded_key (key.begin(), key.end());
-        std::string token = generator_.generate_token (decoded_key);
+        std::string token = generator_.generate_token (key);
 
         return {key_string, token};
     }
@@ -64,4 +63,3 @@ installer installer::create (const tokens &tokens, const unistd &unistd,
     return installer (std::make_shared<impl> (tokens, unistd, directory,
                       generator));
 }
-

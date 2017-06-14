@@ -79,7 +79,7 @@ public:
         expected_token (expected_token)
     {}
 
-    std::string generate_token (const std::string &key) const override
+    std::string generate_token (const octet_vector &key) const override
     {
         return expected_token;
     }

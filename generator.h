@@ -25,11 +25,12 @@
 
 int ipow (int base, int exp);
 time_t time_step (const time_t time, const int step);
+using octet_vector = std::vector<uint8_t>;
 
 class token_generator_ifc
 {
 public:
-    virtual std::string generate_token (const std::string &key) const = 0;
+    virtual std::string generate_token (const octet_vector &key) const = 0;
 };
 
 class totp_generator
@@ -41,7 +42,7 @@ private:
     delegate delegate_;
 
 public:
-    std::string generate_token (const std::string &key) const
+    std::string generate_token (const octet_vector &key) const
     {
         return delegate_->generate_token (key);
     }
@@ -55,4 +56,3 @@ public:
 };
 
 #endif
-
