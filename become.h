@@ -1,4 +1,4 @@
-#ifdef _BECOME_H
+#ifndef _BECOME_H
 #define _BECOME_H
 
 #include "user.h"
