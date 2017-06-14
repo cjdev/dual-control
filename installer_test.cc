@@ -21,6 +21,7 @@
 #include "test_util.h"
 #include "generator.h"
 
+// TODO: audit usage of 'token', sometimes it should be 'key'
 class mock_tokens : public tokens_ifc
 {
 public:
@@ -190,9 +191,6 @@ int unistd_does_not_find_user_name_empty_string_case()
     std::tie (actual_key, actual_token) = installer.install_key();
 
     //then
-    // TODO: rethink this...
-    check (test_tokens->captured_token == "",
-           "should not have installed a token");
     check (actual_key == "",
            "should not have installed a token");
     check (actual_token == "",

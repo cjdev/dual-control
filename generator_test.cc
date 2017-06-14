@@ -173,8 +173,7 @@ int int_precomputed()
 
     // then
     check (actual.size() == 6, "size is wrong");
-    check (actual == expected,
-           "precomputed value failed to match"); // TODO: Does == work for std::string like I want it to?
+    check (actual == expected, "precomputed value failed to match");
     succeed();
 }
 

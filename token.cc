@@ -31,7 +31,8 @@ private:
     totp_generator generator_;
     random_source rand_;
 public:
-    tokens_impl (const fstreams &fstreams, const totp_generator generator, const random_source rand) :
+    tokens_impl (const fstreams &fstreams, const totp_generator generator,
+                 const random_source rand) :
         fstreams_ (fstreams), generator_ (generator), rand_ (rand) {}
     std::string token (const user &user) const override
     {
@@ -67,7 +68,6 @@ private:
         std::string file_path = get_key_path (user);
         fstreams::pstream stream (fstreams_.open_fstream (file_path));
 
-        // TODO: ignore newlines
         std::vector<char> line_v (16);
         stream->read (line_v.data(), line_v.size());
 
@@ -84,7 +84,7 @@ public:
         base32 codec;
         // get randomness
         int length = 10;
-        std::vector<uint8_t> random_bytes (rand_.get_random_bytes(length));
+        std::vector<uint8_t> random_bytes (rand_.get_random_bytes (length));
         // base32encode it
         std::string key = codec.encode (random_bytes);
         return key;
@@ -118,3 +118,4 @@ tokens tokens::create (const fstreams &fstreams,
     return tokens (tokens::delegate
                    (new tokens_impl (fstreams, generator, rand)));
 }
+

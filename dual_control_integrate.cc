@@ -43,7 +43,6 @@ dual_control initialize()
     fstreams fstreams (fstreams::create());
     sys_time time (sys_time::get());
     int code_digits = 6;
-    //TODO: have generator take the key after construction
     totp_generator generator = totp_generator (time, code_digits);
     tokens tokens (tokens::create (fstreams, generator));
     validator validator (validator::create (directory, tokens));

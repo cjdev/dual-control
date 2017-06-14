@@ -192,7 +192,6 @@ public:
 
     std::vector<uint8_t> decode (std::string input) const override
     {
-        //TODO: where to pad input to required size?
         auto lookup_table = construct_lookup_table();
         auto input_size = calculate_decoded_size (input);
 
@@ -201,6 +200,7 @@ public:
         unsigned long long bits_written = 0;
 
         for (std::string::size_type idx = 0; idx < input.size(); idx++) {
+            // TODO: fail on invalid input
             uint8_t val = lookup_table[input[idx]];
 
             uint8_t start_bit = bits_written % 8;
