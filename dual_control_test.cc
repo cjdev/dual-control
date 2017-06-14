@@ -253,7 +253,6 @@ int logs_authentication()
            "logged authorizer should be authorizer");
     check (test_logger->logged_token() == token,
            "logged token should be token");
-    std::cout <<test_logger->logged_reason() << std::endl;
     check (test_logger->logged_reason() == reason,
            "logged reason should be reason");
     succeed();
@@ -306,4 +305,3 @@ int main (int argc, char *argv[])
 {
     return !runtests();
 }
-

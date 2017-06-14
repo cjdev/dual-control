@@ -39,12 +39,13 @@ installer init_installer()
     fstreams fstreams (fstreams::create());
     pwd pwd (pwd::create());
     unistd unistd (unistd::create());
-    directory directory (directory::create (unistd, pwd));
     stdlib stdlib (stdlib::get());
     sys_time time (sys_time::get());
     int code_digits = 6;
     totp_generator generator = totp_generator (time, code_digits);
-    tokens tokens (tokens::create (fstreams, generator));
+    random_source rand (random_source::create(fstreams));
+    directory directory (directory::create (unistd, pwd));
+    tokens tokens (tokens::create (fstreams, generator, rand));
     installer installer (installer::create (tokens, unistd, directory,
                                             generator));
 

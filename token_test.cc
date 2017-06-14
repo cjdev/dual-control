@@ -22,6 +22,7 @@
 #include "user.h"
 #include "sys_fstream.h"
 #include "generator.h"
+#include "base32.h"
 
 class fake_user : public user_ifc
 {
@@ -45,6 +46,13 @@ private:
     mutable std::string captured_filename_;
     mutable std::shared_ptr<std::ostringstream> capture_stream_;
 public:
+    pstream open_fstream (const std::string &file_path) const override
+    {
+        pstream result = std::make_shared<std::istringstream>("");
+        std::string badinator (1, '\0');
+        result->read (&badinator[0], badinator.size());
+        return result;
+    }
     postream open_ofstream (const std::string &file_path,
                             std::ios_base::openmode mode) const override
     {
@@ -83,6 +91,34 @@ public:
     }
 };
 
+class fake_rand : public random_source_ifc
+{
+public:
+    fake_rand ()
+    {}
+
+    std::vector<uint8_t> get_random_bytes (int length) const override
+    {
+        return {};
+    }
+};
+
+using octet_vector = std::vector<uint8_t>;
+class fake_rand_with_specified_result : public random_source_ifc
+{
+private:
+    octet_vector expected_bytes_;
+public:
+    fake_rand_with_specified_result (octet_vector expected_bytes)
+        : expected_bytes_ (expected_bytes)
+    {}
+
+    std::vector<uint8_t> get_random_bytes (int length) const override
+    {
+        return expected_bytes_;
+    }
+};
+
 class fake_totp_generator : public token_generator_ifc
 {
 private:
@@ -110,10 +146,11 @@ int reads_from_the_right_file ()
                            token)));
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator (token)));
+    random_source fake_rand(random_source::delegate (new class fake_rand));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
-    tokens supplier (tokens::create (test_streams, generator));
+    tokens supplier (tokens::create (test_streams, generator, fake_rand));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -133,9 +170,10 @@ int returns_empty_string_if_file_open_fail()
                            "654321")));
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator ()));
+    random_source fake_rand(random_source::delegate (new class fake_rand));
 
     user test_user (user::delegate (new fake_user (home_directory)));
-    tokens supplier (tokens::create (test_streams, generator));
+    tokens supplier (tokens::create (test_streams, generator, fake_rand));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -158,10 +196,11 @@ int returns_empty_string_if_file_too_short()
                            token)));
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator (token)));
+    random_source fake_rand(random_source::delegate (new class fake_rand));
 
     //file_reader test_file_reader (file_reader::delegate (new fake_file_reader));
     user test_user (user::delegate (new fake_user (home_directory)));
-    tokens supplier (tokens::create (test_streams, generator));
+    tokens supplier (tokens::create (test_streams, generator, fake_rand));
 
     //when
     std::string actual = supplier.token (test_user);
@@ -171,7 +210,7 @@ int returns_empty_string_if_file_too_short()
     succeed();
 }
 
-int writes_the_token ()
+int writes_the_key ()
 {
     // given
     std::string home_directory ("/somedir");
@@ -181,7 +220,8 @@ int writes_the_token ()
     totp_generator generator (totp_generator::delegate (new
                               fake_totp_generator ()));
     std::string token ("token");
-    tokens tokens (tokens::create (test_streams, generator));
+    random_source fake_rand(random_source::delegate (new class fake_rand));
+    tokens tokens (tokens::create (test_streams, generator, fake_rand));
 
     //when
     tokens.save (test_user, token);
@@ -198,12 +238,62 @@ int writes_the_token ()
     succeed();
 }
 
+int ensure_key_creates_key_file_if_not_exists ()
+{
+    // given
+    std::string home_directory ("/somedir");
+    user test_user (user::delegate (new fake_user (home_directory)));
+    mock_write_fstreams *mockfs (new mock_write_fstreams);
+
+    fstreams test_streams{fstreams::delegate (mockfs)};
+
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+
+    std::vector<uint8_t> random_bytes {4,2,4, 2,4,  2,4,2, 4,2};
+    random_source fake_rand(random_source::delegate (new fake_rand_with_specified_result(random_bytes)));
+    tokens tokens (tokens::create (test_streams, generator, fake_rand));
+
+    //when
+    std::string actual = tokens.ensure_key (test_user);
+
+    base32 codec;
+    octet_vector actual_decoded = codec.decode(actual);
+    // then
+    std::string expected_filename (home_directory + "/.dual_control");
+    check (mockfs->captured_filename() == expected_filename,
+           "filename does not match");
+    check (random_bytes == actual_decoded,
+           "key does not match");
+    succeed();
+}
+
+int ensure_key_reads_key_file_if_exists ()
+{
+    //given
+    std::string home_directory ("/somedir");
+    std::string key_file = home_directory + "/.dual_control";
+    std::string key ("AAAAAAAAAAAAAAAA");
+    user test_user (user::delegate (new fake_user (home_directory)));
+    fstreams test_streams (fstreams::delegate (new fake_fstreams (key_file,
+                           key)));
+    totp_generator generator (totp_generator::delegate (new fake_totp_generator ()));
+    random_source fake_rand(random_source::delegate (new class fake_rand));
+    tokens tokens (tokens::create (test_streams, generator, fake_rand));
+
+    //when
+    std::string actual = tokens.ensure_key (test_user);
+    //then
+    check(actual == key, "read key does not match given key");
+    succeed();
+}
+
 int run_tests()
 {
     test (reads_from_the_right_file);
     test (returns_empty_string_if_file_open_fail);
     test (returns_empty_string_if_file_too_short);
-    test (writes_the_token);
+    test (ensure_key_creates_key_file_if_not_exists);
+    test (ensure_key_reads_key_file_if_exists);
     succeed();
 }
 
@@ -211,4 +301,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

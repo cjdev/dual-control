@@ -19,6 +19,7 @@
 #include "user.h"
 #include "sys_fstream.h"
 #include "generator.h"
+#include "random_source.h"
 
 class tokens_ifc
 {
@@ -29,10 +30,13 @@ public:
     {
         return "";
     }
+    virtual std::string generate_key() const {
+        return "";
+    }
     virtual std::string ensure_key (const user &user) const
     {
         return "";
-    };
+    }
     virtual void save (const user &user, const std::string &token) const {}
 };
 
@@ -47,6 +51,10 @@ public:
         delegate_ (delegate) {}
     tokens() : tokens (
             delegate (new tokens_ifc)) {}
+    std::string generate_key (const user &user) const
+    {
+        return delegate_->generate_key ();
+    }
     std::string ensure_key (const user &user) const
     {
         return delegate_->ensure_key (user);
@@ -60,8 +68,8 @@ public:
         return delegate_->save (user, token);
     }
     static tokens create (const fstreams &fstreams,
-                          const totp_generator &generator);
+                          const totp_generator &generator,
+                          const random_source &rand);
 };
 
 #endif
-
