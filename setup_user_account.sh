@@ -1,0 +1,65 @@
+#!/usr/bin/env/bash -x
+
+DUAL_CONTROL="$(which dual_control)"
+DUAL_CONTROL="${DUAL_CONTROL:-./dual_control}"
+
+get_key() {
+  "$DUAL_CONTROL" | awk '$1 == "Key:" { print $2 }'
+}
+
+get_token() {
+  "$DUAL_CONTROL" | awk '$2 == "Token:" { print $3 }'
+}
+
+qr() {
+  local VAL=$1
+  local MODE=${2:-ANSIUTF8}
+  shift 2
+
+  qrencode -t $MODE $VAL
+}
+
+get_url() {
+  local user="$(whoami)"
+  printf "otpauth://totp/${user}?secret=$1"
+}
+
+main() {
+  pushd "$(dirname $0)" > /dev/null
+  local KEY="$(get_key)"
+  local KEY_URL="$(get_url "$KEY")"
+  local NONINTERACTIVE="$1"
+
+  if which qrencode > /dev/null; then
+    qr $KEY_URL
+  else
+    echo "Run 'yum install qrencode' to get a QR code"
+  fi
+  echo
+
+  "$DUAL_CONTROL"
+  local MORE
+  while [[ -z "$NONINTERACTIVE" ]]; do
+    read -r -p 'Another token [Y/n]? ' MORE
+    MORE="${MORE:-y}"
+    if [[ "${MORE/Y/y}" != 'y' ]]; then
+      break
+    fi
+    get_token
+  done
+
+  popd > /dev/null
+}
+
+case "$1" in
+  '-h')
+  cat <<EOF
+USAGE:
+  $(basename $0) [--help]
+  $(basename $0) [is_not_interactive]
+EOF
+  exit 0
+  ;;
+*)
+  main "$1"
+esac
