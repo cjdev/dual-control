@@ -23,6 +23,7 @@
 #include "sys_fstream.h"
 #include "generator.h"
 #include "base32.h"
+#include "typealiases.h"
 
 class fake_user : public user_ifc
 {
@@ -103,7 +104,6 @@ public:
     }
 };
 
-using octet_vector = std::vector<uint8_t>;
 class fake_rand_with_specified_result : public random_source_ifc
 {
 private:

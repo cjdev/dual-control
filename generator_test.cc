@@ -20,6 +20,7 @@
 #include "sys_stdlib.h"
 #include "sys_time.h"
 #include "test_util.h"
+#include "typealiases.h"
 
 class fake_stdlib : public stdlib_ifc
 {

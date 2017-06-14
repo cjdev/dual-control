@@ -22,10 +22,10 @@
 
 #include "sys_stdlib.h"
 #include "sys_time.h"
+#include "typealiases.h"
 
 int ipow (int base, int exp);
 time_t time_step (const time_t time, const int step);
-using octet_vector = std::vector<uint8_t>;
 
 class token_generator_ifc
 {

@@ -20,6 +20,7 @@
 #include "token.h"
 #include "test_util.h"
 #include "generator.h"
+#include "typealiases.h"
 
 class mock_tokens : public tokens_ifc
 {
