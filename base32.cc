@@ -128,8 +128,10 @@ public:
     }
 
 private:
+    using reverse_map = std::unordered_map <char, unsigned char>;
+    using character_type = std::string::value_type;
 
-    std::unordered_map <char, unsigned char> construct_lookup_table() const
+    reverse_map construct_lookup_table() const
     {
         std::unordered_map<char, unsigned char> lookup_table;
 
@@ -188,6 +190,16 @@ private:
 
     }
 
+    uint8_t get_next_input(reverse_map &lookup_table, std::string &input, std::string::size_type idx) const {
+        character_type character = input[idx];
+
+        if (character != '=' && lookup_table.find(character) == lookup_table.end()) {
+            throw invalid_data_exception ();
+        }
+
+        return lookup_table[input[idx]];
+    }
+
 public:
 
     std::vector<uint8_t> decode (std::string input) const override
@@ -200,12 +212,10 @@ public:
         unsigned long long bits_written = 0;
 
         for (std::string::size_type idx = 0; idx < input.size(); idx++) {
-            // TODO: fail on invalid input
-            uint8_t val = lookup_table[input[idx]];
-
             uint8_t start_bit = bits_written % 8;
             std::vector<unsigned char>::size_type current_byte = bits_written/8;
 
+            uint8_t val = get_next_input(lookup_table, input, idx);
             set_vector_at_bit (result, val, current_byte, start_bit, 5);
 
             bits_written += 5;
@@ -221,4 +231,3 @@ template class std::vector<unsigned char>;
 base32::base32 ():
     delegate_ (std::make_shared<base32_impl> ())
 {}
-

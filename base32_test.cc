@@ -64,13 +64,23 @@ int decode_validates_input()
     // The token for key 76I6WTYEUTNCJUREMGKVM45PMA and time '2017/01/01 00:00:00' is 258675
     base32 codec = base32();
 
+    int num_exceptions = 0;
     try {
-        codec.decode ("\x00");
-        codec.decode ("\x00\x00\x00\x00\x00\x00\x00\x00\x00");
+        codec.decode ("A");
+        codec.decode ("AAAAAAAAA");
         fail ("invalid length should result in an exception");
     } catch (std::exception e) {
-        succeed();
+        num_exceptions++;
     }
+
+    try {
+        codec.decode ("--------");
+        fail ("invalid input characters should result in an exception");
+    } catch (invalid_data_exception) {
+        num_exceptions++;
+    }
+
+    check(num_exceptions == 2, "base32.decode should validate input data");
 
     succeed();
 }
@@ -107,4 +117,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

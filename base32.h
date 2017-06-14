@@ -16,6 +16,10 @@
 #include <vector>
 #include <string>
 
+class invalid_data_exception : public std::exception
+{
+};
+
 class base32_ifc
 {
 public:
@@ -44,4 +48,3 @@ public:
 };
 
 #endif
-
