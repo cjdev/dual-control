@@ -16,13 +16,51 @@
 #include "user.h"
 #include "test_util.h"
 #include "token.h"
+#include "sys_unistd.h"
+
+template<class T>
+std::shared_ptr<T> share (T *t)
+{
+    return std::shared_ptr<T> (t);
+}
+
+class mock_unistd : public unistd_ifc
+{
+private:
+    uid_t expected_euid_;
+public:
+    mutable std::vector<uid_t> actual_uids;
+    mock_unistd (uid_t expected_euid)
+        : expected_euid_ (expected_euid)
+    {}
+
+    int seteuid (uid_t euid) const override
+    {
+        actual_uids.push_back(euid);
+        return (euid == expected_euid_ || euid == 0) ? 0 : -1;
+    }
+};
+
+class fake_user : public user_ifc
+{
+private:
+    uid_t uid_;
+public:
+    fake_user (uid_t uid) : uid_ (uid)
+    {}
+    uid_t uid() const override
+    {
+        return uid_;
+    }
+};
 
 class fake_directory : public directory_ifc
 {
 private:
     std::string user_name_;
+    uid_t uid_;
 public:
-    fake_directory (const std::string &user_name) : user_name_ (user_name)
+    fake_directory (const std::string &user_name, const uid_t uid = -1) : user_name_ (user_name), uid_ (uid)
     {
     }
     fake_directory() : user_name_ ("_NOT_A_USER") {}
@@ -32,7 +70,7 @@ public:
         std::vector<user> result;
 
         if (user_name == user_name_) {
-            result.push_back (user());
+            result.push_back (user(share (new fake_user (uid_))));
         }
 
         return result;
@@ -52,12 +90,6 @@ public:
     }
 };
 
-template<class T>
-std::shared_ptr<T> share (T *t)
-{
-    return std::shared_ptr<T> (t);
-}
-
 bool validator_validates()
 {
 
@@ -66,14 +98,20 @@ bool validator_validates()
     tokens tokens (share (new
                           fake_tokens (token)));
     std::string user_name = "msmith";
-    directory directory (share (new fake_directory (user_name)));
-    validator validator = validator::create (directory, tokens);
+
+    uid_t expected_uid = 1000;
+    directory directory (share (new fake_directory (user_name, expected_uid)));
+    std::shared_ptr<mock_unistd> mock_unistd = share (new class mock_unistd(expected_uid));
+    class unistd unistd (mock_unistd);
+    validator validator = validator::create (directory, tokens, unistd);
+    std::vector<uid_t> expected_uids {expected_uid, 0};
 
     // when
     bool actual = validator.validate ("requester", user_name, token, "reason");
 
     // then
     check (actual, "should be valid");
+    check (mock_unistd->actual_uids == expected_uids, "should drop permissions");
     succeed();
 }
 
@@ -85,7 +123,8 @@ bool validator_fails_unknown_user()
     tokens tokens (share (new
                           fake_tokens));
     directory directory (share (new fake_directory));
-    validator validator = validator::create (directory, tokens);
+    class unistd unistd (share (new unistd_ifc()));
+    validator validator = validator::create (directory, tokens, unistd);
 
     // when
     bool actual = validator.validate ("requester", "notuser", token, "reason");
@@ -103,7 +142,8 @@ bool validator_fails_incorrect_token()
                           fake_tokens));
     std::string user_name = "msmith";
     directory directory (share (new fake_directory (user_name)));
-    validator validator = validator::create (directory, tokens);
+    class unistd unistd (share (new unistd_ifc()));
+    validator validator = validator::create (directory, tokens, unistd);
 
     // when
     bool actual = validator.validate ("requester", user_name, "token",
@@ -123,7 +163,8 @@ bool validator_fails_with_own_token()
     directory directory (share (new fake_directory (authorizer_user_name)));
     tokens tokens (share (new
                           fake_tokens (authorizer_token)));
-    validator validator = validator::create (directory, tokens);
+    class unistd unistd (share (new unistd_ifc()));
+    validator validator = validator::create (directory, tokens, unistd);
 
     // when
     bool actual = validator.validate (requester_user_name, authorizer_user_name,
@@ -144,7 +185,8 @@ bool validator_fails_with_unknown_requester()
     directory directory (share (new fake_directory (authorizer_user_name)));
     tokens tokens (share (new
                           fake_tokens (authorizer_token)));
-    validator validator = validator::create (directory, tokens);
+    class unistd unistd (share (new unistd_ifc()));
+    validator validator = validator::create (directory, tokens, unistd);
 
     // when
     bool actual = validator.validate (requester_user_name, authorizer_user_name,
@@ -165,7 +207,8 @@ bool validator_fails_on_empty_reason()
     directory directory (share (new fake_directory (authorizer_user_name)));
     tokens tokens (share (new
                           fake_tokens (authorizer_token)));
-    validator validator = validator::create (directory, tokens);
+    class unistd unistd (share (new unistd_ifc()));
+    validator validator = validator::create (directory, tokens, unistd);
 
     //when
     bool actual = validator.validate (requester_user_name, authorizer_user_name,
@@ -191,4 +234,3 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
-

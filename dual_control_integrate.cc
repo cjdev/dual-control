@@ -46,7 +46,7 @@ dual_control initialize()
     totp_generator generator = totp_generator (time, code_digits);
     random_source rand (random_source::create (fstreams));
     tokens tokens (tokens::create (fstreams, generator, rand));
-    validator validator (validator::create (directory, tokens));
+    validator validator (validator::create (directory, tokens, unistd));
     pam pam (pam::create());
     conversation conversation (conversation::create (pam));
     sys_syslog sys_syslog (sys_syslog::create());

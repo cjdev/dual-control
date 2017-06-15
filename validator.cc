@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "validator.h"
+#include "become.h"
+#include "sys_unistd.h"
 
 namespace
 {
@@ -21,14 +23,19 @@ class impl : public validator_ifc
 private:
     directory directory_;
     tokens tokens_;
+    unistd unistd_;
 public:
     impl (const directory &directory,
-          const tokens tokens) :
+          const tokens tokens,
+          const unistd unistd) :
         directory_ (directory),
-        tokens_ (tokens) {}
+        tokens_ (tokens),
+        unistd_ (unistd)
+    {}
     bool validate (const std::string &requester_user_name,
                    const std::string &authorizer_user_name,
-                   const std::string &token, const std::string &reason) override
+                   const std::string &token,
+                   const std::string &reason) override
     {
         std::vector<user> found_user = directory_.find_user (authorizer_user_name);
 
@@ -48,17 +55,19 @@ public:
             return false;
         }
 
-        std::string user_token = tokens_.token (found_user[0]);
+        auto user_ = found_user[0];
+        become become_(user_, unistd_);
+
+        std::string user_token = tokens_.token (user_);
         return user_token == token;
     }
 };
 }
 
 validator validator::create (const directory &directory,
-                             const tokens &tokens)
+                             const tokens &tokens,
+                             const unistd &unistd)
 {
-    std::shared_ptr<validator_ifc> delegate (new impl (directory,
-            tokens));
+    std::shared_ptr<validator_ifc> delegate (new impl (directory, tokens, unistd));
     return validator (delegate);
 }
-
