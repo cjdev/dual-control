@@ -23,10 +23,16 @@ class user_impl : public user_ifc
 private:
     std::string home_directory_;
     std::string user_name_;
+    uid_t uid_;
 public:
     user_impl (const passwd user_info) :
         home_directory_ (std::string (user_info.pw_dir)),
-        user_name_ (std::string (user_info.pw_name)) {}
+        user_name_ (std::string (user_info.pw_name)),
+        uid_ (user_info.pw_uid) {}
+    uid_t uid() const override
+    {
+        return uid_;
+    }
     std::string home_directory() const override
     {
         return home_directory_;
@@ -81,4 +87,3 @@ directory directory::create (unistd &unistd, pwd &pwd)
 {
     return directory (delegate (new directory_impl (unistd, pwd)));
 }
-

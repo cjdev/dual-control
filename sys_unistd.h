@@ -28,6 +28,11 @@ public:
     {
         return "";
     }
+    virtual int seteuid(uid_t euid) const
+    {
+        return -1;
+    };
+
 };
 
 class unistd
@@ -49,10 +54,13 @@ public:
     {
         return delegate_->getlogin();
     }
+    int seteuid(uid_t euid) const
+    {
+        return delegate_->seteuid(euid);
+    };
     static unistd create();
 };
 
 template class std::shared_ptr<unistd_ifc>;
 
 #endif
-

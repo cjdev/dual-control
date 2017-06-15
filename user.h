@@ -26,6 +26,10 @@ public:
     {
         return "";
     }
+    virtual uid_t uid() const
+    {
+        return -1;
+    }
 };
 
 class user
@@ -42,6 +46,10 @@ public:
     std::string home_directory() const
     {
         return delegate_-> home_directory();
+    }
+    uid_t uid() const
+    {
+        return delegate_->uid();
     }
     static user create (const passwd &passwd);
 };
@@ -82,4 +90,3 @@ public:
 };
 
 #endif
-
