@@ -1,5 +1,5 @@
-CXXFLAGS += -fPIC -fno-stack-protector -std=c++11  -g
-CFLAGS += -fPIC -fno-stack-protector -g
+CXXFLAGS += -fPIC -fno-stack-protector -std=c++11
+CFLAGS += -fPIC -fno-stack-protector
 LDFLAGS_COMMON = -lpam
 
 ifeq ($(UNAME_S), Linux)
