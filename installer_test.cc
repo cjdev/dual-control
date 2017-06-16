@@ -25,7 +25,7 @@
 class mock_tokens : public tokens_ifc
 {
 public:
-    mutable std::string captured_token;
+    mutable std::string captured_key;
     const std::string key_;
 
     mock_tokens (std::string key)
@@ -43,9 +43,9 @@ public:
         return key_;
     }
 
-    void save (const user &user, const std::string &token) const override
+    void save (const user &user, const std::string &key) const override
     {
-        captured_token = token;
+        captured_key = key;
     }
 };
 
@@ -141,7 +141,7 @@ int installs_token()
     std::tie (actual_key, actual_token) = installer.install_key();
 
     //then
-    check (test_tokens->captured_token == key, "installed wrong key");
+    check (test_tokens->captured_key == key, "installed wrong key");
     check (actual_key == key, "installer returned wrong key");
     check (actual_token == token, "installer returned wrong token");
     succeed();
@@ -193,7 +193,7 @@ int directory_finds_no_user_info()
     std::tie (actual_key, actual_token) = installer.install_key();
 
     //then
-    check (test_tokens->captured_token == "", "installed wrong key");
+    check (test_tokens->captured_key == "", "installed wrong key");
     check (actual_key == "", "did not return empty token");
     check (actual_token == "", "did not return an empty token");
     succeed();
