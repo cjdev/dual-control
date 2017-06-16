@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
+set -e -u -o pipefail
 
-DUAL_CONTROL="$(which dual_control)"
+DUAL_CONTROL="$(command -v dual_control || printf '')"
 DUAL_CONTROL="${DUAL_CONTROL:-./dual_control}"
 
 get_key() {
@@ -14,7 +15,7 @@ get_token() {
 qr() {
   local VAL=$1
   local MODE=${2:-ANSI}
-  shift 2
+  shift 2 || true
 
   qrencode -t $MODE $VAL
 }
@@ -30,7 +31,7 @@ main() {
   local KEY_URL="$(get_url "$KEY")"
   local NONINTERACTIVE="$1"
 
-  if which qrencode > /dev/null; then
+  if command -v qrencode > /dev/null; then
     qr $KEY_URL
   else
     echo "Run 'yum install qrencode' to get a QR code"
@@ -51,8 +52,8 @@ main() {
   popd > /dev/null
 }
 
-case "$1" in
-  '-h')
+case "${1:-}" in
+'-h')
   cat <<EOF
 USAGE:
   $(basename $0) [--help]
@@ -60,6 +61,7 @@ USAGE:
 EOF
   exit 0
   ;;
+
 *)
-  main "$1"
+  main "${1:-}"
 esac
