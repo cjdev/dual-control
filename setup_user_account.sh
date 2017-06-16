@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash
 
 DUAL_CONTROL="$(which dual_control)"
 DUAL_CONTROL="${DUAL_CONTROL:-./dual_control}"
@@ -8,7 +8,7 @@ get_key() {
 }
 
 get_token() {
-  "$DUAL_CONTROL" | awk '$2 == "Token:" { print $3 }'
+  "$DUAL_CONTROL" | awk '$2 == "Token:" { print $0 }'
 }
 
 qr() {
