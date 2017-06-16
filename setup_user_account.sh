@@ -1,4 +1,4 @@
-#!/usr/bin/env/bash -x
+#!/usr/bin/env bash -x
 
 DUAL_CONTROL="$(which dual_control)"
 DUAL_CONTROL="${DUAL_CONTROL:-./dual_control}"

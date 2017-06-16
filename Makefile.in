@@ -71,6 +71,7 @@ else
 endif
 	mkdir -p $(DESTDIR)/@bindir@
 	cp dual_control $(DESTDIR)/@bindir@/
+	cp setup_user_account.sh $(DESTDIR)/@bindir@/
 	chmod a+x $(DESTDIR)/@bindir@/dual_control
 
 .PHONY: format
