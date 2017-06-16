@@ -13,7 +13,7 @@ get_token() {
 
 qr() {
   local VAL=$1
-  local MODE=${2:-ANSIUTF8}
+  local MODE=${2:-ANSI}
   shift 2
 
   qrencode -t $MODE $VAL
