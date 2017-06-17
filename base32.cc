@@ -190,10 +190,13 @@ private:
 
     }
 
-    uint8_t get_next_input(reverse_map &lookup_table, std::string &input, std::string::size_type idx) const {
+    uint8_t get_next_input (reverse_map &lookup_table, std::string &input,
+                            std::string::size_type idx) const
+    {
         character_type character = input[idx];
 
-        if (character != '=' && lookup_table.find(character) == lookup_table.end()) {
+        if (character != '='
+            && lookup_table.find (character) == lookup_table.end()) {
             throw invalid_data_exception ();
         }
 
@@ -215,7 +218,7 @@ public:
             uint8_t start_bit = bits_written % 8;
             std::vector<unsigned char>::size_type current_byte = bits_written/8;
 
-            uint8_t val = get_next_input(lookup_table, input, idx);
+            uint8_t val = get_next_input (lookup_table, input, idx);
             set_vector_at_bit (result, val, current_byte, start_bit, 5);
 
             bits_written += 5;
@@ -231,3 +234,4 @@ template class std::vector<unsigned char>;
 base32::base32 ():
     delegate_ (std::make_shared<base32_impl> ())
 {}
+

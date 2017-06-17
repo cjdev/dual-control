@@ -95,8 +95,9 @@ private:
                       size_t data_size, const int digits=6) const
     {
         // TODO: see if I can use sha256/etc. with google auth...
-        const unsigned char *digest = HMAC (EVP_sha1(), key.data(), key.size(), data,
-                                      data_size, NULL, NULL);
+        const unsigned char *digest = HMAC (EVP_sha1(), key.data(), key.size(),
+                                            data,
+                                            data_size, NULL, NULL);
 
         if (digest == nullptr) {
             throw hmac_failed_exception();
@@ -137,3 +138,4 @@ totp_generator::totp_generator (
     const int code_digits) :
     delegate_ (std::make_shared<token_generator_impl> (clock, code_digits))
 {}
+

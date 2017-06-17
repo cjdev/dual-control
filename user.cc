@@ -87,3 +87,4 @@ directory directory::create (unistd &unistd, pwd &pwd)
 {
     return directory (delegate (new directory_impl (unistd, pwd)));
 }
+

@@ -62,3 +62,4 @@ installer installer::create (const tokens &tokens, const unistd &unistd,
     return installer (std::make_shared<impl> (tokens, unistd, directory,
                       generator));
 }
+

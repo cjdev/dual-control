@@ -118,3 +118,4 @@ tokens tokens::create (const fstreams &fstreams,
     return tokens (tokens::delegate
                    (new tokens_impl (fstreams, generator, rand)));
 }
+

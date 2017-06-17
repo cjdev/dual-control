@@ -56,7 +56,7 @@ public:
         }
 
         auto user_ = found_user[0];
-        become become_(user_, unistd_);
+        become become_ (user_, unistd_);
 
         std::string user_token = tokens_.token (user_);
         return user_token == token;
@@ -68,6 +68,8 @@ validator validator::create (const directory &directory,
                              const tokens &tokens,
                              const unistd &unistd)
 {
-    std::shared_ptr<validator_ifc> delegate (new impl (directory, tokens, unistd));
+    std::shared_ptr<validator_ifc> delegate (new impl (directory, tokens,
+            unistd));
     return validator (delegate);
 }
+

@@ -36,7 +36,7 @@ public:
 
     int seteuid (uid_t euid) const override
     {
-        actual_uids.push_back(euid);
+        actual_uids.push_back (euid);
         return (euid == expected_euid_ || euid == 0) ? 0 : -1;
     }
 };
@@ -60,7 +60,8 @@ private:
     std::string user_name_;
     uid_t uid_;
 public:
-    fake_directory (const std::string &user_name, const uid_t uid = -1) : user_name_ (user_name), uid_ (uid)
+    fake_directory (const std::string &user_name,
+                    const uid_t uid = -1) : user_name_ (user_name), uid_ (uid)
     {
     }
     fake_directory() : user_name_ ("_NOT_A_USER") {}
@@ -70,7 +71,7 @@ public:
         std::vector<user> result;
 
         if (user_name == user_name_) {
-            result.push_back (user(share (new fake_user (uid_))));
+            result.push_back (user (share (new fake_user (uid_))));
         }
 
         return result;
@@ -101,7 +102,8 @@ bool validator_validates()
 
     uid_t expected_uid = 1000;
     directory directory (share (new fake_directory (user_name, expected_uid)));
-    std::shared_ptr<mock_unistd> mock_unistd = share (new class mock_unistd(expected_uid));
+    std::shared_ptr<mock_unistd> mock_unistd = share (new class mock_unistd (
+                expected_uid));
     class unistd unistd (mock_unistd);
     validator validator = validator::create (directory, tokens, unistd);
     std::vector<uid_t> expected_uids {expected_uid, 0};
@@ -111,7 +113,8 @@ bool validator_validates()
 
     // then
     check (actual, "should be valid");
-    check (mock_unistd->actual_uids == expected_uids, "should drop permissions");
+    check (mock_unistd->actual_uids == expected_uids,
+           "should drop permissions");
     succeed();
 }
 
@@ -234,3 +237,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+

@@ -1,3 +1,14 @@
+/* Copyright (C) CJ Affiliate
+ *
+ * You may use, distribute and modify this code under  the
+ * terms of the  GNU General Public License  version 2  or
+ * later.
+ *
+ * You should have received a copy of the license with this
+ * file. If not, you will find a copy in the "LICENSE" file
+ * at https://github.com/cjdev/dual-control.
+ */
+
 #include "become.h"
 #include "sys_unistd.h"
 #include "sys_pwd.h"
@@ -43,9 +54,10 @@ public:
 int become_calls_seteuid_with_right_arguments ()
 {
     uid_t expected_uid = 1000;
-    std::shared_ptr<mock_unistd> mock_unistd  = share (new class mock_unistd(expected_uid));
+    std::shared_ptr<mock_unistd> mock_unistd  = share (new class mock_unistd (
+                expected_uid));
     unistd fake_unistd (mock_unistd);
-    user fake_user (share (new class fake_user(expected_uid)));
+    user fake_user (share (new class fake_user (expected_uid)));
 
     become become_ (fake_user, fake_unistd);
 
@@ -64,3 +76,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+

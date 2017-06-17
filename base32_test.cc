@@ -65,6 +65,7 @@ int decode_validates_input()
     base32 codec = base32();
 
     int num_exceptions = 0;
+
     try {
         codec.decode ("A");
         codec.decode ("AAAAAAAAA");
@@ -80,7 +81,7 @@ int decode_validates_input()
         num_exceptions++;
     }
 
-    check(num_exceptions == 2, "base32.decode should validate input data");
+    check (num_exceptions == 2, "base32.decode should validate input data");
 
     succeed();
 }
@@ -117,3 +118,4 @@ int main (int argc, char *argv[])
 {
     return !run_tests();
 }
+

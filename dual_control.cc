@@ -76,3 +76,4 @@ dual_control dual_control::create (const dual_control_configuration
     return dual_control (std::shared_ptr<dual_control_ifc> (new impl (
                              configuration)));
 }
+
