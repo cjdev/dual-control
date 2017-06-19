@@ -28,7 +28,7 @@ struct conversation_data {
     int return_value;
 };
 
-const std::string token_prompt ("Dual control token: ");
+const std::string token_prompt ("Dual control token (<user>:<token>): ");
 const std::string reason_prompt ("Reason: ");
 
 bool same_prompts (const std::vector<pam_message> &expected,
@@ -175,8 +175,8 @@ conversation successful_conversation (pam_handle *expected_handle,
     };
 
     std::vector<conversation_data> conversations;
-    conversations.push_back (token_conv_data);
     conversations.push_back (reason_conv_data);
+    conversations.push_back (token_conv_data);
 
     pam pam (share (new fake_pam (expected_handle, conversations)));
     return conversation::create (pam);
@@ -285,8 +285,8 @@ int returns_empty_user_and_token_when_token_answer_fails()
         reason_retcode
     };
     std::vector<conversation_data> conversations;
-    conversations.push_back (token_conversation_data);
     conversations.push_back (reason_conversation_data);
+    conversations.push_back (token_conversation_data);
     pam pam (share (new fake_pam (0, conversations)));
     conversation conversation = conversation::create (pam);
     pam_request request (0, 0, 0, 0);
@@ -331,8 +331,8 @@ int returns_empty_reason_when_reason_answer_fails()
         reason_retcode
     };
     std::vector<conversation_data> conversations;
-    conversations.push_back (token_conversation_data);
     conversations.push_back (reason_conversation_data);
+    conversations.push_back (token_conversation_data);
     pam pam (share (new fake_pam (0, conversations)));
     conversation conversation = conversation::create (pam);
     pam_request request (0, 0, 0, 0);
@@ -364,4 +364,3 @@ int main (int argc, char **argv)
 {
     return !run_tests();
 }
-

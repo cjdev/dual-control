@@ -53,17 +53,17 @@ public:
     {
         conversation_result result;
 
-        pam_conv_result token_result (conversation ("Dual control token: ",
-                                      PAM_PROMPT_ECHO_OFF, request));
-
-        if (token_result.get_conv_result != PAM_SUCCESS) {
-            return result;
-        }
-
         pam_conv_result reason_result (conversation ("Reason: ", PAM_PROMPT_ECHO_ON,
                                        request));
 
         if (reason_result.get_conv_result != PAM_SUCCESS) {
+            return result;
+        }
+
+        pam_conv_result token_result (conversation ("Dual control token (<user>:<token>): ",
+                                      PAM_PROMPT_ECHO_OFF, request));
+
+        if (token_result.get_conv_result != PAM_SUCCESS) {
             return result;
         }
 
@@ -86,6 +86,7 @@ public:
 
         result.user_name = std::string (token_answer.begin(), delim);
         result.token = std::string (delim + 1, token_answer.end());
+
         return result;
     }
 };
@@ -95,4 +96,3 @@ conversation conversation::create (pam &pam)
 {
     return conversation (std::shared_ptr<conversation_ifc> (new impl (pam)));
 }
-
