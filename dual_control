@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e -u -o pipefail
 
-DUAL_CONTROL="$(command -v dual_control || printf '')"
-DUAL_CONTROL="${DUAL_CONTROL:-./dual_control}"
+DUAL_CONTROL="$(command -v _dual_control || printf '')"
+DUAL_CONTROL="${DUAL_CONTROL:-./_dual_control}"
 
 get_key() {
   "$DUAL_CONTROL" | awk '$1 == "Key:" { print $2 }'
