@@ -27,7 +27,7 @@ version:
 	@echo COMPILER VERSION --------------------------------
 	$(CXX) --version
 
-_dual_control.a: _dual_control.o dual_control_integrate.o $(OBJS) $(INTEGRATION_OBJS)
+dual_control.a: dual_control.o dual_control_integrate.o $(OBJS) $(INTEGRATION_OBJS)
 	ar rvs $@ $^
 	ranlib $@
 
