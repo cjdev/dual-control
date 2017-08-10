@@ -1,4 +1,5 @@
-/* Copyright (C) CJ Affiliate
+
+/*Copyright (C) CJ Affiliate
  *
  * You may use, distribute and modify this code under  the
  * terms of the  GNU General Public License  version 2  or
@@ -60,32 +61,30 @@ public:
             return result;
         }
 
-        pam_conv_result token_result (conversation ("Dual control token (<user>:<token>): ",
-                                      PAM_PROMPT_ECHO_OFF, request));
-
-        if (token_result.get_conv_result != PAM_SUCCESS) {
-            return result;
-        }
-
         if (reason_result.conv_result == PAM_SUCCESS) {
             std::string reason (reason_result.responses[0]->resp);
             result.reason = reason;
         }
 
-        if (token_result.conv_result != PAM_SUCCESS) {
+        pam_conv_result seconduser_username (conversation ("Dual Control User: ",
+                                             PAM_PROMPT_ECHO_ON, request));
+
+
+        pam_conv_result seconduser_token (conversation ("Dual Control User Token: ",
+                                          PAM_PROMPT_ECHO_OFF, request));
+        if (seconduser_username.conv_result!= PAM_SUCCESS) {
             return result;
         }
 
-        std::string token_answer (token_result.responses[0]->resp);
-        std::string::iterator delim = std::find (token_answer.begin(),
-                                      token_answer.end(), ':');
 
-        if (delim == token_answer.end()) {
+        if (seconduser_token.conv_result!= PAM_SUCCESS) {
             return result;
         }
 
-        result.user_name = std::string (token_answer.begin(), delim);
-        result.token = std::string (delim + 1, token_answer.end());
+
+
+        result.user_name = std::string (seconduser_username.responses[0]->resp);
+        result.token = std::string (seconduser_token.responses[0]->resp);
 
         return result;
     }

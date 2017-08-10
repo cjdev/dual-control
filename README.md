@@ -66,3 +66,4 @@ prompt to get a more recent token).
 - ./configure
 - make
 - make test
+
